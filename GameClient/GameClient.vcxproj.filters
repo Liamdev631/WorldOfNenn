@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{bbd9b380-3915-4a3e-812e-09658e429906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{88694aba-302f-4e97-9677-773b9339bf69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Menus">
+      <UniqueIdentifier>{219507b3-89c7-44db-b109-d10073c41659}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C_Client.h" />
+    <ClInclude Include="C_Entity.h" />
+    <ClInclude Include="C_ItemManager.h" />
+    <ClInclude Include="C_MouseState.h" />
+    <ClInclude Include="Target.h" />
+    <ClInclude Include="C_WorldScene.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="C_WorldMap.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SFMLOrthogonalLayer.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceLoader.h" />
+    <ClInclude Include="C_WorldManager.h" />
+    <ClInclude Include="Crosshair.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Healthbar.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Chatbox.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuTab.h">
+      <Filter>Graphics\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="InventoryTab.h">
+      <Filter>Graphics\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="Interface.h" />
+    <ClInclude Include="RCOption.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C_Client.cpp" />
+    <ClCompile Include="C_Entity.cpp" />
+    <ClCompile Include="C_ItemManager.cpp" />
+    <ClCompile Include="C_Main.cpp" />
+    <ClCompile Include="C_WorldScene.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="C_WorldMap.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceLoader.cpp" />
+    <ClCompile Include="C_WorldManager.cpp" />
+    <ClCompile Include="Crosshair.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Healthbar.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Chatbox.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuTab.cpp">
+      <Filter>Graphics\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="InventoryTab.cpp">
+      <Filter>Graphics\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Interface.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Fractal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TerrainFragmentShader.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="TerrainVertexShader.vert">
+      <Filter>shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
