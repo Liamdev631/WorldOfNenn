@@ -26,9 +26,9 @@ public:
 		g_server->start();
 	}
 
-	void tick()
+	void update()
 	{
-		g_server->tick();
+		g_server->update();
 	}
 
 	void forceStop()
@@ -48,7 +48,7 @@ int main()
 
 		auto start = std::chrono::high_resolution_clock::now();
 
-		m.tick();
+		m.update();
 
 		std::this_thread::sleep_until(start + std::chrono::milliseconds(1000 / S_TICKS_PER_SECOND));
 

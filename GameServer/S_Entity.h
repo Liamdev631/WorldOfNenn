@@ -29,7 +29,7 @@ public:
 	~S_Entity();
 
 	/// Called each tick of the server
-	virtual void tick();
+	virtual void update();
 
 	//---- Getters / Setters ----//
 
@@ -40,7 +40,7 @@ public:
 	const EntityType& getEntityType() const;
 	
 	/// Returns the Connection attached to this entity, or nullptr if this is not a player
-	const S_Connection& getConnection() const;
+	const S_Connection* getConnection() const;
 	
 	//---- Components ----//
 	S_CombatComponent& getCombat();

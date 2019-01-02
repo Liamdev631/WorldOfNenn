@@ -55,3 +55,15 @@ struct CP_MoveToDest
 		: pos(pos) { }
 };
 #pragma pack(pop)
+
+#pragma pack(push, 1)
+#define CP_SetRun_header 4
+struct CP_SetRun
+{
+	const packet_header header = CP_SetRun_header;
+	bool run;
+
+	CP_SetRun(bool run)
+		: run(run) { }
+};
+#pragma pack(pop)

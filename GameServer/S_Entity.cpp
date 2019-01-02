@@ -3,7 +3,6 @@
 #include "S_GlobalServer.h"
 #include "S_Connection.h"
 
-
 /// Constructor
 S_Entity::S_Entity(const u16 uid, const EntityType entityType, const Region region)
 	: m_id(uid), m_entityType(entityType), m_combat(*this), m_movement(*this), m_connection(nullptr)
@@ -17,7 +16,7 @@ S_Entity::~S_Entity()
 
 }
 
-void S_Entity::tick()
+void S_Entity::update()
 {
 
 }
@@ -32,9 +31,11 @@ const EntityType& S_Entity::getEntityType() const
 	return m_entityType;
 }
 
-const S_Connection& S_Entity::getConnection() const
+const S_Connection* S_Entity::getConnection() const
 {
-	return *m_connection;
+	if (m_entityType == ET_PLAYER || m_entityType == ET_ADMIN)
+		assert(m_connection != nullptr);
+	return m_connection;
 }
 
 S_CombatComponent& S_Entity::getCombat()
@@ -49,7 +50,7 @@ S_MovementComponent& S_Entity::getMovement()
 
 void S_Entity::onRespawn()
 {
-	m_movement.blinkTo(m_movement.position);
+	m_movement.blinkTo(m_movement.getPos());
 }
 
 void S_Entity::onDeath()

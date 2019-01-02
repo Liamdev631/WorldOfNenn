@@ -33,7 +33,7 @@ public:
 	~S_Server();
 
 	void start();
-	void tick(); // 12 times/sec, fixed
+	void update(); // 12 times/sec, fixed
 	void stop();
 	
 	S_WorldManager& getWorldManager() const;

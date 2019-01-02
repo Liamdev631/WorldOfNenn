@@ -2,7 +2,7 @@
 #include "Global.h"
 #include "Items.h"
 #include "CombatState.h"
-#include "MovementState.h"
+#include "MoveKey.h"
 
 typedef u8 packet_header;
 
@@ -33,7 +33,7 @@ struct SP_EntityStatus_Elem
 {
 	u16 uid;
 	EntityType entityType;
-	MovementState move;
+	MoveKey move;
 };
 #pragma pack(pop)
 
@@ -101,7 +101,7 @@ struct SP_EntityMoved
 {
 	const packet_header header = SP_EntityMoved_header; // 7
 	u16 uid;
-	MovementState move;
+	MoveKey move;
 };
 #pragma pack(pop)
 
@@ -113,3 +113,16 @@ struct SP_TimestampSync
 	u32 timestamp;
 };
 #pragma pack(pop)
+
+#pragma pack(push, 1)
+constexpr packet_header SP_SetRun_header = 9;
+struct SP_SetRun
+{
+	const packet_header header = SP_SetRun_header;
+	bool run;
+
+	SP_SetRun(bool run)
+		: run(run) { }
+};
+#pragma pack(pop)
+

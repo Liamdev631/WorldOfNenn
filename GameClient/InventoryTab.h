@@ -14,13 +14,15 @@ public:
 	InventoryTab();
 	~InventoryTab();
 
-	void onMousePressed(const sf::Mouse::Button& button, const sf::Vector2f& mousePos) override;
-	void onMouseReleased(const sf::Mouse::Button& button, const sf::Vector2f& mousePos) override;
-	void update(const sf::Vector2f& mousePos) override;
+	void setHighlightedSlot(const int& slotclicked);
 
 	// Returns which slot of the inventory is being pointed at by the mouse, or -1 if none are
 	int getSlotUnderMouse(const sf::Vector2f& mousePos) const;
 
+	// UIComponent override
+	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override;
+	void openRCOMenuForSlot(const int& slotClicked);
+	void update(const sf::Vector2f& mousePos) override;
 	void draw(sf::RenderTarget& target) override;
 };
 

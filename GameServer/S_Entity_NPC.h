@@ -14,7 +14,7 @@ public:
 	S_Entity_NPC(const u16 uid, const EntityType entityType, const Region region);
 	~S_Entity_NPC();
 
-	void tick() override;
+	void update() override;
 	void onRespawn() override;
 	void onDeath() override;
 };

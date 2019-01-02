@@ -63,7 +63,7 @@ void S_Server::addConnectedPlayers()
 		packet.write(p);
 		newConnection->inventory.serialize(packet);
 
-		newEntity.getMovement().blinkTo(newEntity.getMovement().position);
+		newEntity.getMovement().blinkTo(newEntity.getMovement().getPos());
 
 		printf("Client (%d) added as a player.\n", newConnection->getUID());
 		newConnection = m_loginManager->popPlayer();
@@ -90,7 +90,7 @@ void S_Server::disconnectPlayer(S_Connection& connection)
 	m_connections[connection.getUID()] = nullptr;
 }
 
-void S_Server::tick()
+void S_Server::update()
 {
 	timestamp++;
 
@@ -105,7 +105,7 @@ void S_Server::tick()
 			c->getBuffer().getTimestamp() = timestamp; // Set the ts at the beginning of the packet
 			
 			m_server->send_packet_to(c->getUID(), 0, c->getBuffer().getData(), c->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-			c->getBuffer().reset();
+			c->getBuffer().endUpdate();
 		}
 
 }
@@ -124,7 +124,7 @@ void S_Server::calculateNewState()
 	m_server->consume_events(on_client_connected, on_client_disconnected, on_client_data_received);
 
 	// Calculate new entity positions
-	m_worldManager->tick();
+	m_worldManager->update();
 }
 
 void S_Server::transmitNewStates()
@@ -135,29 +135,6 @@ void S_Server::transmitNewStates()
 		S_Entity& playerEntity = (*conn)->getEntity();
 		WPacket& packet = (*conn)->getBuffer();
 		S_Region& region = playerEntity.getMovement().getWorldRegion();
-
-		// Send updated positions
-		/* CHANGED TO SEND UPDATE PACKET EVERY TIME POSITION IS CHANGED
-		int numEntities = 0;
-		std::map<u16, S_Entity*>::iterator entityIter;
-		for (entityIter = region.getEntities().begin(); entityIter != region.getEntities().end(); entityIter++)
-			if (entityIter->second->getMovement().hasUpdate())
-				numEntities++;
-		if (numEntities > 0)
-		{
-			packet.write<u8>(0x01); // P_EntityStatus Header
-			packet.write<u8>(numEntities);
-			for (entityIter = region.getEntities().begin(); entityIter != region.getEntities().end(); entityIter++)
-			{
-				auto other = entityIter->second;
-				if (other->getMovement().hasUpdate())
-				{
-					packet.write<u16>(other->getUID());
-					packet.write<u16>(other->getEntityType());
-					packet.write<Vec2<u16>>(other->getMovement().getPosition());
-				}
-			}
-		}*/
 
 		// Send updated inventories
 		if (player.inventory.dirty)
@@ -223,7 +200,7 @@ void S_Server::onDataRecieved(S_Connection& client, RPacket packet)
 			{
 				// Request to attack
 				const CP_AttackEntity& p = *packet.read<CP_AttackEntity>();
-				playerEntity.getCombat().attackTarget(*m_worldManager->getEntity(p.uid));
+				playerEntity.getCombat().initiateCombat(*m_worldManager->getEntity(p.uid));
 				continue;
 			}
 
@@ -248,6 +225,14 @@ void S_Server::onDataRecieved(S_Connection& client, RPacket packet)
 				// Player wants to drop an item
 				const CP_ItemDropped& p = *packet.read<CP_ItemDropped>();
 				client.dropItemFromInventory(p.item, p.slot);
+				continue;
+			}
+
+			case CP_SetRun_header:
+			{
+				const CP_SetRun& p = *packet.read<CP_SetRun>();
+				playerEntity.getMovement().setRun(p.run);
+				client.getBuffer().write(SP_SetRun(playerEntity.getMovement().isRunning()));
 				continue;
 			}
 

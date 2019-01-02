@@ -31,9 +31,9 @@ public:
 	u8 getRange() const;
 
 	bool inRange(S_Entity& other) const;
-	void attackTarget(S_Entity& target);
-	void reset();
+	void initiateCombat(S_Entity& target);
+	void endUpdate();
 	void totalReset();
-	void tick();
+	void update();
 	void takeDamage(S_CombatComponent& attacker, u8 damage);
 };

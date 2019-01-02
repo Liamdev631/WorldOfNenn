@@ -3,6 +3,7 @@
 #include <chrono>
 #include <thread>
 #include "C_WorldScene.h"
+#include "RunButton.h"
 
 C_Client::C_Client()
 {
@@ -48,7 +49,7 @@ bool C_Client::update()
 	//if (!m_gui->update(m_timer))
 	//	return false;
 	C_WorldManager::get().update(m_timer);
-	C_WorldScene::get().tick(m_timer);
+	C_WorldScene::get().update(m_timer);
 
 	// END GAME LOGIC
 
@@ -56,7 +57,7 @@ bool C_Client::update()
 	if (m_packetBuffer->getBytesWritten() > 0)
 	{
 		m_client->send_packet(0, m_packetBuffer->getData(), m_packetBuffer->getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-		m_packetBuffer->reset();
+		m_packetBuffer->endUpdate();
 	}
 
 	// Render
@@ -145,7 +146,8 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 			const SP_EntityStatus_Elem& p2 = *packet.read<SP_EntityStatus_Elem>();
 			C_Entity* entity = C_WorldManager::get().getEntity(p2.uid);
 			entity->entityType = p2.entityType;
-			entity->addMoveStateKey(MoveStateKey(m_timer.totalTime, p2.move));
+			entity->addMoveKey(p2.move);
+			printf("speed:%u\n", p2.move.speed);
 			if (LOG_PACKET_HEADERS) {
 				printf("Processing P_EntityStatus_Elem elem:%u uid:%#06x type:%#04x pos:(%#06x,%#06x)\n", i, p2.uid, p2.entityType, p2.move.pos.x, p2.move.pos.y);
 				printBytes(p);
@@ -221,14 +223,24 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 	{
 		const SP_EntityMoved& p = *packet.read<SP_EntityMoved>();
 		auto entity = C_WorldManager::get().getEntity(p.uid);
-		assert(entity != nullptr);
-		entity->addMoveStateKey(MoveStateKey(m_timer.totalTime, p.move));
+		if (!entity)
+			break;
+		entity->addMoveKey(p.move);
 
 		if (LOG_PACKET_HEADERS) {
 			printf("Processing SP_EntityMoved. pos:(%u,%u) rot:%u\n", p.move.pos.x, p.move.pos.y, p.move.rot);
 			printBytes(p);
 		}
 
+		break;
+	}
+
+	case SP_SetRun_header:
+	{
+		const auto& p = *packet.read<SP_SetRun>();
+		RunButton::get().setActive(p.run);
+		if (LOG_PACKET_HEADERS)
+			printf("Processing SP_SetRun. (run:%u)\n", p.run);
 		break;
 	}
 

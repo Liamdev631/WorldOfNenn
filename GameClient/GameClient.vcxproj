@@ -148,8 +148,11 @@
     <ClInclude Include="MenuTab.h" />
     <ClInclude Include="RCOption.h" />
     <ClInclude Include="ResourceLoader.h" />
+    <ClInclude Include="RunButton.h" />
     <ClInclude Include="SFMLOrthogonalLayer.hpp" />
+    <ClInclude Include="SideMenu.h" />
     <ClInclude Include="Target.h" />
+    <ClInclude Include="UIComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Chatbox.cpp" />
@@ -166,6 +169,8 @@
     <ClCompile Include="InventoryTab.cpp" />
     <ClCompile Include="MenuTab.cpp" />
     <ClCompile Include="ResourceLoader.cpp" />
+    <ClCompile Include="RunButton.cpp" />
+    <ClCompile Include="SideMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Fractal.png" />

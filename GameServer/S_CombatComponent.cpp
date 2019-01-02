@@ -17,13 +17,13 @@ S_CombatComponent::~S_CombatComponent()
 
 }
 
-void S_CombatComponent::tick()
+void S_CombatComponent::update()
 {
 	if (combatState.dead)
 	{
 		if (respawnTimer-- == 0)
 		{
-			combatState.reset();
+			combatState.endUpdate();
 			m_owner.onRespawn();
 			m_owner.getMovement().forcePositionUpdate();
 		}
@@ -31,9 +31,9 @@ void S_CombatComponent::tick()
 
 	if (attackTimer > 0)
 		attackTimer--;
-	if (!isInCombat)
-		return;
 	if (attackTimer != 0)
+		return;
+	if (!isInCombat)
 		return;
 
 	if (inRange(*target))
@@ -59,7 +59,7 @@ void S_CombatComponent::tick()
 	}
 }
 
-void S_CombatComponent::attackTarget(S_Entity& newTarget)
+void S_CombatComponent::initiateCombat(S_Entity& newTarget)
 {
 	//if (!isMulticombat)
 	//	if (isInCombat)
@@ -80,10 +80,10 @@ void S_CombatComponent::takeDamage(S_CombatComponent& attacker, u8 damage)
 
 	//if (target->autoRetaliate)
 	if (!isInCombat)
-		attackTarget(attacker.m_owner);
+		initiateCombat(attacker.m_owner);
 
 	auto et = m_owner.getEntityType();
-	if (et != ET_PLAYER && et != ET_ADMIN) // Temp make playesr immune to damage
+	//if (et != ET_PLAYER && et != ET_ADMIN) // Temp make playesr immune to damage
 	{
 		if (damage >= combatState.currentHealth)
 		{
@@ -128,7 +128,7 @@ bool S_CombatComponent::inRange(S_Entity& other) const
 	return m_owner.getMovement().isWithinDistance(other.getMovement().getPos(), getRange());
 }
 
-void S_CombatComponent::reset()
+void S_CombatComponent::endUpdate()
 {
 	hits.clear();
 	justDied = false;
@@ -136,6 +136,6 @@ void S_CombatComponent::reset()
 
 void S_CombatComponent::totalReset()
 {
-	reset();
-	combatState.reset();
+	endUpdate();
+	combatState.endUpdate();
 }

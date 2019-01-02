@@ -1,7 +1,7 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "UIComponent.h"
 
-class MenuTab
+class MenuTab : public UIComponent
 {
 protected:
 	const sf::FloatRect m_menuBounds;
@@ -12,11 +12,7 @@ public:
 
 	const sf::FloatRect& getBounds();
 
-	virtual void onMousePressed(const sf::Mouse::Button& button, const sf::Vector2f& mousePos) = 0;
-	virtual void onMouseReleased(const sf::Mouse::Button& button, const sf::Vector2f& mousePos) = 0;
-	virtual void update(const sf::Vector2f& mousePos) = 0;
-
-	virtual void draw(sf::RenderTarget& target) = 0;
+	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override = 0;
+	void update(const sf::Vector2f& mousePos) override = 0;
+	void draw(sf::RenderTarget& target) override = 0;
 };
-
-class InventoryTab;

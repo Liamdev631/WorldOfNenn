@@ -15,7 +15,7 @@ S_Region::~S_Region()
 
 }
 
-void S_Region::tick()
+void S_Region::update()
 {
 
 }

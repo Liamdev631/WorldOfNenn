@@ -51,6 +51,11 @@
     <ClInclude Include="RCOption.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="UIComponent.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SideMenu.h" />
+    <ClInclude Include="RunButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C_Client.cpp" />
@@ -81,6 +86,8 @@
       <Filter>Graphics\Menus</Filter>
     </ClCompile>
     <ClCompile Include="Interface.cpp" />
+    <ClCompile Include="SideMenu.cpp" />
+    <ClCompile Include="RunButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Fractal.png">

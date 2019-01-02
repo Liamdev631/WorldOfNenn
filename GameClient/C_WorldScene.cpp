@@ -4,6 +4,8 @@
 #include "Packets.h"
 #include "Target.h"
 #include "InventoryTab.h"
+#include "SideMenu.h"
+#include "RunButton.h"
 
 C_WorldScene::C_WorldScene()
 {
@@ -32,7 +34,11 @@ C_WorldScene::C_WorldScene()
 	m_font1 = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
 
 	// Set the default menu tab
-	m_activeMenuTab = new InventoryTab();
+	SideMenu::get();
+
+	m_uiComponents.push_back(&m_chatbox);
+	m_uiComponents.push_back(&SideMenu::get());
+	m_uiComponents.push_back(&RunButton::get());
 }
 
 C_WorldScene::~C_WorldScene()
@@ -40,52 +46,46 @@ C_WorldScene::~C_WorldScene()
 
 }
 
-void C_WorldScene::tick(const GameTime& gameTime)
+void C_WorldScene::checkEvents()
 {
 	sf::Event ev;
 	while (m_window.pollEvent(ev))
 	{
 		switch (ev.type)
 		{
-		case sf::Event::Resized:
-		{
-			// adjust the viewport when the window is resized
-			glViewport(0, 0, ev.size.width, ev.size.height);
-			break;
+			case sf::Event::Resized:
+			{
+				// adjust the viewport when the window is resized
+				glViewport(0, 0, ev.size.width, ev.size.height);
+				break;
+			}
+
+			case sf::Event::MouseMoved:
+			{
+				// Update the internal record of the mouse position
+				m_mousePos = sf::Vector2f((float)ev.mouseMove.x, (float)ev.mouseMove.y);
+				break;
+			}
+
+			case sf::Event::MouseButtonPressed:
+			{
+				if (ev.mouseButton.button == sf::Mouse::Button::Left)
+					onLeftClick();
+				else if (ev.mouseButton.button == sf::Mouse::Button::Right)
+					onRightClick();
+				break;
+			}
 		}
 
-		case sf::Event::MouseMoved:
-		{
-			// Update the internal record of the mouse position
-			m_mousePos = sf::Vector2f((float)ev.mouseMove.x, (float)ev.mouseMove.y);
-			if (m_activeMenuTab)
-				m_activeMenuTab->update(sf::Vector2f((float)m_mousePos.x, (float)m_mousePos.y));
-			break;
-		}
-
-		case sf::Event::MouseButtonPressed:
-		{
-			if (ev.mouseButton.button == sf::Mouse::Button::Left)
-				onLeftClick();
-			else if (ev.mouseButton.button == sf::Mouse::Button::Right)
-				onRightClick();
-			break;
-		}
-
-		case sf::Event::MouseButtonReleased:
-		{
-			if (m_activeMenuTab)
-				m_activeMenuTab->onMouseReleased(ev.mouseButton.button, sf::Vector2f((float)ev.mouseButton.x, (float)ev.mouseButton.y));
-			break;
-		}
-		}
+		for (auto& component : m_uiComponents)
+			component->onEvent(ev, m_mousePos);
 	}
-
-	update();
 }
 
-void C_WorldScene::update()
+void C_WorldScene::update(const GameTime& gameTime)
 {
+	checkEvents();
+
 	auto thisPlayer = C_WorldManager::get().getThisEntity();
 
 	// Calculate which cell is pointed to by the mouse
@@ -100,7 +100,7 @@ void C_WorldScene::update()
 
 	// If a right click option is showing, determine which option is currently being pointed to
 	if (m_optionsList.size() != 0)
-		m_highlightedOption = max<int>(min<int>((m_mousePos.y - m_optionsPos.y) / 16.f, (int)m_optionsList.size() - 1), 0);
+		m_highlightedOption = max<int>(min<int>((int)(m_mousePos.y - m_optionsPos.y) / 16, (int)m_optionsList.size() - 1), 0);
 
 	m_entitiesUnderMouse.clear();
 	m_itemsUnderMouse.clear();
@@ -134,6 +134,9 @@ void C_WorldScene::update()
 			m_mouseTarget._item = m_itemsUnderMouse.front();
 		}
 	}
+
+	for (auto& component : m_uiComponents)
+		component->update(m_mousePos);
 }
 
 void C_WorldScene::draw()
@@ -151,11 +154,12 @@ void C_WorldScene::drawGameScene()
 
 	// Center the camera on the player
 	auto thisPlayer = C_WorldManager::get().getThisEntity();
-	if (thisPlayer)
+	if (thisPlayer && !thisPlayer->expired)
 	{
+		// Move the camera to the player if it exists
 		m_worldView.setCenter((float)thisPlayer->drawPos.x * 16, (float)thisPlayer->drawPos.y * 16);
-		m_gameScene.setView(m_worldView);
 	}
+	m_gameScene.setView(m_worldView);
 
 	// Draw the map
 	m_gameScene.draw(m_worldMap);
@@ -192,10 +196,7 @@ void C_WorldScene::drawGui()
 	m_window.draw(*m_interface);
 
 	// Draw the chat box
-	m_window.draw(m_chatbox);
-
-	// Draw the active menu tab
-	m_activeMenuTab->draw(m_window);
+	m_chatbox.draw(m_window);
 
 	// Draw the name of the cursor target
 	if (m_mouseTarget.type != TT_NONE)
@@ -267,6 +268,9 @@ void C_WorldScene::drawGui()
 		}
 	}
 
+	// Draw the additional UI components
+	for (auto& component : m_uiComponents)
+		component->draw(m_window);
 
 	// End draw
 	m_window.display();
@@ -282,10 +286,8 @@ void C_WorldScene::onLeftClick()
 		if (isMouseInOptionBox())
 			processRightClickOptionSelection(m_optionsList[m_highlightedOption]);
 		m_optionsList.clear();
-		return;
 	}
-
-	if (WorldSceneBounds.contains(m_mousePos)) // Clicked the scene
+	else if (WorldSceneBounds.contains(m_mousePos)) // Clicked the scene
 	{
 		// Left clicked an item
 		if (m_mouseTarget.type != TargetType::TT_NONE)
@@ -293,37 +295,34 @@ void C_WorldScene::onLeftClick()
 			if (m_mouseTarget.type == TargetType::TT_ITEM)
 			{
 				packet.write(CP_ItemPicked(m_mouseTarget._item));
-				m_mouseTarget.type = TargetType::TT_NONE;
-				return;
 			}
 			else if (m_mouseTarget.type == TargetType::TT_ENTITY)
 			{
 				// Left click entity to attack
 				packet.write(CP_AttackEntity(m_mouseTarget._entity->uid));
-				return;
-			}
-			else if (m_mouseTarget.type == TargetType::TT_INV_ITEM)
-			{
-				return;
-			}
-
-			return; // Should be unreachable
+			} 
+			m_mouseTarget.type = TargetType::TT_NONE;
 		}
-
-		// Open left click. Used to walk to a position
-		auto thisPlayer = C_WorldManager::get().getThisEntity();
-		if (thisPlayer)
-			packet.write(CP_MoveToDest(m_mouseTargetCell));
+		else
+		{
+			// Open left click. Used to walk to a position
+			auto thisPlayer = C_WorldManager::get().getThisEntity();
+			if (thisPlayer)
+				packet.write(CP_MoveToDest(m_mouseTargetCell));
+		}
 	}
-	else if (m_activeMenuTab && m_activeMenuTab->getBounds().contains(m_mousePos))
-		m_activeMenuTab->onMousePressed(sf::Mouse::Button::Left, m_mousePos);
 
+	//if (m_activeMenuTab)
+	//	m_activeMenuTab->onMousePressed(sf::Mouse::Button::Left, m_mousePos);
+
+	//m_chatbox.onMousePressed(sf::Mouse::Button::Left, m_mousePos);
 
 	return;
 }
 
 void C_WorldScene::onRightClick()
 {
+	m_optionsList.clear();
 	if (WorldSceneBounds.contains(m_mousePos))
 	{
 		if (m_entitiesUnderMouse.size() > 0 || m_itemsUnderMouse.size() > 0)
@@ -335,7 +334,7 @@ void C_WorldScene::onRightClick()
 			for (size_t i = 0; i < m_entitiesUnderMouse.size(); i++)
 			{
 				// Add an entity to the rco menu options list
-				// TODO: Entities with a highe level than the player have the attack option shown last
+				// TODO: Entities with a higher level than the player have the attack option shown last
 				Target t;
 				t.type = TT_ENTITY;
 				t._entity = m_entitiesUnderMouse[i];
@@ -345,7 +344,7 @@ void C_WorldScene::onRightClick()
 			}
 
 			// Add items
-			for (auto i = 0; i < m_itemsUnderMouse.size(); i++)
+			for (auto i = 0; i < (int)m_itemsUnderMouse.size(); i++)
 			{
 				// Add an entity to the rco menu options list
 				// TODO: Entities with a highe level than the player have the attack option shown last
@@ -358,37 +357,10 @@ void C_WorldScene::onRightClick()
 
 			C_WorldScene::get().setRightClickOptions(m_mousePos - sf::Vector2f(4, 4), options);
 		}
-
-		//if (m_mouseTarget.type != TT_NONE)
-		//{
-		//	switch (m_mouseTarget.type)
-		//	{
-		//	case TT_ENTITY:
-		//	{
-		//		//setRightClickOptions(m_mouseTarget, m_mousePos - sf::Vector2f(4, 4), { RCO_INSPECT, RCO_ATTACK });
-		//		std::vector<RCOption> options;
-		//		options.push_back(RCOption(m_mouseTarget, RCO_INSPECT));
-		//		options.push_back(RCOption(m_mouseTarget, RCO_ATTACK));
-		//		C_WorldScene::get().setRightClickOptions(m_mousePos - sf::Vector2f(4, 4), options);
-		//		return;
-		//	}
-
-		//	case TT_ITEM:
-		//	{
-		//		//setRightClickOptions(m_mouseTarget, m_mousePos - sf::Vector2f(4, 4), { RCO_INSPECT, RCO_PICKUP });
-		//		std::vector<RCOption> options;
-		//		options.push_back(RCOption(m_mouseTarget, RCO_INSPECT));
-		//		options.push_back(RCOption(m_mouseTarget, RCO_PICKUP));
-		//		C_WorldScene::get().setRightClickOptions(m_mousePos - sf::Vector2f(4, 4), options);
-		//		return;
-		//	}
-		//	default:
-		//		return;
-		//	}
-		//}
 	}
-	else if (m_activeMenuTab && m_activeMenuTab->getBounds().contains(m_mousePos))
-		m_activeMenuTab->onMousePressed(sf::Mouse::Button::Right, m_mousePos);
+	
+	//if (m_activeMenuTab)
+	//	m_activeMenuTab->onMousePressed(sf::Mouse::Button::Right, m_mousePos);
 }
 
 void C_WorldScene::setRightClickOptions(const sf::Vector2f& position, const std::vector<RCOption>& options)

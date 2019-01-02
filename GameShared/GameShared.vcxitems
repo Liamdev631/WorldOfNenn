@@ -21,11 +21,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Global.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Items.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Loader.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MovementState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MoveKey.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Packets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RightClickOption.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RPacket.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ServerPackets.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Skills.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WPacket.h" />
   </ItemGroup>
   <ItemGroup>
@@ -36,5 +37,6 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Loader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Skills.cpp" />
   </ItemGroup>
 </Project>

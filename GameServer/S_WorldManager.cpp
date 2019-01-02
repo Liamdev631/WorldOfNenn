@@ -41,25 +41,25 @@ S_Region& S_WorldManager::getRegion(const Region region) const
 
 #pragma endregion
 
-void S_WorldManager::tick()
+void S_WorldManager::update()
 {
 	// Reset temporary states
 	for (S_Entity* entity : m_entitiesList)
-		entity->getMovement().reset();
+		entity->getMovement().endUpdate();
 	for (S_Entity* entity : m_entitiesList)
-		entity->getCombat().reset();
+		entity->getCombat().endUpdate();
 	
 	// Generic tick
 	for (S_Entity* entity : m_entitiesList)
-		entity->tick();
+		entity->update();
 
 	// Simulate movement
 	for (S_Entity* entity : m_entitiesList)
-		entity->getMovement().tick();
+		entity->getMovement().update();
 
 	// Simulate combat
 	for (S_Entity* entity : m_entitiesList)
-		entity->getCombat().tick();
+		entity->getCombat().update();
 }
 
 void S_WorldManager::registerNPC(const u16 npcid, const EntityType entityType)

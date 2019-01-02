@@ -23,7 +23,7 @@ public:
 	S_Region(S_WorldManager& worldManager);
 	~S_Region();
 
-	void tick();
+	void update();
 
 	std::map<u16, S_Connection*>& getConnections();
 	

@@ -9,7 +9,7 @@
 #include <string>
 #include "GameTime.h"
 
-constexpr auto SERVER_IP = "localhost";
+constexpr auto SERVER_IP = "localhost";// "localhost";
 constexpr bool LOG_PACKET_HEADERS = false;
 
 enum ConnectionState

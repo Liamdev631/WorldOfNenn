@@ -10,7 +10,6 @@
 #include "Chatbox.h"
 #include "RightClickOption.h"
 #include "RCOption.h"
-#include "MenuTab.h"
 
 //  _______________________
 // |				|	   |
@@ -35,7 +34,8 @@ private:
 
 	// GUI
 	sf::Sprite* m_interface;
-	MenuTab* m_activeMenuTab;
+	std::vector<UIComponent*> m_uiComponents;
+	Chatbox m_chatbox;
 
 	// Mouse 
 	sf::Vector2f m_mousePos;
@@ -54,8 +54,6 @@ private:
 	u8 m_highlightedOption;
 
 	sf::Font* m_font1;
-
-	Chatbox m_chatbox;
 
 public:
 	std::vector<sf::Drawable*> components;
@@ -82,11 +80,11 @@ public:
 		return s;
 	}
 
-	void tick(const GameTime& gameTime);
+	void update(const GameTime& gameTime);
+	void checkEvents();
+
 	void draw();
-
 	void drawGui();
-
 	void drawGameScene();
 
 	//void setRightClickOptions(const Target& optionsTarget, const sf::Vector2f& optionsPos, const std::vector<RightClickOption> options);
@@ -96,7 +94,6 @@ public:
 	bool isMouseInOptionBox();
 
 private:
-	void update();
 	void onLeftClick();
 	void onRightClick();
 };

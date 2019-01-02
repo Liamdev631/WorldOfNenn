@@ -19,7 +19,7 @@ public:
 	std::vector<S_Entity*>& getEntities();
 	S_Region& getRegion(const Region region) const;
 
-	void tick();
+	void update();
 	void registerNPC(const u16 npcid, const EntityType entityType);
 	void registerPlayer(S_Connection& connection);
 	void deregisterPlayer(S_Connection& connection);

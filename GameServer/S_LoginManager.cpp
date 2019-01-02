@@ -47,7 +47,7 @@ void S_LoginManager::loadPlayers()
 			{
 				S_Connection* conn = m_connectionsToLoad.front();
 				S_Entity* newPlayer = new S_Entity((u16)conn->getUID(), ET_PLAYER, R_Overworld);
-				newPlayer->getMovement().position = vec2<u16>(40 + rand() % 10, 40 + rand() % 10);
+				newPlayer->getMovement().moveKey.pos = vec2<u16>(40 + rand() % 10, 40 + rand() % 10);
 				conn->setPlayer(*newPlayer);
 				m_connectionsToLoad.pop();
 				m_readyPlayers.push(conn);

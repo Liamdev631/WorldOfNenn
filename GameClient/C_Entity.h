@@ -2,7 +2,6 @@
 #include <queue>
 #include "Global.h"
 #include "Packets.h"
-#include "MovementState.h"
 #include "SFML/Graphics.hpp"
 #include "GameTime.h"
 #include "ResourceLoader.h"
@@ -20,19 +19,6 @@ struct HitMarker
 	}
 };
 
-struct MoveStateKey
-{
-	u32 timestamp;
-	MovementState moveState;
-
-	MoveStateKey() = default;
-	MoveStateKey(const u32& timestamp, const MovementState& moveState)
-		: timestamp(timestamp), moveState(moveState)
-	{
-
-	}
-};
-
 class C_Entity : public sf::Drawable
 {
 public:
@@ -40,14 +26,17 @@ public:
 	u8 rotation = 0;
 	EntityType entityType;
 	bool expired;
-	float deathAnimation;
+	float deathAnimationTimer;
 	CombatState combatState;
 	std::deque<HitMarker> hitMarkers;
 	const u16 uid;
+
+	// Animation
 	sf::Vector2f drawPos;
+	float drawRot;
 
 private:
-	std::queue<MoveStateKey> m_moveStateHistory;
+	std::queue<MoveKey> moveStateHistory;
 
 	float m_moveTimer;
 	bool m_translating;
@@ -69,7 +58,7 @@ public:
 
 	const sf::Color getColor() const;
 
-	void addMoveStateKey(const MoveStateKey& key);
+	void addMoveKey(const MoveKey& key);
 
 private:
 	

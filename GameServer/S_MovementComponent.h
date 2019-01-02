@@ -1,33 +1,23 @@
 #pragma once
 #include "Global.h"
 #include <queue>
+#include "MoveKey.h"
 
 class S_Region;
 class S_Entity;
-
-enum MoveState : u8
-{
-	Idle = 0, // Make no actions
-	Waypoint = 1, // Follow a series of waypoints
-	Follow = 2, // Follow a entity until told otherwise
-	Combat = 3, // Compelx movement associated with combat
-	Guided = 4, // Follow a compelx series of waypoints, possibly with dialogue
-};
 
 class S_MovementComponent
 {
 public:
 	Region region;
-	u8 rotation;
-	vec2s position;
+	MoveKey moveKey;
 
 private:
 	S_Entity& m_owner;
-	MoveState m_moveState;
 	S_Entity* m_followEntity;
-	std::queue<vec2<u16>> m_waypoints;
+	std::queue<vec2s> m_waypoints;
 	u8 m_moveTimer;
-	u8 m_speed; // # of ticks needed to complete movement
+	bool m_running;
 
 	bool m_hasMoved; // Desribes whether or not the player has changed position this tick
 	bool m_forcePositionUpdate; // If this is set to true, all nearby players will recieve a position update for this entity this tick
@@ -36,7 +26,9 @@ public:
 	S_MovementComponent(S_Entity& owner);
 	~S_MovementComponent();
 
-	void tick();
+	void update();
+
+	void stepInRandomDirection();
 
 	void blinkTo(const vec2s& position);
 
@@ -56,7 +48,7 @@ public:
 	void resetMovement();
 
 	/// Called at the beginning of every tick
-	void reset();
+	void endUpdate();
 
 	/// Returns true if the given entity is within 16 units of this entity
 	bool isNear(const u16 entity) const;
@@ -88,5 +80,11 @@ public:
 	bool hasUpdate() const;
 
 	void forcePositionUpdate();
+
+	// Attemps to change the running state of the player, notifying clients if neccesary
+	void setRun(bool run);
+
+	// Returns whether or not the player is running
+	bool isRunning() const;
 };
 
