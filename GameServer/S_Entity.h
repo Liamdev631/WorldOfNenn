@@ -5,19 +5,22 @@
 #include "S_CombatComponent.h"
 #include "S_MovementComponent.h"
 
-class S_Connection;
 class S_Region;
+
+struct EntitySettings
+{
+	bool autoRetaliate;
+};
 
 class S_Entity
 {
 	friend class S_LoginManager;
 	friend class S_Server;
 public:
+	u16 uid;
 
 private:
-	u16 m_id;
 	EntityType m_entityType;
-	S_Connection* m_connection; // nullptr if this is not a player.
 
 protected:
 	// Components
@@ -33,14 +36,8 @@ public:
 
 	//---- Getters / Setters ----//
 
-	/// Returns the unique id of this entity
-	const u16& getUID() const;
-
 	/// Returns this entity's type
 	const EntityType& getEntityType() const;
-	
-	/// Returns the Connection attached to this entity, or nullptr if this is not a player
-	const S_Connection* getConnection() const;
 	
 	//---- Components ----//
 	S_CombatComponent& getCombat();

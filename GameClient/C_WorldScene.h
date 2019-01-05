@@ -20,12 +20,12 @@
 // |	CHATBOX		|	   |
 // |________________|______|
 
-class C_WorldScene
+class SceneManager
 {
 	friend class sf::Drawable;
 
 private:
-	C_WorldScene();
+	SceneManager();
 
 	sf::RenderWindow m_window;
 	sf::RenderTexture m_gameScene;
@@ -35,7 +35,6 @@ private:
 	// GUI
 	sf::Sprite* m_interface;
 	std::vector<UIComponent*> m_uiComponents;
-	Chatbox m_chatbox;
 
 	// Mouse 
 	sf::Vector2f m_mousePos;
@@ -68,15 +67,15 @@ public:
 
 public:
 	// Needed for singleton
-	~C_WorldScene();
-	C_WorldScene(C_WorldScene const&) = delete;
-	void operator=(C_WorldScene const&) = delete;
+	~SceneManager();
+	SceneManager(SceneManager const&) = delete;
+	void operator=(SceneManager const&) = delete;
 
 
 	// Singleton accessor
-	static C_WorldScene& get()
+	static SceneManager& get()
 	{
-		static C_WorldScene s;
+		static SceneManager s;
 		return s;
 	}
 
@@ -89,7 +88,6 @@ public:
 
 	//void setRightClickOptions(const Target& optionsTarget, const sf::Vector2f& optionsPos, const std::vector<RightClickOption> options);
 	void setRightClickOptions(const sf::Vector2f& position, const std::vector<RCOption>& options);
-	void printInChatbox(const std::wstring& text);
 	void processRightClickOptionSelection(const RCOption& selection);
 	bool isMouseInOptionBox();
 

@@ -14,7 +14,7 @@ C_Client::C_Client()
 	m_timer.totalTime = 0;
 	m_timer.deltaTime = 0;
 
-	// Load all the game into preemptively
+	// Load all the game info preemptively
 	Loader::get();
 }
 
@@ -38,6 +38,8 @@ bool C_Client::update()
 	if (!m_client.get()->is_connecting_or_connected())
 		return true;
 
+	auto start = std::chrono::high_resolution_clock::now();
+
 	// Consume events raised by worker thread
 	auto on_connected = [&]() { onConnect(); };
 	auto on_disconnected = [&]() { onDisconnect(); };
@@ -49,7 +51,7 @@ bool C_Client::update()
 	//if (!m_gui->update(m_timer))
 	//	return false;
 	C_WorldManager::get().update(m_timer);
-	C_WorldScene::get().update(m_timer);
+	SceneManager::get().update(m_timer);
 
 	// END GAME LOGIC
 
@@ -57,14 +59,16 @@ bool C_Client::update()
 	if (m_packetBuffer->getBytesWritten() > 0)
 	{
 		m_client->send_packet(0, m_packetBuffer->getData(), m_packetBuffer->getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-		m_packetBuffer->endUpdate();
+		m_packetBuffer->reset();
 	}
 
 	// Render
-	C_WorldScene::get().draw();
+	SceneManager::get().draw();
 
-	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-	m_timer.addDeltaTime(1.f / 60.f);
+	auto end = std::chrono::high_resolution_clock::now();
+	auto dt = (float)std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+	dt /= 1000000000.f; // conversion to seconds
+	m_timer.addDeltaTime(dt);
 	return true;
 } 
 
@@ -107,6 +111,11 @@ void C_Client::onDataRecieved(const u8* data, size_t size)
 	}
 
 	m_entityMutex.unlock();
+}
+
+const GameTime& C_Client::getGameTime() const
+{
+	return m_timer;
 }
 
 void C_Client::processPacket(const u8 header, RPacket &packet)
@@ -244,9 +253,33 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 		break;
 	}
 
+	case SP_ChatText_header:
+	{
+		const SP_ChatText& p = *packet.read<SP_ChatText>();
+		std::wstring str = std::wstring(p.chatText);
+
+		// Send the text to chat
+		std::wstringstream textBuilder;
+		textBuilder << L"Player " << p.speaker << L": " << str;
+		Chatbox::get().addText(textBuilder.str());
+
+		// Set the floating text above the player
+		auto speaker = C_WorldManager::get().getEntity(p.speaker);
+		//speaker->setFloatingText(str);
+
+		break;
+	}
+
+	case SP_ExperienceTable_header:
+	{
+		const SP_ExperienceTable& p = *packet.read<SP_ExperienceTable>();
+		printf("xp\n");
+		break;
+	}
+
 	default:
 	{
-		printf("INVALID PACKET RECIEVED! header:%u\n", header);
+		printf("INVALID PACKET RECIEVED! header:%u\n First 12 bytes: ", header);
 		printBytes(&packet.peek<u8>(), 12);
 		break;
 	}

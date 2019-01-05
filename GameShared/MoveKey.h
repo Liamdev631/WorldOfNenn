@@ -17,11 +17,12 @@ struct MoveKey
 	u8 rot;
 	u8 speed;
 	MoveState state;
+	bool run;
 
 	MoveKey() = default;
-	MoveKey(const u32& timestamp, const vec2s& position, const u8& rot, const MoveState& movestate, const u8& speed)
-		: timestamp(timestamp), pos(pos), rot(rot), state(state), speed(speed)
-	{
+	//MoveKey(const u32& timestamp, const vec2s& position, const u8& rot, const MoveState& movestate, const u8& speed)
+	//	: timestamp(timestamp), pos(pos), rot(rot), state(state), speed(speed)
+	//{
 
-	}
+	//}
 };

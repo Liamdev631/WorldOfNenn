@@ -1,5 +1,7 @@
 #include "Chatbox.h"
 #include "ResourceLoader.h"
+#include "C_Client.h"
+#include "ClientPackets.h"
 
 Chatbox::Chatbox()
 	: m_active(false)
@@ -35,8 +37,8 @@ Chatbox::~Chatbox()
 void Chatbox::addText(const std::wstring& str)
 {
 	// Shift the text history and insert the new text at the bottom
-	for (int i = 0; i < TextBufferLength - 2; i++)
-		m_text[i + 1].setString(m_text[i].getString());
+	for (int i = TextBufferLength - 1; i > 0; i--)
+		m_text[i].setString(m_text[i - 1].getString());
 	m_text[0].setString(sf::String::fromUtf8(str.begin(), str.end()));
 }
 
@@ -69,7 +71,12 @@ void Chatbox::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 		if (ev.key.code == sf::Keyboard::Key::Enter)
 		{
 			// Press enter to print the typed text
-			addText(L"Chat: " + m_inputBuffer);
+			//addText(L"Chat: " + m_inputBuffer);
+
+			// Send the text to the server
+			C_Client::get().getPacket().write(CP_ChatText(m_inputBuffer.toWideString()));
+
+			// Reset
 			m_inputBuffer.clear();
 			m_inputBufferText.setString(L"Chat: *");
 			break;
@@ -92,12 +99,12 @@ void Chatbox::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 	return;
 }
 
-void Chatbox::update(const sf::Vector2f& mousePos)
+void Chatbox::update(const GameTime& time, const sf::Vector2f& mousePos)
 {
 
 }
 
-void Chatbox::draw(sf::RenderTarget& target)
+void Chatbox::draw(sf::RenderTarget& target) const
 {
 	// Draw each line of text
 	for (int i = 0; i < TextBufferLength; i++)

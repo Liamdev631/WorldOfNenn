@@ -14,6 +14,21 @@ ExperienceTable::~ExperienceTable()
 
 }
 
+void ExperienceTable::addExp(Skill s, exp_val exp)
+{
+	m_experience[s] += exp;
+	calcLevel(s);
+}
+
+void ExperienceTable::addExp(const std::vector<exp_chunk>& exp)
+{
+	for (auto pair : exp)
+	{
+		m_experience[pair.first] += pair.second;
+		calcLevel(pair.first);
+	}
+}
+
 void ExperienceTable::setExp(Skill s, exp_val exp)
 {
 	m_experience[s] = exp;
@@ -22,7 +37,7 @@ void ExperienceTable::setExp(Skill s, exp_val exp)
 
 void ExperienceTable::calcLevel(Skill s)
 {
-	m_levels[s] = 1 + (level_val)sqrtf(m_experience[s] + 1);
+	m_levels[s] = 1 + (level_val)sqrtf(((float)m_experience[s] + 1.f) / 100.f);
 }
 
 void ExperienceTable::calcAllLevels()

@@ -3,7 +3,7 @@
 #include <sstream>
 #include "UIComponent.h"
 
-constexpr int TextBufferLength = 20;
+constexpr int TextBufferLength = 7;
 
 class Chatbox : public UIComponent
 {
@@ -19,8 +19,12 @@ private:
 	const sf::FloatRect m_bounds = sf::FloatRect(ChatboxPos.x, ChatboxPos.y, ChatboxSize.x, ChatboxSize.y);
 
 public:
-	Chatbox();
 	~Chatbox();
+	static Chatbox& get()
+	{
+		static Chatbox c;
+		return c;
+	}
 
 	bool isActive() const
 	{ return m_active; }
@@ -30,7 +34,10 @@ public:
 
 	// UIComponent override
 	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override;
-	void update(const sf::Vector2f& mousePos) override;
-	void draw(sf::RenderTarget& target) override;
+	void update(const GameTime& time, const sf::Vector2f& mousePos) override;
+	void draw(sf::RenderTarget& target) const override;
+
+private:
+	Chatbox();
 };
 

@@ -30,13 +30,13 @@ void SideMenu::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 	activeTab->onEvent(ev, mousePos);
 }
 
-void SideMenu::update(const sf::Vector2f& mousePos)
+void SideMenu::update(const GameTime& time, const sf::Vector2f& mousePos)
 {
 	auto& activeTab = m_menuTabs[m_activeMenuTab];
-	activeTab->update(mousePos);
+	activeTab->update(time, mousePos);
 }
 
-void SideMenu::draw(sf::RenderTarget& target)
+void SideMenu::draw(sf::RenderTarget& target) const
 {
 	auto& activeTab = m_menuTabs[m_activeMenuTab];
 	activeTab->draw(target);

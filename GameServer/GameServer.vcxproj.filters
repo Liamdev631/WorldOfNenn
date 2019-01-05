@@ -12,7 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="S_Connection.cpp" />
     <ClCompile Include="S_LoginManager.cpp" />
     <ClCompile Include="S_Main.cpp" />
     <ClCompile Include="S_Server.cpp" />
@@ -34,9 +33,11 @@
     <ClCompile Include="S_WorldManager.cpp">
       <Filter>World</Filter>
     </ClCompile>
+    <ClCompile Include="S_Entity_Player.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="S_Connection.h" />
     <ClInclude Include="S_GlobalServer.h" />
     <ClInclude Include="S_LoginManager.h" />
     <ClInclude Include="S_Server.h" />
@@ -57,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="S_WorldManager.h">
       <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="S_Entity_Player.h">
+      <Filter>Entity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

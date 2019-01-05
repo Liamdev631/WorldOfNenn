@@ -20,9 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="S_CombatComponent.cpp" />
-    <ClCompile Include="S_Connection.cpp" />
     <ClCompile Include="S_Entity.cpp" />
     <ClCompile Include="S_Entity_NPC.cpp" />
+    <ClCompile Include="S_Entity_Player.cpp" />
     <ClCompile Include="S_LoginManager.cpp" />
     <ClCompile Include="S_Main.cpp" />
     <ClCompile Include="S_MovementComponent.cpp" />
@@ -32,9 +32,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="S_CombatComponent.h" />
-    <ClInclude Include="S_Connection.h" />
     <ClInclude Include="S_Entity.h" />
     <ClInclude Include="S_Entity_NPC.h" />
+    <ClInclude Include="S_Entity_Player.h" />
     <ClInclude Include="S_GlobalServer.h" />
     <ClInclude Include="S_LoginManager.h" />
     <ClInclude Include="S_MovementComponent.h" />

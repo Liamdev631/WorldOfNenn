@@ -51,14 +51,6 @@ int InventoryTab::getSlotUnderMouse(const sf::Vector2f& mousePos) const
 	return -1;
 }
 
-void InventoryTab::drawItemStack(sf::RenderTarget& target, const ItemStack& item, const int& slot)
-{
-	// Grab the sprite and move it into position
-	auto itemTexture = ResourceLoader::get().getItemSprite(item).getTexture();
-	m_tabs[slot].setTexture(itemTexture);
-	target.draw(m_tabs[slot]);
-}
-
 // UIComponent override
 
 void InventoryTab::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
@@ -134,18 +126,24 @@ void InventoryTab::openRCOMenuForSlot(const int &slotClicked)
 	options.push_back(RCOption(target, RCO_INSPECT));
 	options.push_back(RCOption(target, RCO_DROP));
 
-	C_WorldScene::get().setRightClickOptions(position, options);
+	SceneManager::get().setRightClickOptions(position, options);
 }
 
-void InventoryTab::update(const sf::Vector2f& mousePos)
-{
-
-}
-
-void InventoryTab::draw(sf::RenderTarget& target)
+void InventoryTab::update(const GameTime& time, const sf::Vector2f& mousePos)
 {
 	auto& inventory = C_Client::get().getPlayerInventory();
 	for (int i = 0; i < 28; i++)
 		if (inventory.itemStacks[i].count > 0)
-			drawItemStack(target, inventory.itemStacks[i], i);
+		{
+			auto itemTexture = ResourceLoader::get().getItemSprite(inventory.itemStacks[i]).getTexture();
+			m_tabs[i].setTexture(itemTexture);
+		}
+}
+
+void InventoryTab::draw(sf::RenderTarget& target) const
+{
+	auto& inventory = C_Client::get().getPlayerInventory();
+	for (int i = 0; i < 28; i++)
+		if (inventory.itemStacks[i].count > 0)
+			target.draw(m_tabs[i]);
 }

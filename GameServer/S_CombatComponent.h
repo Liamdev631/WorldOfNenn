@@ -8,7 +8,7 @@ class S_Entity;
 class S_CombatComponent
 {
 private:
-	S_Entity& m_owner;
+	S_Entity& owner;
 
 public:
 	S_Entity* target;
@@ -32,8 +32,9 @@ public:
 
 	bool inRange(S_Entity& other) const;
 	void initiateCombat(S_Entity& target);
-	void endUpdate();
+	void reset();
 	void totalReset();
 	void update();
 	void takeDamage(S_CombatComponent& attacker, u8 damage);
+	void die();
 };

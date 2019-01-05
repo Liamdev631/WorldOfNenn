@@ -11,7 +11,7 @@ S_LoginManager::~S_LoginManager()
 
 }
 
-void S_LoginManager::registerNewConnection(S_Connection* newPeer)
+void S_LoginManager::registerNewConnection(S_Entity_Player* newPeer)
 {
 	m_mutex_connectionsToLoad.lock();
 	{
@@ -20,9 +20,9 @@ void S_LoginManager::registerNewConnection(S_Connection* newPeer)
 	m_mutex_connectionsToLoad.unlock();
 }
 
-S_Connection* S_LoginManager::popPlayer()
+S_Entity_Player* S_LoginManager::popPlayer()
 {
-	S_Connection* ret = nullptr;
+	S_Entity_Player* ret = nullptr;
 	m_mutex_readyPlayers.lock();
 	{
 		if (m_readyPlayers.size() > 0)
@@ -45,17 +45,22 @@ void S_LoginManager::loadPlayers()
 		{
 			while (m_connectionsToLoad.size() > 0)
 			{
-				S_Connection* conn = m_connectionsToLoad.front();
-				S_Entity* newPlayer = new S_Entity((u16)conn->getUID(), ET_PLAYER, R_Overworld);
-				newPlayer->getMovement().moveKey.pos = vec2<u16>(40 + rand() % 10, 40 + rand() % 10);
-				conn->setPlayer(*newPlayer);
+				// Take a player off the stack
+				auto conn = m_connectionsToLoad.front();
 				m_connectionsToLoad.pop();
+
+				// Load the players character
+				//S_Entity* newPlayer = new S_Entity((u16)conn->uid, ET_PLAYER, R_Overworld);
+				conn->getMovement().moveKey.pos = vec2<u16>(40 + rand() % 10, 40 + rand() % 10);
+				conn->getMovement().region = R_Overworld;
+
+				// Add to the list of loaded players
 				m_readyPlayers.push(conn);
 			}
 		}
 		m_mutex_readyPlayers.unlock();
 		m_mutex_connectionsToLoad.unlock();
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 }

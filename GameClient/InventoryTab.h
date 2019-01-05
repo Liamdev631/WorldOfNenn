@@ -8,7 +8,6 @@ protected:
 	sf::RectangleShape m_tabs[28];
 
 private:
-	void drawItemStack(sf::RenderTarget & target, const ItemStack& item, const int& slot);
 
 public:
 	InventoryTab();
@@ -22,7 +21,7 @@ public:
 	// UIComponent override
 	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override;
 	void openRCOMenuForSlot(const int& slotClicked);
-	void update(const sf::Vector2f& mousePos) override;
-	void draw(sf::RenderTarget& target) override;
+	void update(const GameTime& time, const sf::Vector2f& mousePos) override;
+	void draw(sf::RenderTarget& target) const override;
 };
 

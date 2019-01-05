@@ -1,12 +1,10 @@
 #pragma once
 #include "Global.h"
 #include <map>
-#include "S_Entity.h"
+#include "S_Entity_Player.h"
 #include "Items.h"
 
 class S_WorldManager;
-class S_Entity;
-class S_Connection;
 
 class S_Region
 {
@@ -15,7 +13,7 @@ private:
 
 	// Entities
 	std::map<u16, S_Entity*> m_entitiesList;
-	std::map<u16, S_Connection*> m_regionConnections;
+	std::map<u16, S_Entity_Player*> m_regionConnections;
 
 	// Items
 	std::vector<DropableItem> m_itemsList;
@@ -25,13 +23,13 @@ public:
 
 	void update();
 
-	std::map<u16, S_Connection*>& getConnections();
+	std::map<u16, S_Entity_Player*>& getConnections();
 	
 	// Entities
 	std::map<u16, S_Entity*>& getEntities();
 	void addEntity(S_Entity& newEntity);
-	void addConnection(S_Connection& newConnection);
-	void removeConnection(S_Connection& entity);
+	void addConnection(S_Entity_Player* connection);
+	void removeConnection(S_Entity_Player* connection);
 
 	// Items
 	// Returns a const reference to the list of items.

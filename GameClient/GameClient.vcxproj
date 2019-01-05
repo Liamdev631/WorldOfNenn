@@ -142,6 +142,7 @@
     <ClInclude Include="C_MouseState.h" />
     <ClInclude Include="C_WorldMap.h" />
     <ClInclude Include="C_WorldScene.h" />
+    <ClInclude Include="FloatingText.h" />
     <ClInclude Include="Healthbar.h" />
     <ClInclude Include="Interface.h" />
     <ClInclude Include="InventoryTab.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="C_Main.cpp" />
     <ClCompile Include="C_WorldMap.cpp" />
     <ClCompile Include="C_WorldScene.cpp" />
+    <ClCompile Include="FloatingText.cpp" />
     <ClCompile Include="Healthbar.cpp" />
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="InventoryTab.cpp" />

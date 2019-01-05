@@ -6,6 +6,7 @@
 #include "GameTime.h"
 #include "ResourceLoader.h"
 #include "Healthbar.h"
+#include "FloatingText.h"
 
 struct HitMarker
 {
@@ -22,6 +23,7 @@ struct HitMarker
 class C_Entity : public sf::Drawable
 {
 public:
+	const u16 uid;
 	vec2s position;
 	u8 rotation = 0;
 	EntityType entityType;
@@ -29,7 +31,6 @@ public:
 	float deathAnimationTimer;
 	CombatState combatState;
 	std::deque<HitMarker> hitMarkers;
-	const u16 uid;
 
 	// Animation
 	sf::Vector2f drawPos;
@@ -46,6 +47,7 @@ private:
 	Sprite* m_sprite_hitmarker;
 	sf::Font* m_font_hitsplat;
 	Healthbar m_healthbar;
+	FloatingText m_floatingText;
 
 	float m_counter = 0;
 
@@ -59,6 +61,7 @@ public:
 	const sf::Color getColor() const;
 
 	void addMoveKey(const MoveKey& key);
+	void setFloatingText(const std::wstring& text);
 
 private:
 	

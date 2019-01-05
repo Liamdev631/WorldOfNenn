@@ -1,7 +1,7 @@
 #include "C_WorldManager.h"
 
 C_WorldManager::C_WorldManager()
-	: m_uid(0xFFFF)
+	: uid(0xFFFF)
 {
 	m_activeEntities.reserve(32);
 }
@@ -45,17 +45,17 @@ C_Entity* C_WorldManager::getEntity(const u16 uid)
 
 C_Entity* C_WorldManager::getThisEntity()
 {
-	assert(m_uid == 0xFFFF || m_uid < MAX_ENTITIES);
-	if (m_uid == 0xFFFF)
+	assert(uid == 0xFFFF || uid < MAX_ENTITIES);
+	if (uid == 0xFFFF)
 		return nullptr;
 	else
-		return getEntity(m_uid);
+		return getEntity(uid);
 }
 
 void C_WorldManager::setThisUID(const u16 uid)
 {
 	assert(uid < MAX_ENTITIES);
-	m_uid = uid;
+	this->uid = uid;
 }
 
 void C_WorldManager::update(const GameTime& gameTime)

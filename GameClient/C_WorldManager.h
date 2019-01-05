@@ -10,7 +10,7 @@ class C_WorldManager
 {
 private:
 	std::vector<C_Entity*> m_activeEntities;
-	u16 m_uid;
+	u16 uid;
 
 public:
 	C_WorldManager();

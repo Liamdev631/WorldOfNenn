@@ -108,7 +108,7 @@ namespace enetpp {
 				auto packet = enet_packet_create(data, data_size, flags);
 				for (auto c : _connected_clients) {
 					if (predicate(*c)) {
-						_packet_queue.emplace(channel_id, packet, c->get_id());
+						_packet_queue.emplace(channel_id, packet, c->uid);
 					}
 				}
 			}
@@ -279,8 +279,7 @@ namespace enetpp {
 			assert(e.peer->data == nullptr);
 			e.peer->data = client;
 
-			_thread_peer_map[client->getUID()] = e.peer;
-
+			_thread_peer_map[client->uid] = e.peer;
 			{
 				std::lock_guard<std::mutex> lock(_event_queue_mutex);
 				_event_queue.emplace(ENET_EVENT_TYPE_CONNECT, 0, nullptr, client);
@@ -290,7 +289,7 @@ namespace enetpp {
 		void handle_disconnect_event_in_thread(const ENetEvent& e) {
 			auto client = reinterpret_cast<ClientT*>(e.peer->data);
 			if (client != nullptr) {
-				auto iter = _thread_peer_map.find(client->getUID());
+				auto iter = _thread_peer_map.find(client->uid);
 				assert(iter != _thread_peer_map.end());
 				assert(iter->second == e.peer);
 				e.peer->data = nullptr;

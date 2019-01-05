@@ -6,8 +6,9 @@
 #include "InventoryTab.h"
 #include "SideMenu.h"
 #include "RunButton.h"
+#include "C_Client.h"
 
-C_WorldScene::C_WorldScene()
+SceneManager::SceneManager()
 {
 	// Create the window handle with the given settings
 	sf::ContextSettings settings;
@@ -36,17 +37,17 @@ C_WorldScene::C_WorldScene()
 	// Set the default menu tab
 	SideMenu::get();
 
-	m_uiComponents.push_back(&m_chatbox);
+	m_uiComponents.push_back(&Chatbox::get());
 	m_uiComponents.push_back(&SideMenu::get());
 	m_uiComponents.push_back(&RunButton::get());
 }
 
-C_WorldScene::~C_WorldScene()
+SceneManager::~SceneManager()
 {
 
 }
 
-void C_WorldScene::checkEvents()
+void SceneManager::checkEvents()
 {
 	sf::Event ev;
 	while (m_window.pollEvent(ev))
@@ -82,7 +83,7 @@ void C_WorldScene::checkEvents()
 	}
 }
 
-void C_WorldScene::update(const GameTime& gameTime)
+void SceneManager::update(const GameTime& gameTime)
 {
 	checkEvents();
 
@@ -136,10 +137,10 @@ void C_WorldScene::update(const GameTime& gameTime)
 	}
 
 	for (auto& component : m_uiComponents)
-		component->update(m_mousePos);
+		component->update(C_Client::get().getGameTime(), m_mousePos);
 }
 
-void C_WorldScene::draw()
+void SceneManager::draw()
 {
 	/////// World Space ///////
 	drawGameScene();
@@ -148,7 +149,7 @@ void C_WorldScene::draw()
 	drawGui();
 }
 
-void C_WorldScene::drawGameScene()
+void SceneManager::drawGameScene()
 {
 	m_gameScene.clear(sf::Color::Magenta);
 
@@ -183,7 +184,7 @@ void C_WorldScene::drawGameScene()
 	m_gameScene.display();
 }
 
-void C_WorldScene::drawGui()
+void SceneManager::drawGui()
 {
 	m_window.clear(sf::Color::Black);
 
@@ -196,7 +197,7 @@ void C_WorldScene::drawGui()
 	m_window.draw(*m_interface);
 
 	// Draw the chat box
-	m_chatbox.draw(m_window);
+	Chatbox::get().draw(m_window);
 
 	// Draw the name of the cursor target
 	if (m_mouseTarget.type != TT_NONE)
@@ -276,7 +277,7 @@ void C_WorldScene::drawGui()
 	m_window.display();
 }
 
-void C_WorldScene::onLeftClick()
+void SceneManager::onLeftClick()
 {
 	auto& packet = C_Client::get().getPacket();
 
@@ -312,15 +313,10 @@ void C_WorldScene::onLeftClick()
 		}
 	}
 
-	//if (m_activeMenuTab)
-	//	m_activeMenuTab->onMousePressed(sf::Mouse::Button::Left, m_mousePos);
-
-	//m_chatbox.onMousePressed(sf::Mouse::Button::Left, m_mousePos);
-
 	return;
 }
 
-void C_WorldScene::onRightClick()
+void SceneManager::onRightClick()
 {
 	m_optionsList.clear();
 	if (WorldSceneBounds.contains(m_mousePos))
@@ -355,27 +351,24 @@ void C_WorldScene::onRightClick()
 				options.push_back(RCOption(t, RCO_INSPECT));
 			}
 
-			C_WorldScene::get().setRightClickOptions(m_mousePos - sf::Vector2f(4, 4), options);
+			SceneManager::get().setRightClickOptions(m_mousePos - sf::Vector2f(4, 4), options);
 		}
 	}
-	
-	//if (m_activeMenuTab)
-	//	m_activeMenuTab->onMousePressed(sf::Mouse::Button::Right, m_mousePos);
 }
 
-void C_WorldScene::setRightClickOptions(const sf::Vector2f& position, const std::vector<RCOption>& options)
+void SceneManager::setRightClickOptions(const sf::Vector2f& position, const std::vector<RCOption>& options)
 {
 	m_optionsPos = position;
 	m_optionsList = options;
 }
 
-bool C_WorldScene::isMouseInOptionBox()
+bool SceneManager::isMouseInOptionBox()
 {
 	return m_mousePos.x > m_optionsPos.x && m_mousePos.x < m_optionsPos.x + 120 &&
 		m_mousePos.y > m_optionsPos.y && m_mousePos.y < m_optionsPos.y + m_optionsList.size() * 24;
 }
 
-void C_WorldScene::processRightClickOptionSelection(const RCOption& selection)
+void SceneManager::processRightClickOptionSelection(const RCOption& selection)
 {
 	if (selection.option == RightClickOption::RCO_NONE)
 		return;
@@ -388,12 +381,12 @@ void C_WorldScene::processRightClickOptionSelection(const RCOption& selection)
 		switch (selection.target.type)
 		{
 		case TT_ENTITY:
-			printInChatbox(Loader::get().getEntityDescription(selection.target._entity->entityType));
+			Chatbox::get().addText(Loader::get().getEntityDescription(selection.target._entity->entityType));
 			return;
 
 		case TT_ITEM:
 		case TT_INV_ITEM:
-			printInChatbox(Loader::get().getItemDescription(selection.target._item.stack.type));
+			Chatbox::get().addText(Loader::get().getItemDescription(selection.target._item.stack.type));
 			return;
 
 		}
@@ -426,9 +419,3 @@ void C_WorldScene::processRightClickOptionSelection(const RCOption& selection)
 		return;
 	}
 }
-
-void C_WorldScene::printInChatbox(const std::wstring& text)
-{
-	m_chatbox.addText(text);
-}
-

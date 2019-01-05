@@ -3,6 +3,9 @@
 #include <queue>
 #include "MoveKey.h"
 
+#define WALK_SPEED 5
+#define RUN_SPEED 3
+
 class S_Region;
 class S_Entity;
 
@@ -13,7 +16,7 @@ public:
 	MoveKey moveKey;
 
 private:
-	S_Entity& m_owner;
+	S_Entity& owner;
 	S_Entity* m_followEntity;
 	std::queue<vec2s> m_waypoints;
 	u8 m_moveTimer;
@@ -48,7 +51,7 @@ public:
 	void resetMovement();
 
 	/// Called at the beginning of every tick
-	void endUpdate();
+	void reset();
 
 	/// Returns true if the given entity is within 16 units of this entity
 	bool isNear(const u16 entity) const;

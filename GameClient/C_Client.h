@@ -43,6 +43,8 @@ public:
 		return c;
 	}
 
+	const GameTime& getGameTime() const;
+
 	// Initializes recources required for the game, including networking.
 	void start();
 	

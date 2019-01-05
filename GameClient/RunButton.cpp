@@ -26,14 +26,14 @@ void RunButton::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 			}
 }
 
-void RunButton::update(const sf::Vector2f& mousePos)
+void RunButton::update(const GameTime& time, const sf::Vector2f& mousePos)
 {
-
+	
 }
 
 
 // Called from being added to C_WorldScene::m_uiComponents
-void RunButton::draw(sf::RenderTarget& target)
+void RunButton::draw(sf::RenderTarget& target) const
 {
 	target.draw(*m_sprite);
 }

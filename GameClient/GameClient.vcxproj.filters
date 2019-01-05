@@ -30,7 +30,6 @@
     <ClInclude Include="SFMLOrthogonalLayer.hpp">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="C_WorldManager.h" />
     <ClInclude Include="Crosshair.h">
       <Filter>Graphics</Filter>
@@ -47,15 +46,27 @@
     <ClInclude Include="InventoryTab.h">
       <Filter>Graphics\Menus</Filter>
     </ClInclude>
-    <ClInclude Include="Interface.h" />
     <ClInclude Include="RCOption.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="UIComponent.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="SideMenu.h" />
-    <ClInclude Include="RunButton.h" />
+    <ClInclude Include="RunButton.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Interface.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SideMenu.h">
+      <Filter>Graphics\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatingText.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceLoader.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C_Client.cpp" />
@@ -68,7 +79,6 @@
     <ClCompile Include="C_WorldMap.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="C_WorldManager.cpp" />
     <ClCompile Include="Crosshair.cpp">
       <Filter>Graphics</Filter>
@@ -85,9 +95,21 @@
     <ClCompile Include="InventoryTab.cpp">
       <Filter>Graphics\Menus</Filter>
     </ClCompile>
-    <ClCompile Include="Interface.cpp" />
-    <ClCompile Include="SideMenu.cpp" />
-    <ClCompile Include="RunButton.cpp" />
+    <ClCompile Include="RunButton.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Interface.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="SideMenu.cpp">
+      <Filter>Graphics\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatingText.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceLoader.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Fractal.png">

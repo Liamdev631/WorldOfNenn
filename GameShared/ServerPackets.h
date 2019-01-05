@@ -3,6 +3,7 @@
 #include "Items.h"
 #include "CombatState.h"
 #include "MoveKey.h"
+#include "Skills.h"
 
 typedef u8 packet_header;
 
@@ -13,7 +14,7 @@ This is the first game packet the client should recieve.
 constexpr packet_header SP_Hello_header = 0;
 struct SP_Hello
 {
-	const packet_header header = SP_Hello_header; // 0
+	const packet_header header = SP_Hello_header;
 	u32 timestamp;
 	u16 uid;
 };
@@ -23,7 +24,7 @@ struct SP_Hello
 constexpr packet_header SP_EntityStatus_header = 1;
 struct SP_EntityStatus 
 {
-	const packet_header header = 1; // 1
+	const packet_header header = SP_EntityStatus_header;
 	u8 numEntities;
 };
 #pragma pack(pop)
@@ -41,7 +42,7 @@ struct SP_EntityStatus_Elem
 constexpr packet_header SP_RemoveEntity_header = 2;
 struct SP_RemoveEntity
 {
-	const packet_header header = SP_RemoveEntity_header; // 2
+	const packet_header header = SP_RemoveEntity_header;
 	u16 uid;
 };
 #pragma pack(pop)
@@ -50,7 +51,7 @@ struct SP_RemoveEntity
 constexpr packet_header SP_Inventory_header = 3;
 struct SP_Inventory
 {
-	const packet_header header = SP_Inventory_header; // 3
+	const packet_header header = SP_Inventory_header;
 	u16 uid;
 };
 #pragma pack(pop)
@@ -59,7 +60,7 @@ struct SP_Inventory
 constexpr packet_header SP_EntityTookDamage_header = 4;
 struct SP_EntityTookDamage
 {
-	const packet_header header = SP_EntityTookDamage_header; // 4
+	const packet_header header = SP_EntityTookDamage_header;
 	u16 defender;
 	u8 damage;
 	CombatState combatState;
@@ -74,7 +75,7 @@ constexpr packet_header SP_ItemPicked_header = 5;
 struct SP_ItemPicked
 {
 public:
-	const packet_header header = SP_ItemPicked_header; // 5
+	const packet_header header = SP_ItemPicked_header;
 	DropableItem item;
 
 	SP_ItemPicked(const DropableItem& item)
@@ -87,7 +88,7 @@ constexpr packet_header SP_ItemDropped_header = 6;
 struct SP_ItemDropped
 {
 public:
-	const packet_header header = SP_ItemDropped_header; // 6
+	const packet_header header = SP_ItemDropped_header;
 	DropableItem item;
 
 	SP_ItemDropped(const DropableItem& item)
@@ -99,7 +100,7 @@ public:
 constexpr packet_header SP_EntityMoved_header = 7;
 struct SP_EntityMoved
 {
-	const packet_header header = SP_EntityMoved_header; // 7
+	const packet_header header = SP_EntityMoved_header;
 	u16 uid;
 	MoveKey move;
 };
@@ -123,6 +124,40 @@ struct SP_SetRun
 
 	SP_SetRun(bool run)
 		: run(run) { }
+};
+#pragma pack(pop)
+
+constexpr packet_header SP_ChatText_header = 10;
+#pragma pack(push, 1)
+struct SP_ChatText
+{
+	const packet_header header = SP_ChatText_header;
+	wchar_t chatText[64];
+	u32 speaker;
+
+	SP_ChatText(std::wstring text, u32 speaker)
+		: speaker(speaker)
+	{
+		if (text.length() >= 64)
+			return;
+		memcpy_s(&chatText, sizeof(wchar_t) * 64, text.c_str(), 64);
+		chatText[text.length()] = '\0';
+	}
+};
+#pragma pack(pop)
+
+constexpr packet_header SP_ExperienceTable_header = 11;
+#pragma pack(push, 1)
+struct SP_ExperienceTable
+{
+	const packet_header header = SP_ExperienceTable_header;
+	ExperienceTable exp;
+
+	SP_ExperienceTable(const ExperienceTable& exp)
+		: exp(exp)
+	{
+
+	}
 };
 #pragma pack(pop)
 

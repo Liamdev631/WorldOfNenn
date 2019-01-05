@@ -5,7 +5,7 @@
 #include "Packets.h"
 
 S_MovementComponent::S_MovementComponent(S_Entity& owner)
-	: m_owner(owner), m_hasMoved(false), m_moveTimer(0), region(R_Overworld),
+	: owner(owner), m_hasMoved(false), m_moveTimer(0), region(R_Overworld),
 	m_running(false)
 {
 	moveKey.speed = 2;
@@ -18,12 +18,15 @@ S_MovementComponent::~S_MovementComponent()
 
 void S_MovementComponent::update()
 {
+	// This is by far the most common case so dont put it in switch
 	if (moveKey.state == MoveState::Idle)
 		return;
 
-	moveKey.speed = m_running ? 4 : 6;
+	// If the move timer hasn't expired, we shouldnt do anything here
+	moveKey.speed = m_running ? 3 : 5;
 	if (m_moveTimer++ < moveKey.speed)
 		return;
+	m_moveTimer = 0;
 
 	switch (moveKey.state)
 	{
@@ -61,8 +64,8 @@ void S_MovementComponent::update()
 			{
 				// Step towards the target until in follow distance
 				int followDistance = 1;
-				if (m_owner.getCombat().isInCombat)
-					followDistance = m_owner.getCombat().getRange();
+				if (owner.getCombat().isInCombat)
+					followDistance = owner.getCombat().getRange();
 				if (!isWithinDistance(m_followEntity->getMovement().getPos(), followDistance))
 					stepTowards(*m_followEntity);
 			}
@@ -91,6 +94,9 @@ void S_MovementComponent::moveToPosition(const vec2<u16>& pos)
 	resetMovement();
 	moveKey.state = MoveState::Waypoint;
 	m_waypoints.push(pos);
+
+	// Cancel combat so we dont attack while moving
+	owner.getCombat().isInCombat = false;
 }
 
 void S_MovementComponent::blinkTo(const vec2s& pos)
@@ -99,9 +105,9 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 	auto& thisRegion = getWorldRegion();
 
 	// If this entity is a player, we will need to tell it everything about the local game state
-	if (m_owner.getEntityType() == ET_PLAYER || m_owner.getEntityType() == ET_ADMIN)
+	if (owner.getEntityType() == ET_PLAYER || owner.getEntityType() == ET_ADMIN)
 	{
-		auto& packetBuffer = m_owner.getConnection()->getBuffer();
+		auto& packetBuffer = reinterpret_cast<S_Entity_Player*>(&owner)->getBuffer();
 		SP_EntityStatus& addEntitiesPacket = *packetBuffer.writePacket<SP_EntityStatus>();
 		assert(thisRegion.getEntities().size() <= 0xFF); // More than 255 entities in the players surroundings. Rediculous!
 		addEntitiesPacket.numEntities = (u8)thisRegion.getEntities().size();
@@ -110,7 +116,7 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 		{
 			auto otherEntity = iter->second;
 			SP_EntityStatus_Elem& addEntitiesPacketElem = *packetBuffer.writePacket<SP_EntityStatus_Elem>();
-			addEntitiesPacketElem.uid = otherEntity->getUID();
+			addEntitiesPacketElem.uid = otherEntity->uid;
 			addEntitiesPacketElem.entityType = otherEntity->getEntityType();
 			addEntitiesPacketElem.move = otherEntity->getMovement().moveKey;
 		}
@@ -119,7 +125,7 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 	// Tell nearby players that the entity has appeared
 	for (auto iter = thisRegion.getConnections().begin(); iter != thisRegion.getConnections().end(); iter++)
 	{
-		if (iter->second == m_owner.getConnection())
+		if (iter->second == &owner)
 			continue;
 		auto& buffer = iter->second->getBuffer();
 
@@ -127,8 +133,8 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 		addEntitiesPacket.numEntities = 1;
 
 		SP_EntityStatus_Elem& addEntitiesPacketElem = *buffer.writePacket<SP_EntityStatus_Elem>();
-		addEntitiesPacketElem.uid = m_owner.getUID();
-		addEntitiesPacketElem.entityType = m_owner.getEntityType();
+		addEntitiesPacketElem.uid = owner.uid;
+		addEntitiesPacketElem.entityType = owner.getEntityType();
 		addEntitiesPacketElem.move = moveKey;
 	}
 }
@@ -200,10 +206,10 @@ void S_MovementComponent::stepTowards(const vec2s& target)
 		moveKey.pos.y++;
 
 	// Calculate the new rotation
-	if (m_owner.getCombat().isInCombat)
+	if (owner.getCombat().isInCombat)
 	{
 		// Face the combat target
-		moveKey.rot = directionFromTo(moveKey.pos, m_owner.getCombat().target->getMovement().getPos());
+		moveKey.rot = directionFromTo(moveKey.pos, owner.getCombat().target->getMovement().getPos());
 	}
 	else
 	{
@@ -214,7 +220,7 @@ void S_MovementComponent::stepTowards(const vec2s& target)
 	// Transmit the new m_moveKey.pos
 	auto nearbyPlayers = getWorldRegion().getConnections();
 	SP_EntityMoved p = SP_EntityMoved();
-	p.uid = m_owner.getUID();
+	p.uid = owner.uid;
 	p.move = moveKey;
 	for (auto iter = nearbyPlayers.begin(); iter != nearbyPlayers.end(); iter++)
 	{
@@ -248,7 +254,7 @@ S_Region& S_MovementComponent::getWorldRegion() const
 	return g_server->getWorldManager().getRegion(region);
 }
 
-void S_MovementComponent::endUpdate()
+void S_MovementComponent::reset()
 {
 	m_hasMoved = false;
 	m_forcePositionUpdate = false;
@@ -266,9 +272,12 @@ void S_MovementComponent::forcePositionUpdate()
 
 void S_MovementComponent::setRun(bool run)
 {
-	m_running = run;
-	if (m_owner.getConnection())
-		m_owner.getConnection()->getBuffer().write(SP_SetRun(m_running));
+	moveKey.run = run;
+	if (owner.getEntityType() == ET_PLAYER)
+	{
+		auto& player = *reinterpret_cast<S_Entity_Player*>(this);
+		player.getBuffer().write(SP_SetRun(m_running));
+	}
 }
 
 bool S_MovementComponent::isRunning() const

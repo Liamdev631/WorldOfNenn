@@ -1,11 +1,12 @@
 #pragma once
 #include "Global.h"
+#include <utility>
+#include <vector>
 
-#define SK_Count 10
+#define SK_Count 9
 
 typedef u8 level_val;
 typedef u32 exp_val;
-
 
 enum Skill : u8
 {
@@ -13,13 +14,14 @@ enum Skill : u8
 	SK_Constitution = 1,
 	SK_Defence = 2,
 	SK_Dexterity = 3,
-	SK_Intelligence = 4,
-	SK_Charisma = 5,
+	SK_Perception = 4,
+	SK_Intelligence = 5,
 	SK_Wisdom = 6,
-	SK_Willpower = 7,
-	SK_Perception = 8,
-	SK_Luck = 9,
+	SK_Luck = 7,
+	SK_Prayer = 8,
 };
+
+typedef std::pair<Skill, exp_val> exp_chunk;
 
 class ExperienceTable
 {
@@ -31,10 +33,11 @@ public:
 	ExperienceTable();
 	~ExperienceTable();
 
+	void addExp(Skill s, exp_val exp);
+	void addExp(const std::vector<exp_chunk>& exp);
 	void setExp(Skill s, exp_val exp);
 	void calcLevel(Skill s);
 	void calcAllLevels();
 	level_val getLevel(Skill s) const;
 	exp_val getExperience(Skill s) const;
 };
-

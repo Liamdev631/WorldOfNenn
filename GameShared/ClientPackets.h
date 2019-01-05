@@ -1,11 +1,12 @@
 #pragma once
 #include "Global.h"
 #include "Items.h"
+#include <string>
 
 typedef u8 packet_header;
 
-#pragma pack(push, 1)
 #define CP_AttackEntity_header 0
+#pragma pack(push, 1)
 struct CP_AttackEntity
 {
 public:
@@ -17,8 +18,8 @@ public:
 };
 #pragma pack(pop)
 
-#pragma pack(push, 1)
 #define CP_ItemPicked_header 1
+#pragma pack(push, 1)
 struct CP_ItemPicked
 {
 public:
@@ -30,8 +31,8 @@ public:
 };
 #pragma pack(pop)
 
-#pragma pack(push, 1)
 #define CP_ItemDropped_header 2
+#pragma pack(push, 1)
 struct CP_ItemDropped
 {
 public:
@@ -44,8 +45,8 @@ public:
 };
 #pragma pack(pop)
 
-#pragma pack(push, 1)
 #define CP_MoveToDest_header 3
+#pragma pack(push, 1)
 struct CP_MoveToDest
 {
 	const packet_header header = CP_MoveToDest_header;
@@ -56,8 +57,8 @@ struct CP_MoveToDest
 };
 #pragma pack(pop)
 
-#pragma pack(push, 1)
 #define CP_SetRun_header 4
+#pragma pack(push, 1)
 struct CP_SetRun
 {
 	const packet_header header = CP_SetRun_header;
@@ -67,3 +68,21 @@ struct CP_SetRun
 		: run(run) { }
 };
 #pragma pack(pop)
+
+#define CP_ChatText_header 5
+#pragma pack(push, 1)
+struct CP_ChatText
+{
+	const packet_header header = CP_ChatText_header;
+	wchar_t chatText[64];
+
+	CP_ChatText(std::wstring text)
+	{
+		if (text.length() >= 64)
+			return;
+		memcpy_s(&chatText, sizeof(wchar_t) * 64, text.c_str(), 64);
+		chatText[text.length()] = '\0';
+	}
+};
+#pragma pack(pop)
+

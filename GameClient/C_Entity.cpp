@@ -29,14 +29,14 @@ C_Entity::C_Entity(const u16 uid)
 	m_font_hitsplat = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
 	if (!m_font_hitsplat)
 		printf("Entity (uid:%u) failed to load hitsplat font!\n", uid);
-	C_WorldScene::get().components.push_back(this);
+	SceneManager::get().components.push_back(this);
 
 	m_healthbar.setSize(14, 4);
 }
 
 C_Entity::~C_Entity()
 {
-	auto c = C_WorldScene::get().components;
+	auto c = SceneManager::get().components;
 	c.erase(std::remove(c.begin(), c.end(), this), c.end());
 }
 
@@ -85,7 +85,7 @@ void C_Entity::update(const GameTime& gameTime)
 		{
 			// Integrate for position
 			auto velocity = (targetPos - drawPos) / distanceToTarget; // Normalize
-			float positionStepSize = gameTime.deltaTime * moveKey.speed / S_TICKS_PER_SECOND;
+			float positionStepSize = gameTime.deltaTime * S_TICKS_PER_SECOND / moveKey.speed;
 			
 			// Move faster along diagonals
 			auto cellDiff = moveKey.pos - position;
@@ -113,6 +113,11 @@ void C_Entity::update(const GameTime& gameTime)
 		else
 			m_healthbar.setColors(sf::Color::Red, sf::Color::Green);
 	}
+
+	// Update the floating text
+	m_floatingText.update(gameTime, sf::Vector2f(0, 0));
+	m_floatingText.setCenter(drawPos * 16.f + sf::Vector2f(240, 150));
+	//m_floatingText.setText(L"NIGGERZ!");
 }
 
 void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -158,6 +163,9 @@ void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(text);
 		count++;
 	}
+
+	// Floating chat text
+	m_floatingText.draw(target);
 }
 
 const sf::Color C_Entity::getColor() const
@@ -176,7 +184,9 @@ const sf::Color C_Entity::getColor() const
 void C_Entity::addMoveKey(const MoveKey& key)
 {
 	moveStateHistory.push(key);
-	//position = key.moveState.pos;
-	//rotation = key.moveState.rot;
-	//interpPosition = vec2f((float)position.x, (float)position.y) * 16;
+}
+
+void C_Entity::setFloatingText(const std::wstring& text)
+{
+	m_floatingText.setText(text);
 }

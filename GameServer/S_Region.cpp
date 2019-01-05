@@ -1,6 +1,5 @@
 #include "S_Region.h"
 #include "S_WorldManager.h"
-#include "S_Connection.h"
 #include "Items.h"
 #include "ServerPackets.h"
 
@@ -24,20 +23,19 @@ void S_Region::update()
 
 void S_Region::addEntity(S_Entity& entity)
 {
-	m_entitiesList[entity.getUID()] = &entity;
+	m_entitiesList[entity.uid] = &entity;
 }
 
-void S_Region::addConnection(S_Connection& connection)
+void S_Region::addConnection(S_Entity_Player* connection)
 {
-	m_regionConnections[connection.getUID()] = &connection;
-	m_entitiesList[connection.getUID()] = &connection.getEntity();
+	m_regionConnections[connection->uid] = connection;
+	m_entitiesList[connection->uid] = connection;
 }
 
-void S_Region::removeConnection(S_Connection& connection)
+void S_Region::removeConnection(S_Entity_Player* connection)
 {
-	m_regionConnections.erase(connection.getUID());
-	m_entitiesList.erase(connection.getUID());
-
+	m_regionConnections.erase(connection->uid);
+	m_entitiesList.erase(connection->uid);
 }
 
 std::map<u16, S_Entity*>& S_Region::getEntities()
@@ -45,7 +43,7 @@ std::map<u16, S_Entity*>& S_Region::getEntities()
 	return m_entitiesList;
 }
 
-std::map<u16, S_Connection*>& S_Region::getConnections()
+std::map<u16, S_Entity_Player*>& S_Region::getConnections()
 {
 	return m_regionConnections;
 }

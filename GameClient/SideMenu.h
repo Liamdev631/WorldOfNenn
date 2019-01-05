@@ -26,8 +26,8 @@ public:
 
 	// UIComponent override
 	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override;
-	void update(const sf::Vector2f& mousePos) override;
-	void draw(sf::RenderTarget& target) override;
+	void update(const GameTime& time, const sf::Vector2f& mousePos) override;
+	void draw(sf::RenderTarget& target) const override;
 
 private:
 	SideMenu();

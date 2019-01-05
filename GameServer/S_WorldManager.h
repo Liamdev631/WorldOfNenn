@@ -1,6 +1,6 @@
 #pragma once
-#include "S_Entity.h"
 #include "S_Entity_NPC.h"
+#include "S_Entity_Player.h"
 #include "S_Region.h"
 #include <vector>
 
@@ -21,8 +21,8 @@ public:
 
 	void update();
 	void registerNPC(const u16 npcid, const EntityType entityType);
-	void registerPlayer(S_Connection& connection);
-	void deregisterPlayer(S_Connection& connection);
+	void registerPlayer(S_Entity_Player* connection);
+	void deregisterPlayer(S_Entity_Player* connection);
 
 private:
 };

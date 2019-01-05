@@ -3,8 +3,7 @@
 #include <queue>
 #include <mutex>
 #include <thread>
-#include "S_Connection.h"
-#include "S_Entity.h"
+#include "S_Entity_Player.h"
 
 class S_LoginManager
 {
@@ -12,16 +11,16 @@ public:
 	S_LoginManager();
 	~S_LoginManager();
 
-	void registerNewConnection(S_Connection* newPeer);
-	S_Connection* popPlayer();
+	void registerNewConnection(S_Entity_Player* newPeer);
+	S_Entity_Player* popPlayer();
 
 private:
 	// New connections that must have their player info loaded
-	std::queue<S_Connection*> m_connectionsToLoad;
+	std::queue<S_Entity_Player*> m_connectionsToLoad;
 	std::mutex m_mutex_connectionsToLoad;
 
 	// Loaded player objects that are ready to be injected into the world
-	std::queue<S_Connection*> m_readyPlayers;
+	std::queue<S_Entity_Player*> m_readyPlayers;
 	std::mutex m_mutex_readyPlayers;
 
 	std::thread m_thread_loadPlayers;

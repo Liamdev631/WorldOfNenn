@@ -1,5 +1,4 @@
 #include "S_WorldManager.h"
-#include "S_Connection.h"
 #include <assert.h>
 
 S_WorldManager::S_WorldManager()
@@ -45,9 +44,9 @@ void S_WorldManager::update()
 {
 	// Reset temporary states
 	for (S_Entity* entity : m_entitiesList)
-		entity->getMovement().endUpdate();
+		entity->getMovement().reset();
 	for (S_Entity* entity : m_entitiesList)
-		entity->getCombat().endUpdate();
+		entity->getCombat().reset();
 	
 	// Generic tick
 	for (S_Entity* entity : m_entitiesList)
@@ -65,24 +64,24 @@ void S_WorldManager::update()
 void S_WorldManager::registerNPC(const u16 npcid, const EntityType entityType)
 {
 	S_Entity* entity = new S_Entity_NPC((u16)(MAX_PLAYERS + npcid), entityType, R_Overworld);
-	m_entities[entity->getUID()] = entity;
+	m_entities[entity->uid] = entity;
 	m_entitiesList.push_back(entity);
 	m_regions[entity->getMovement().region]->addEntity(*entity);
 }
 
-void S_WorldManager::registerPlayer(S_Connection& connection)
+void S_WorldManager::registerPlayer(S_Entity_Player* connection)
 {
-	m_regions[connection.getEntity().getMovement().region]->addConnection(connection);
-	m_entities[connection.getUID()] = &connection.getEntity();
-	m_entitiesList.push_back(&connection.getEntity());
+	m_regions[connection->getMovement().region]->addConnection(connection);
+	m_entities[connection->uid] = connection;
+	m_entitiesList.push_back(connection);
 }
 
-void S_WorldManager::deregisterPlayer(S_Connection& connection)
+void S_WorldManager::deregisterPlayer(S_Entity_Player* connection)
 {
-	m_regions[connection.getEntity().getMovement().region]->removeConnection(connection);
-	m_entities[connection.getUID()] = nullptr;
+	m_regions[connection->getMovement().region]->removeConnection(connection);
+	m_entities[connection->uid] = nullptr;
 	for (auto iter = m_entitiesList.begin(); iter != m_entitiesList.end(); iter++)
-		if ((*iter)->getUID() == connection.getUID())
+		if ((*iter)->uid == connection->uid)
 		{
 			m_entitiesList.erase(iter);
 			return;

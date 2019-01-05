@@ -13,6 +13,6 @@ public:
 	const sf::FloatRect& getBounds();
 
 	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override = 0;
-	void update(const sf::Vector2f& mousePos) override = 0;
-	void draw(sf::RenderTarget& target) override = 0;
+	void update(const GameTime& time, const sf::Vector2f& mousePos) override = 0;
+	void draw(sf::RenderTarget& target) const override = 0;
 };
