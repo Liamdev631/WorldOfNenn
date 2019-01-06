@@ -53,6 +53,7 @@ private:
 
 public:
 	C_Entity(const u16 uid);
+	void loadAssets();
 	~C_Entity();
 
 	void update(const GameTime& gameTime); // 60 times/sec

@@ -12,26 +12,25 @@ C_Entity::C_Entity(const u16 uid)
 {
 	position = vec2s(0, 0);
 	drawPos = sf::Vector2f(position.x, position.y);
-
 	deathAnimationTimer = 2.0f;
+	m_healthbar.setSize(14, 4);
 
+	loadAssets();
+
+	SceneManager::get().components.push_back(this);
+}
+
+void C_Entity::loadAssets()
+{
 	m_sprite_body = ResourceLoader::get().getSprite("assets/graphics/entities/entity_player.png");
 	m_sprite_body->sprite.setOrigin(10, 10);
 	m_sprite_body->sprite.setScale(16.f / 20.f, 16.f / 20.f);
-
 	m_sprite_bodyPointer = ResourceLoader::get().getSprite("assets/graphics/entities/entity_pointer.png");
 	m_sprite_bodyPointer->sprite.setOrigin(0, 1);
 	m_sprite_body->sprite.setScale(16.f / 20.f, 16.f / 20.f);
-
 	m_sprite_hitmarker = ResourceLoader::get().getSprite("assets/graphics/entities/hitmarker.png");
 	m_sprite_hitmarker->sprite.setOrigin(8, 8);
-
 	m_font_hitsplat = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
-	if (!m_font_hitsplat)
-		printf("Entity (uid:%u) failed to load hitsplat font!\n", uid);
-	SceneManager::get().components.push_back(this);
-
-	m_healthbar.setSize(14, 4);
 }
 
 C_Entity::~C_Entity()
@@ -92,7 +91,7 @@ void C_Entity::update(const GameTime& gameTime)
 			if (cellDiff.x != 0 && cellDiff.y != 0)
 				positionStepSize *= 1.41f;
 
-			velocity = velocity * positionStepSize;
+			velocity = velocity * positionStepSize * 0.8f;
 			drawPos = drawPos + velocity;
 
 			// Integrate for rotation

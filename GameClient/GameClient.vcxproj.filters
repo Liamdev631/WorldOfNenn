@@ -67,6 +67,9 @@
     <ClInclude Include="ResourceLoader.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="ExperienceTab.h">
+      <Filter>Graphics\Menus</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C_Client.cpp" />
@@ -109,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="ResourceLoader.cpp">
       <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ExperienceTab.cpp">
+      <Filter>Graphics\Menus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

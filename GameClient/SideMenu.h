@@ -2,6 +2,18 @@
 #include "UIComponent.h"
 #include "MenuTab.h"
 
+enum SideMenuTab : uint8_t
+{
+	Tab_Inventory = 0,
+	Tab_Experience = 1,
+	Tab_Settings = 2,
+	Tab_Combat = 3,
+	Tab_COUNT
+};
+
+constexpr int NumTabs = 16;
+constexpr SideMenuTab DefaultTab = SideMenuTab::Tab_Inventory;
+
 class SideMenu : public UIComponent
 {
 public:
@@ -12,17 +24,7 @@ public:
 	}
 	~SideMenu();
 
-	enum Tab : uint8_t
-	{
-		Inventory = 0,
-		ExperienceTable = 1,
-		Settings = 2,
-		Combat = 3,
-
-		COUNT
-	};
-
-	void setTab(Tab tab);
+	void setTab(SideMenuTab tab);
 
 	// UIComponent override
 	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override;
@@ -32,7 +34,8 @@ public:
 private:
 	SideMenu();
 
-	Tab m_activeMenuTab;
-	MenuTab* m_menuTabs[COUNT];
+	SideMenuTab m_activeMenuTab;
+	MenuTab* m_menuTabs[NumTabs];
+	sf::RectangleShape m_tabButtons[NumTabs];
 };
 

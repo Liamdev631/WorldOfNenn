@@ -5,7 +5,7 @@
 class InventoryTab : public MenuTab
 {
 protected:
-	sf::RectangleShape m_tabs[28];
+	sf::RectangleShape m_itemSlotImages[28];
 
 private:
 

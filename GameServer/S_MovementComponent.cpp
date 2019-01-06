@@ -23,7 +23,7 @@ void S_MovementComponent::update()
 		return;
 
 	// If the move timer hasn't expired, we shouldnt do anything here
-	moveKey.speed = m_running ? 3 : 5;
+	moveKey.speed = m_running ? 2 : 4;
 	if (m_moveTimer++ < moveKey.speed)
 		return;
 	m_moveTimer = 0;

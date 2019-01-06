@@ -9,17 +9,18 @@ InventoryTab::InventoryTab()
 	const auto tabSize = sf::Vector2f(32, 32);
 	for (int i = 0; i < 28; i++)
 	{
+
 		// Calculate the bounds of the item sprite
 		sf::Vector2f centerPos;
 		int x = i % 4, y = i / 4;
 		centerPos.x = m_menuBounds.left + (m_menuBounds.width / 5.f) * (x + 1);
 		centerPos.y = m_menuBounds.top + (m_menuBounds.height / 8.f) * (y + 1);
 		sf::Vector2f topLeft = centerPos - tabSize / 2.f;
-		m_tabs[i].setPosition(topLeft);
-		m_tabs[i].setSize(tabSize);
 
-		// Set the border color
-		m_tabs[i].setOutlineColor(sf::Color::White);
+		auto& itemImage = m_itemSlotImages[i];
+		itemImage.setPosition(topLeft);
+		itemImage.setSize(tabSize);
+		itemImage.setOutlineColor(sf::Color::White);
 	}
 }
 
@@ -31,9 +32,9 @@ InventoryTab::~InventoryTab()
 void InventoryTab::setHighlightedSlot(const int& slotClicked)
 {
 	for (int i = 0; i < 28; i++)
-		m_tabs[i].setOutlineThickness(0.0f);
+		m_itemSlotImages[i].setOutlineThickness(0.0f);
 	if (slotClicked > -1 && slotClicked < 28)
-		m_tabs[slotClicked].setOutlineThickness(1.0f);
+		m_itemSlotImages[slotClicked].setOutlineThickness(1.0f);
 }
 
 int InventoryTab::getSlotUnderMouse(const sf::Vector2f& mousePos) const
@@ -45,7 +46,7 @@ int InventoryTab::getSlotUnderMouse(const sf::Vector2f& mousePos) const
 	{
 		if (inventory.itemStacks[i].count == 0)
 			continue;
-		if (m_tabs[i].getGlobalBounds().contains(mousePos))
+		if (m_itemSlotImages[i].getGlobalBounds().contains(mousePos))
 			return i;
 	}
 	return -1;
@@ -75,7 +76,7 @@ void InventoryTab::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 		auto& clickedStack = playerInventory.itemStacks[slotClicked];
 		if (clickedStack.count == 0)
 			return; // The slot clicked was empty
-		auto& tabClicked = m_tabs[slotClicked];
+		auto& tabClicked = m_itemSlotImages[slotClicked];
 
 		switch (ev.mouseButton.button)
 		{
@@ -107,7 +108,7 @@ void InventoryTab::openRCOMenuForSlot(const int &slotClicked)
 {
 	auto& playerInventory = C_Client::get().getPlayerInventory();
 	auto& clickedStack = playerInventory.itemStacks[slotClicked];
-	auto& clickedTab = m_tabs[slotClicked];
+	auto& clickedTab = m_itemSlotImages[slotClicked];
 
 	// Highlight the selected item and unhighlight others
 	setHighlightedSlot(slotClicked);
@@ -136,7 +137,7 @@ void InventoryTab::update(const GameTime& time, const sf::Vector2f& mousePos)
 		if (inventory.itemStacks[i].count > 0)
 		{
 			auto itemTexture = ResourceLoader::get().getItemSprite(inventory.itemStacks[i]).getTexture();
-			m_tabs[i].setTexture(itemTexture);
+			m_itemSlotImages[i].setTexture(itemTexture);
 		}
 }
 
@@ -145,5 +146,5 @@ void InventoryTab::draw(sf::RenderTarget& target) const
 	auto& inventory = C_Client::get().getPlayerInventory();
 	for (int i = 0; i < 28; i++)
 		if (inventory.itemStacks[i].count > 0)
-			target.draw(m_tabs[i]);
+			target.draw(m_itemSlotImages[i]);
 }
