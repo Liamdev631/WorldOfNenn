@@ -46,7 +46,7 @@ void ExperienceTable::calcAllLevels()
 		calcLevel((Skill)i);
 }
 
-exp_val ExperienceTable::getExperience(Skill s) const
+exp_val ExperienceTable::getExp(Skill s) const
 {
 	return m_experience[s];
 }

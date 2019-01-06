@@ -27,8 +27,10 @@ private:
 	std::mutex m_entityMutex;
 	WPacket* m_packetBuffer;
 	GameTime m_timer; // For local timing
-	Inventory m_inventory;
 	sf::Clock clock;
+
+	Inventory m_playerInventory;
+	ExperienceTable m_playerExperienceTable;
 
 public:
 	C_Client();
@@ -36,6 +38,7 @@ public:
 
 	WPacket& getPacket() const;
 	const Inventory& getPlayerInventory() const;
+	const ExperienceTable& getPlayerExperienceTable() const;
 
 	static C_Client& get()
 	{

@@ -8,7 +8,7 @@ SideMenu::SideMenu()
 	for (int i = 0; i < NumTabs; i++)
 		m_menuTabs[i] = nullptr; // Tabs are null by default
 	m_menuTabs[SideMenuTab::Tab_Inventory] = new InventoryTab();
-	m_menuTabs[SideMenuTab::Tab_Experience] = new ExperienceTab();
+	m_menuTabs[SideMenuTab::Tab_Experience] = &ExperienceTab::get();
 
 	// Create the buttons for switching tabs
 	sf::Vector2f tabPos = sf::Vector2f(522, 168);
@@ -17,12 +17,20 @@ SideMenu::SideMenu()
 	for (int y = 0; y < 2; y++)
 		for (int x = 0; x < 8; x++)
 		{
-			auto& tab = m_tabButtons[x + y * 8];
+			int index = x + y * 8;
+			auto& tab = m_tabButtons[index];
 			tab = sf::RectangleShape(tabSize);
 			tab.setPosition(tabPos + sf::Vector2f(tabSize.x * x, 298.f * y));
 			tab.setSize(tabSize);
 			tab.setOutlineColor(sf::Color::Red);
-			tab.setFillColor(sf::Color::Transparent);
+
+			if (m_menuTabs[index])
+			{
+				auto texture = &ResourceLoader::get().getSprite("assets/graphics/gui/menu_" + std::to_string(index) + ".png")->texture;
+				tab.setTexture(texture);
+			}
+			else
+				tab.setFillColor(sf::Color::Transparent); // Tab hasn't been implemented yet
 		}
 	setTab(DefaultTab);
 }

@@ -18,8 +18,40 @@ enum Skill : u8
 	SK_Intelligence = 5,
 	SK_Wisdom = 6,
 	SK_Luck = 7,
-	SK_Prayer = 8,
+	SK_Piety = 8,
 };
+
+static std::wstring getSkillName(Skill s)
+{
+	static std::wstring nameArray[] = {
+		L"Strength",
+		L"Constitution",
+		L"Defence",
+		L"Dexterity",
+		L"Perception",
+		L"Intelligence",
+		L"Wisdom",
+		L"Luck",
+		L"Piety",
+	};
+	return nameArray[s];
+}
+
+static std::wstring getPaddedSkillName(Skill s)
+{
+	static std::wstring nameArray[] = {
+		L"Strength    ",
+		L"Constitution",
+		L"Defence     ",
+		L"Dexterity   ",
+		L"Perception  ",
+		L"Intelligence",
+		L"Wisdom      ",
+		L"Luck        ",
+		L"Piety       ",
+	};
+	return nameArray[s];
+}
 
 typedef std::pair<Skill, exp_val> exp_chunk;
 
@@ -39,5 +71,5 @@ public:
 	void calcLevel(Skill s);
 	void calcAllLevels();
 	level_val getLevel(Skill s) const;
-	exp_val getExperience(Skill s) const;
+	exp_val getExp(Skill s) const;
 };

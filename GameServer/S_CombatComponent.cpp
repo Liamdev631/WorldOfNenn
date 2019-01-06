@@ -125,6 +125,7 @@ void S_CombatComponent::die()
 	justDied = true;
 	isInCombat = false;
 	respawnTimer = respawnDelay;
+	owner.getMovement().resetMovement();
 	owner.onDeath();
 }
 

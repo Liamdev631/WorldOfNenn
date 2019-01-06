@@ -4,6 +4,7 @@
 #include <thread>
 #include "C_WorldScene.h"
 #include "RunButton.h"
+#include "ExperienceTab.h"
 
 C_Client::C_Client()
 {
@@ -84,7 +85,12 @@ WPacket& C_Client::getPacket() const
 
 const Inventory& C_Client::getPlayerInventory() const
 {
-	return m_inventory;
+	return m_playerInventory;
+}
+
+const ExperienceTable& C_Client::getPlayerExperienceTable() const
+{
+	return m_playerExperienceTable;
 }
 
 void C_Client::onConnect()
@@ -137,7 +143,7 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 		m_connectionState = ConnectionState::Connected;
 		C_WorldManager::get().setThisUID(p.uid);
 		m_timer.totalTime = p.timestamp;
-		m_inventory.deserialize(packet);
+		m_playerInventory.deserialize(packet);
 		break;
 	}
 
@@ -156,7 +162,6 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 			C_Entity* entity = C_WorldManager::get().getEntity(p2.uid);
 			entity->entityType = p2.entityType;
 			entity->addMoveKey(p2.move);
-			printf("speed:%u\n", p2.move.speed);
 			if (LOG_PACKET_HEADERS) {
 				printf("Processing P_EntityStatus_Elem elem:%u uid:%#06x type:%#04x pos:(%#06x,%#06x)\n", i, p2.uid, p2.entityType, p2.move.pos.x, p2.move.pos.y);
 				printBytes(p);
@@ -181,7 +186,7 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 	{
 		// Inventory
 		const SP_Inventory& p = *packet.read<SP_Inventory>();
-		m_inventory.deserialize(packet);
+		m_playerInventory.deserialize(packet);
 		if (LOG_PACKET_HEADERS) {
 			printf("Processing P_Inventory. inventory: \n");
 			printBytes(p);
@@ -273,7 +278,8 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 	case SP_ExperienceTable_header:
 	{
 		const SP_ExperienceTable& p = *packet.read<SP_ExperienceTable>();
-		printf("xp\n");
+		m_playerExperienceTable = p.exp;
+		ExperienceTab::get().setExperienceTable(p.exp);
 		break;
 	}
 
