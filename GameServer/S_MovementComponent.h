@@ -20,9 +20,8 @@ private:
 	S_Entity* m_followEntity;
 	std::queue<vec2s> m_waypoints;
 	u8 m_moveTimer;
-	bool m_running;
 
-	bool m_hasMoved; // Desribes whether or not the player has changed position this tick
+	bool m_hasMoved; // Tells whether or not the player has changed position this tick
 	bool m_forcePositionUpdate; // If this is set to true, all nearby players will recieve a position update for this entity this tick
 
 public:

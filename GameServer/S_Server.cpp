@@ -222,7 +222,6 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 			{
 				const CP_SetRun& p = *packet.read<CP_SetRun>();
 				player.getMovement().setRun(p.run);
-				player.getBuffer().write(SP_SetRun(player.getMovement().isRunning()));
 				continue;
 			}
 

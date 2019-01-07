@@ -7,18 +7,39 @@
 #include "SideMenu.h"
 #include "RunButton.h"
 #include "C_Client.h"
+#include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
+#include <../irrlicht-1.8.4/include/irrlicht.h>
 
 SceneManager::SceneManager()
 {
 	// Create the window handle with the given settings
 	sf::ContextSettings settings;
-	settings.depthBits = 24;
-	settings.stencilBits = 8;
-	settings.antialiasingLevel = 4;
-	settings.majorVersion = 3;
-	settings.minorVersion = 0;
+	settings.antialiasingLevel = 8;
+	settings.depthBits = 16;
+	settings.stencilBits = 0;
 	m_window.create(sf::VideoMode(GuiSize.x, GuiSize.y), "World of Nenn", sf::Style::Default, settings);
 	m_window.setVerticalSyncEnabled(true);
+
+	// Setup irrlicht
+	irr::SIrrlichtCreationParameters params;
+	params.AntiAlias = 8;
+	params.Bits = 16;
+	params.DeviceType = irr::EIDT_BEST; //Device creation fails with anything other
+	params.DriverType = irr::video::EDT_OPENGL;
+	params.Doublebuffer = true;
+	params.EventReceiver = nullptr;
+	params.Fullscreen = false;
+	params.HandleSRGB = false;
+	params.IgnoreInput = true;
+	params.Stencilbuffer = false;
+	params.UsePerformanceTimer = false;
+	params.Vsync = false;
+	params.WithAlphaChannel = false;
+	params.ZBufferBits = 24;
+	params.LoggingLevel = irr::ELL_DEBUG;
+	//params.WindowId = GetWindowHandle(m_window.getSystemHandle()); // Described below
+	
 
 	// Create the render texture for the game world
 	if (!m_gameScene.create(WorldSceneSize.x, WorldSceneSize.y, settings))
@@ -143,7 +164,10 @@ void SceneManager::update(const GameTime& gameTime)
 void SceneManager::draw()
 {
 	/////// World Space ///////
+	//m_window.pushGLStates();
+	//m_window.resetGLStates();
 	drawGameScene();
+	//m_window.popGLStates();
 
 	/////// Screen Space ///////
 	drawGui();
@@ -151,14 +175,21 @@ void SceneManager::draw()
 
 void SceneManager::drawGameScene()
 {
-	m_gameScene.clear(sf::Color::Magenta);
+	//m_gameScene.clear(sf::Color::Magenta);
+	m_gameScene.setActive(true);
+	m_gameScene.clear(sf::Color::Red);
 
+
+
+
+
+	
 	// Center the camera on the player
 	auto thisPlayer = C_WorldManager::get().getThisEntity();
 	if (thisPlayer && !thisPlayer->expired)
 	{
 		// Move the camera to the player if it exists
-		m_worldView.setCenter((float)thisPlayer->drawPos.x * 16, (float)thisPlayer->drawPos.y * 16);
+		m_worldView.setCenter((int)(thisPlayer->drawPos.x * 16), (int)(thisPlayer->drawPos.y * 16));
 	}
 	m_gameScene.setView(m_worldView);
 
@@ -179,8 +210,9 @@ void SceneManager::drawGameScene()
 
 	// Draw the crosshair
 	m_gameScene.draw(m_crosshair);
-
+	
 	// Done drawing
+	m_gameScene.setActive(false);
 	m_gameScene.display();
 }
 

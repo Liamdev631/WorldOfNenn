@@ -5,8 +5,7 @@
 #include "Packets.h"
 
 S_MovementComponent::S_MovementComponent(S_Entity& owner)
-	: owner(owner), m_hasMoved(false), m_moveTimer(0), region(R_Overworld),
-	m_running(false)
+	: owner(owner), m_hasMoved(false), m_moveTimer(0), region(R_Overworld)
 {
 	moveKey.speed = 2;
 }
@@ -23,7 +22,7 @@ void S_MovementComponent::update()
 		return;
 
 	// If the move timer hasn't expired, we shouldnt do anything here
-	moveKey.speed = m_running ? 2 : 4;
+	moveKey.speed = moveKey.run ? 2 : 4;
 	if (m_moveTimer++ < moveKey.speed)
 		return;
 	m_moveTimer = 0;
@@ -275,12 +274,12 @@ void S_MovementComponent::setRun(bool run)
 	moveKey.run = run;
 	if (owner.getEntityType() == ET_PLAYER)
 	{
-		auto& player = *reinterpret_cast<S_Entity_Player*>(this);
-		player.getBuffer().write(SP_SetRun(m_running));
+		auto& player = *reinterpret_cast<S_Entity_Player*>(&owner);
+		player.getBuffer().write(SP_SetRun(moveKey.run));
 	}
 }
 
 bool S_MovementComponent::isRunning() const
 {
-	return m_running;
+	return moveKey.run;
 }

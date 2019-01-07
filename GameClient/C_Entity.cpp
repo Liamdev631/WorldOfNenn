@@ -70,6 +70,7 @@ void C_Entity::update(const GameTime& gameTime)
 	if (moveStateHistory.size() > 0) // if moving
 	{
 		auto& moveKey = moveStateHistory.front();
+		printf("%u\n", moveKey.speed);
 		const sf::Vector2f targetPos = sf::Vector2f(moveKey.pos.x, moveKey.pos.y);
 		const float distanceToTarget = std::sqrtf(std::powf(targetPos.x - drawPos.x, 2) + std::powf(targetPos.y - drawPos.y, 2));
 		if (distanceToTarget < 0.1f || distanceToTarget > 3.f)
@@ -85,13 +86,12 @@ void C_Entity::update(const GameTime& gameTime)
 			// Integrate for position
 			auto velocity = (targetPos - drawPos) / distanceToTarget; // Normalize
 			float positionStepSize = gameTime.deltaTime * S_TICKS_PER_SECOND / moveKey.speed;
-			
 			// Move faster along diagonals
 			auto cellDiff = moveKey.pos - position;
 			if (cellDiff.x != 0 && cellDiff.y != 0)
 				positionStepSize *= 1.41f;
 
-			velocity = velocity * positionStepSize * 0.8f;
+			velocity = velocity * positionStepSize;
 			drawPos = drawPos + velocity;
 
 			// Integrate for rotation
