@@ -84,9 +84,9 @@ void InventoryTab::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 		{
 			// Shift + Left Click to drop items
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-			{
 				C_Client::get().getPacket().write(CP_ItemDropped(clickedStack, (uint8_t)slotClicked));
-			}
+			else 
+				C_Client::get().getPacket().write(CP_UseItem(clickedStack.type, (uint8_t)slotClicked));
 			return;
 		}
 

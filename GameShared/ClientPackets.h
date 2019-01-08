@@ -74,15 +74,29 @@ struct CP_SetRun
 struct CP_ChatText
 {
 	const packet_header header = CP_ChatText_header;
-	wchar_t chatText[64];
+	wchar_t message[64];
 
 	CP_ChatText(std::wstring text)
 	{
 		if (text.length() >= 64)
 			return;
-		memcpy_s(&chatText, sizeof(wchar_t) * 64, text.c_str(), 64);
-		chatText[text.length()] = '\0';
+		memcpy_s(&message, sizeof(wchar_t) * 64, text.c_str(), 64);
+		message[text.length()] = '\0';
 	}
 };
 #pragma pack(pop)
+
+#define CP_UseItem_header 6
+#pragma pack(push, 1)
+struct CP_UseItem
+{
+	const packet_header header = CP_UseItem_header;
+	ItemType itemType;
+	u8 slot;
+
+	CP_UseItem(ItemType itemType, u8 slot)
+		: itemType(itemType), slot(slot) { }
+};
+#pragma pack(pop)
+
 

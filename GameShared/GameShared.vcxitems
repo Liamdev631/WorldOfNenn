@@ -19,6 +19,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CSVReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameTime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Global.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ItemContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Items.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Loader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MoveKey.h" />
@@ -36,6 +37,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)CSVReader.cpp">
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ItemContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Loader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Skills.cpp" />
   </ItemGroup>

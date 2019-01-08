@@ -3,6 +3,7 @@
 #include "Items.h"
 #include "Global.h"
 #include "Skills.h"
+#include "ItemContainer.h"
 
 class S_Entity_Player : public S_Entity
 {
@@ -31,5 +32,8 @@ public:
 
 	// Adds experience to a skill and notifies the player of a change
 	void addExperience(Skill skill, exp_val amount);
+
+	// Overrides
+	void onDeath() override;
 };
 

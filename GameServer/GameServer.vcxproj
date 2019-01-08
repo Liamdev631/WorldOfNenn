@@ -29,6 +29,7 @@
     <ClCompile Include="S_Region.cpp" />
     <ClCompile Include="S_Server.cpp" />
     <ClCompile Include="S_WorldManager.cpp" />
+    <ClCompile Include="UseItem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="S_CombatComponent.h" />
@@ -41,6 +42,8 @@
     <ClInclude Include="S_Region.h" />
     <ClInclude Include="S_Server.h" />
     <ClInclude Include="S_WorldManager.h" />
+    <ClInclude Include="UseItem.h" />
+    <ClInclude Include="UseItemFunctions.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -37,7 +37,7 @@ S_MovementComponent& S_Entity::getMovement()
 
 void S_Entity::onRespawn()
 {
-	m_movement.blinkTo(m_movement.getPos());
+	m_movement.blinkTo(vec2s(10, 10));
 }
 
 void S_Entity::onDeath()

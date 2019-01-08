@@ -26,7 +26,7 @@ bool S_Entity_Player::pickUpItem(const DropableItem& item)
 
 	// First, try to take the item from the world
 	for (auto iter = region.getItems().begin(); iter != region.getItems().end(); iter++)
-		if ((*iter).stack.type == item.stack.type)
+		if (iter->stack.type == item.stack.type && iter->pos == item.pos)
 		{
 			// If the item was taken, find a suitable slot
 			ItemStack newItem = item.stack;
@@ -104,9 +104,9 @@ void S_Entity_Player::dropItemFromInventory(const ItemStack& stack, const uint8_
 	currentRegion.addGroundItem(DropableItem(stack, playerPos.x, playerPos.y));
 }
 
-void S_Entity_Player::printInChatbox(const std::wstring& string)
+void S_Entity_Player::printInChatbox(const std::wstring& message)
 {
-	//m_buffer->write();
+	m_buffer->write(SP_PrintMessage(message));
 }
 
 void S_Entity_Player::addExperience(Skill skill, exp_val amount)
@@ -117,3 +117,8 @@ void S_Entity_Player::addExperience(Skill skill, exp_val amount)
 	m_buffer->write(SP_ExperienceTable(exp));
 }
 
+void S_Entity_Player::onDeath()
+{
+	S_Entity::onDeath();
+	printInChatbox(L"Oh no! You have died!");
+}

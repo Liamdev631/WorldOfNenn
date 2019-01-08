@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include "S_Server.h"
 #include "Loader.h"
+#include "UseItem.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ public:
 	{
 		srand((unsigned int)time(0));
 		Loader::get();
+		UseItem::init();
 		g_server = new S_Server();
 	}
 	~Main() = default;

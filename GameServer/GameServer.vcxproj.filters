@@ -10,6 +10,9 @@
     <Filter Include="Entity\Components">
       <UniqueIdentifier>{dc1d03a6-44dc-4240-a84b-ada0e6819982}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Items">
+      <UniqueIdentifier>{f9cf65b7-d0aa-4b75-bf17-11030c03905d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="S_LoginManager.cpp" />
@@ -36,6 +39,9 @@
     <ClCompile Include="S_Entity_Player.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
+    <ClCompile Include="UseItem.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="S_GlobalServer.h" />
@@ -61,6 +67,12 @@
     </ClInclude>
     <ClInclude Include="S_Entity_Player.h">
       <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="UseItem.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="UseItemFunctions.h">
+      <Filter>Items</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include <queue>
 #include "WPacket.h"
 #include "Packets.h"
+#include "UseItem.h"
 
 S_Server::S_Server()
 {
@@ -228,12 +229,19 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 			case CP_ChatText_header:
 			{
 				const CP_ChatText& p = *packet.read<CP_ChatText>();
-				std::wstring str = std::wstring(p.chatText);
+				std::wstring str = std::wstring(p.message);
 				//printf("%ls\n", str.c_str());
 
 				// Relay the message to nearby players
 				for (auto& p : m_loadedPlayers)
 					p->getBuffer().write(SP_ChatText(str, player.uid));
+				continue;
+			}
+
+			case CP_UseItem_header:
+			{
+				const CP_UseItem p = *packet.read<CP_UseItem>();
+				UseItem::use(player, p.itemType, p.slot);
 				continue;
 			}
 

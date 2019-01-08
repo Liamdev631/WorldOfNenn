@@ -1,6 +1,7 @@
 #pragma once
-#include "Global.h"
 #include <vector>
+#include "Global.h"
+#include "Items.h"
 
 constexpr size_t NumberOfItems = 7;
 constexpr size_t NumberOfEntityTypes = 4;
@@ -36,7 +37,7 @@ public:
 		static Loader l;
 		return l;
 	}
-
+	
 	const std::wstring&	getItemName(const ItemType& item) const;
 	const u32&			getItemMaxStack(const ItemType& item) const;
 	const std::wstring&	getItemDescription(const ItemType& item) const;

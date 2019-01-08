@@ -70,7 +70,6 @@ void C_Entity::update(const GameTime& gameTime)
 	if (moveStateHistory.size() > 0) // if moving
 	{
 		auto& moveKey = moveStateHistory.front();
-		printf("%u\n", moveKey.speed);
 		const sf::Vector2f targetPos = sf::Vector2f(moveKey.pos.x, moveKey.pos.y);
 		const float distanceToTarget = std::sqrtf(std::powf(targetPos.x - drawPos.x, 2) + std::powf(targetPos.y - drawPos.y, 2));
 		if (distanceToTarget < 0.1f || distanceToTarget > 3.f)
@@ -145,7 +144,7 @@ void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	for (auto hit = hitMarkers.begin(); hit != hitMarkers.end(); hit++)
 	{
 		sf::CircleShape circle = sf::CircleShape(8.0f, 8);
-		circle.setPosition((float)drawPos.x * 16.f, (drawPos.y * 16.f - 16.f) + (hit->timer * 10) - (count * 16));
+		circle.setPosition((float)drawPos.x * 16.f, (drawPos.y * 16.f - 24.f) + (hit->timer * 10) - (count * 16));
 		if (hit->damage == 0)
 			circle.setFillColor(sf::Color::Blue);
 		else

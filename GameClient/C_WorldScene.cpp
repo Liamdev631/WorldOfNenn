@@ -9,7 +9,6 @@
 #include "C_Client.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
-#include <../irrlicht-1.8.4/include/irrlicht.h>
 
 SceneManager::SceneManager()
 {
@@ -20,26 +19,6 @@ SceneManager::SceneManager()
 	settings.stencilBits = 0;
 	m_window.create(sf::VideoMode(GuiSize.x, GuiSize.y), "World of Nenn", sf::Style::Default, settings);
 	m_window.setVerticalSyncEnabled(true);
-
-	// Setup irrlicht
-	irr::SIrrlichtCreationParameters params;
-	params.AntiAlias = 8;
-	params.Bits = 16;
-	params.DeviceType = irr::EIDT_BEST; //Device creation fails with anything other
-	params.DriverType = irr::video::EDT_OPENGL;
-	params.Doublebuffer = true;
-	params.EventReceiver = nullptr;
-	params.Fullscreen = false;
-	params.HandleSRGB = false;
-	params.IgnoreInput = true;
-	params.Stencilbuffer = false;
-	params.UsePerformanceTimer = false;
-	params.Vsync = false;
-	params.WithAlphaChannel = false;
-	params.ZBufferBits = 24;
-	params.LoggingLevel = irr::ELL_DEBUG;
-	//params.WindowId = GetWindowHandle(m_window.getSystemHandle()); // Described below
-	
 
 	// Create the render texture for the game world
 	if (!m_gameScene.create(WorldSceneSize.x, WorldSceneSize.y, settings))
@@ -189,7 +168,7 @@ void SceneManager::drawGameScene()
 	if (thisPlayer && !thisPlayer->expired)
 	{
 		// Move the camera to the player if it exists
-		m_worldView.setCenter((int)(thisPlayer->drawPos.x * 16), (int)(thisPlayer->drawPos.y * 16));
+		m_worldView.setCenter((float)((int)(thisPlayer->drawPos.x * 16.f)), (float)((int)(thisPlayer->drawPos.y * 16.f)));
 	}
 	m_gameScene.setView(m_worldView);
 
@@ -444,6 +423,13 @@ void SceneManager::processRightClickOptionSelection(const RCOption& selection)
 	{
 		assert(selection.target.type == TT_INV_ITEM);
 		packet.write(CP_ItemDropped(selection.target._item.stack, selection.target.uid));
+		return;
+	}
+
+	case RCO_USE:
+	{
+		assert(selection.target.type == TT_INV_ITEM);
+		packet.write(CP_UseItem(selection.target._item.stack.type, selection.target.uid));
 		return;
 	}
 

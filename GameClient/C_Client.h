@@ -8,6 +8,7 @@
 #include "Items.h"
 #include <string>
 #include "GameTime.h"
+#include "ItemContainer.h"
 
 constexpr auto SERVER_IP = "localhost";// "localhost";
 constexpr bool LOG_PACKET_HEADERS = false;

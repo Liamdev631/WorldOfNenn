@@ -25,6 +25,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RightClickOption.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MoveKey.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Skills.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ItemContainer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)npctable.csv" />
@@ -33,6 +34,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)CSVReader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Loader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Skills.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ItemContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Packets">

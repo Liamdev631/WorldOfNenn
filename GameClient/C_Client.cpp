@@ -261,7 +261,7 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 	case SP_ChatText_header:
 	{
 		const SP_ChatText& p = *packet.read<SP_ChatText>();
-		std::wstring str = std::wstring(p.chatText);
+		std::wstring str = std::wstring(p.message);
 
 		// Send the text to chat
 		std::wstringstream textBuilder;
@@ -280,6 +280,14 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 		const SP_ExperienceTable& p = *packet.read<SP_ExperienceTable>();
 		m_playerExperienceTable = p.exp;
 		ExperienceTab::get().setExperienceTable(p.exp);
+		break;
+	}
+
+	case SP_PrintMessage_header:
+	{
+		const auto& p = *packet.read<SP_PrintMessage>();
+		auto message = std::wstring(p.message);
+		Chatbox::get().addText(message);
 		break;
 	}
 

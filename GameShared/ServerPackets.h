@@ -132,7 +132,7 @@ constexpr packet_header SP_ChatText_header = 10;
 struct SP_ChatText
 {
 	const packet_header header = SP_ChatText_header;
-	wchar_t chatText[64];
+	wchar_t message[64];
 	u32 speaker;
 
 	SP_ChatText(std::wstring text, u32 speaker)
@@ -140,8 +140,8 @@ struct SP_ChatText
 	{
 		if (text.length() >= 64)
 			return;
-		memcpy_s(&chatText, sizeof(wchar_t) * 64, text.c_str(), 64);
-		chatText[text.length()] = '\0';
+		memcpy_s(&message, sizeof(wchar_t) * 64, text.c_str(), 64);
+		message[text.length()] = '\0';
 	}
 };
 #pragma pack(pop)
@@ -161,3 +161,19 @@ struct SP_ExperienceTable
 };
 #pragma pack(pop)
 
+constexpr packet_header SP_PrintMessage_header = 12;
+#pragma pack(push, 1)
+struct SP_PrintMessage
+{
+	const packet_header header = SP_PrintMessage_header;
+	wchar_t message[64];
+
+	SP_PrintMessage(std::wstring text)
+	{
+		if (text.length() >= 64)
+			return;
+		memcpy_s(&message, sizeof(wchar_t) * 64, text.c_str(), 64);
+		message[text.length()] = '\0';
+	}
+};
+#pragma pack(pop)
