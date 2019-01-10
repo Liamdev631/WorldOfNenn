@@ -5,7 +5,6 @@
 Loader::Loader()
 	: m_language(Language::English)
 {
-
 	load();
 }
 
@@ -27,8 +26,8 @@ void Loader::loadItemsInfo()
 	reader.readNextRow(); // Skip header
 	for (int i = 0; i < NumberOfItems; i++)
 	{
-		m_itemNames[i] = reader[1];
-		m_itemMaxStack[i] = std::stoi(reader[2]);
+		m_itemNames[i] = reader[2];
+		m_itemMaxStack[i] = std::stoi(reader[1]);
 		if (m_itemMaxStack[i] == 0)
 			m_itemMaxStack[i] = 1000000;
 		m_itemDescription[i] = reader[3];

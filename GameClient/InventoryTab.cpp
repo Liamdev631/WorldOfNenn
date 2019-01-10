@@ -6,7 +6,7 @@
 
 InventoryTab::InventoryTab()
 {
-	auto itemCountFont = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
+	auto itemCountFont = ResourceLoader::get().getFont("assets/fonts/Candarab.ttf");
 	const auto tabSize = sf::Vector2f(32, 32);
 	for (int i = 0; i < 28; i++)
 	{
@@ -25,10 +25,10 @@ InventoryTab::InventoryTab()
 		// Place the item count text
 		auto& itemCount = m_itemCountText[i];
 		itemCount.setFont(*itemCountFont);
-		itemCount.setPosition(topLeft);
+		itemCount.setPosition(topLeft + sf::Vector2f(0, -10.f));
 		itemCount.setString(L"");
 		itemCount.setFillColor(sf::Color::Black);
-		itemCount.setCharacterSize(10);
+		itemCount.setCharacterSize(13);
 	}
 }
 
