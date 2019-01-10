@@ -229,8 +229,10 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 			case CP_ChatText_header:
 			{
 				const CP_ChatText& p = *packet.read<CP_ChatText>();
+				
+				// Apply a chat filter
 				std::wstring str = std::wstring(p.message);
-				//printf("%ls\n", str.c_str());
+
 
 				// Relay the message to nearby players
 				for (auto& p : m_loadedPlayers)

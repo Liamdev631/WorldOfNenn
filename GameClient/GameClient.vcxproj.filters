@@ -14,6 +14,9 @@
     <Filter Include="Graphics\Menus">
       <UniqueIdentifier>{219507b3-89c7-44db-b109-d10073c41659}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\graphics3d">
+      <UniqueIdentifier>{45ba7aa4-c570-45b1-9a6a-499a699491f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C_Client.h" />
@@ -70,6 +73,12 @@
     <ClInclude Include="ExperienceTab.h">
       <Filter>Graphics\Menus</Filter>
     </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Graphics\graphics3d</Filter>
+    </ClInclude>
+    <ClInclude Include="GLHelper.h">
+      <Filter>Graphics\graphics3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C_Client.cpp" />
@@ -115,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="ExperienceTab.cpp">
       <Filter>Graphics\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Graphics\graphics3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

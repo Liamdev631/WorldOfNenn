@@ -18,7 +18,7 @@ WPacket& S_Entity_Player::getBuffer() const
 	return *m_buffer;
 }
 
-bool S_Entity_Player::pickUpItem(const DropableItem& item)
+bool S_Entity_Player::pickUpItem(DropableItem item)
 {
 	auto& region = getMovement().getWorldRegion();
 
@@ -26,7 +26,7 @@ bool S_Entity_Player::pickUpItem(const DropableItem& item)
 
 	// First, try to take the item from the world
 	for (auto iter = region.getItems().begin(); iter != region.getItems().end(); iter++)
-		if (iter->stack.type == item.stack.type && iter->pos == item.pos)
+		if (*iter == item)
 		{
 			// If the item was taken, find a suitable slot
 			ItemStack newItem = item.stack;
@@ -46,6 +46,7 @@ bool S_Entity_Player::pickUpItem(const DropableItem& item)
 			}
 			else
 			{
+				// Attempt to dump the items into existing stacks
 				for (int i = 0; i < 28; i++)
 				{
 					if (inventory.itemStacks[i].type == newItem.type)
@@ -61,12 +62,27 @@ bool S_Entity_Player::pickUpItem(const DropableItem& item)
 						}
 						else
 						{
+							// This stack can take the rest of the items
 							inventory.itemStacks[i].count += newItem.count;
+							newItem.count = 0;
 							inventory.dirty = true;
 							taken = true;
+							break;
 						}
 					}
 				}
+
+				// Place the remaining items in empty inventory slots
+				for (int i = 0; i < 28; i++)
+					if (inventory.itemStacks[i].count == 0)
+					{
+						u32 amountToInsert = std::min(maxStack, inventory.itemStacks[i].count);
+						inventory.itemStacks[i].type = item.stack.type;
+						inventory.itemStacks[i].count = amountToInsert;
+						item.stack.count -= amountToInsert;
+						if (item.stack.count == 0)
+							break;
+					}
 			}
 
 			if (taken)
@@ -121,4 +137,23 @@ void S_Entity_Player::onDeath()
 {
 	S_Entity::onDeath();
 	printInChatbox(L"Oh no! You have died!");
+
+	// Drop bones
+	auto& thisRegion = m_movement.getWorldRegion();
+	thisRegion.addGroundItem(DropableItem(ItemStack(ITEM_BONES, 1), m_movement.getPos()));
+
+	// Drop inventory
+	for (int i = 0; i < 28; i++)
+		if (inventory.itemStacks[i].count > 0)
+		{
+			auto& region = m_movement.getWorldRegion();
+			region.addGroundItem(DropableItem(inventory.itemStacks[i], m_movement.getPos()));
+			inventory.itemStacks[i].count = 0;
+		}
+	inventory.dirty = true;
+}
+
+void S_Entity_Player::onRespawn()
+{
+	m_movement.blinkTo(vec2s(50, 50));
 }

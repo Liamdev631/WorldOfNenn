@@ -1,5 +1,6 @@
 #include "Loader.h"
 #include "CSVReader.h"
+#include <cstdint>
 
 Loader::Loader()
 	: m_language(Language::English)
@@ -28,6 +29,8 @@ void Loader::loadItemsInfo()
 	{
 		m_itemNames[i] = reader[1];
 		m_itemMaxStack[i] = std::stoi(reader[2]);
+		if (m_itemMaxStack[i] == 0)
+			m_itemMaxStack[i] = 1000000;
 		m_itemDescription[i] = reader[3];
 		reader.readNextRow();
 	}

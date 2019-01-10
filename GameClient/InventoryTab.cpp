@@ -6,10 +6,10 @@
 
 InventoryTab::InventoryTab()
 {
+	auto itemCountFont = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
 	const auto tabSize = sf::Vector2f(32, 32);
 	for (int i = 0; i < 28; i++)
 	{
-
 		// Calculate the bounds of the item sprite
 		sf::Vector2f centerPos;
 		int x = i % 4, y = i / 4;
@@ -21,6 +21,14 @@ InventoryTab::InventoryTab()
 		itemImage.setPosition(topLeft);
 		itemImage.setSize(tabSize);
 		itemImage.setOutlineColor(sf::Color::White);
+
+		// Place the item count text
+		auto& itemCount = m_itemCountText[i];
+		itemCount.setFont(*itemCountFont);
+		itemCount.setPosition(topLeft);
+		itemCount.setString(L"");
+		itemCount.setFillColor(sf::Color::Black);
+		itemCount.setCharacterSize(10);
 	}
 }
 
@@ -119,7 +127,7 @@ void InventoryTab::openRCOMenuForSlot(const int &slotClicked)
 	target.uid = (uint8_t)slotClicked;
 	target._item.stack = clickedStack;
 	//sf::Vector2f position = mousePos - sf::Vector2f(4, 4); // draw position
-	sf::Vector2f position = clickedTab.getPosition() + clickedTab.getSize();
+	sf::Vector2f position = clickedTab.getPosition() + clickedTab.getSize() / 2.f; // Open around the center of the icon
 
 	// Build the list of options
 	std::vector<RCOption> options;
@@ -138,6 +146,8 @@ void InventoryTab::update(const GameTime& time, const sf::Vector2f& mousePos)
 		{
 			auto itemTexture = ResourceLoader::get().getItemSprite(inventory.itemStacks[i]).getTexture();
 			m_itemSlotImages[i].setTexture(itemTexture);
+			if (inventory.itemStacks[i].count > 1)
+				m_itemCountText[i].setString(inventory.itemStacks[i].getFormattedCountString());
 		}
 }
 
@@ -146,5 +156,9 @@ void InventoryTab::draw(sf::RenderTarget& target) const
 	auto& inventory = C_Client::get().getPlayerInventory();
 	for (int i = 0; i < 28; i++)
 		if (inventory.itemStacks[i].count > 0)
+		{
 			target.draw(m_itemSlotImages[i]);
+			if (inventory.itemStacks[i].count > 1)
+				target.draw(m_itemCountText[i]);
+		}
 }

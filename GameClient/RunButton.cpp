@@ -21,8 +21,8 @@ void RunButton::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 			if (m_sprite->getGlobalBounds().contains(mousePos))
 			{
 				setActive(!m_active); // Toggle
-				auto p = CP_SetRun(m_active);
-				C_Client::get().getPacket().write(p);
+				auto hidden = CP_SetRun(m_active);
+				C_Client::get().getPacket().write(hidden);
 			}
 }
 

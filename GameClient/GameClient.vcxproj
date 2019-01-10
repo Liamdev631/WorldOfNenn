@@ -79,7 +79,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../tmxlite\include;D:\Code\glm-stable\include;..\SFML-2.5.0\include;..\enetpp-master\include;..\enet-1.3.13\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../tmxlite\include;..\dep\glm;..\SFML-2.5.0\include;..\enetpp-master\include;..\enet-1.3.13\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PreprocessorDefinitions>SDL_MAIN_HANDLED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -108,13 +108,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\irrlicht-1.8.4\include;..\tmxlite\include;..\enetpp-master\include;..\enet-1.3.13\include;..\SFML-2.5.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dep\glm;..\tmxlite\include;..\enetpp-master\include;..\enet-1.3.13\include;..\SFML-2.5.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>freetype.lib;sfml-graphics.lib;sfml-main.lib;sfml-network.lib;sfml-system.lib;sfml-window.lib;enet.lib;Ws2_32.lib;winmm.lib;opengl32.lib;libtmxlite-s.lib;Irrlicht.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\irrlicht-1.8.4\lib\Win32-visualstudio;..\tmxlite\bin\ReleaseStatic;..\SFML-2.5.0\lib;..\enet-1.3.13;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freetype.lib;sfml-graphics.lib;sfml-main.lib;sfml-network.lib;sfml-system.lib;sfml-window.lib;enet.lib;Ws2_32.lib;winmm.lib;opengl32.lib;libtmxlite-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\tmxlite\bin\ReleaseStatic;..\SFML-2.5.0\lib;..\enet-1.3.13;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -144,6 +144,7 @@
     <ClInclude Include="C_WorldScene.h" />
     <ClInclude Include="ExperienceTab.h" />
     <ClInclude Include="FloatingText.h" />
+    <ClInclude Include="GLHelper.h" />
     <ClInclude Include="Healthbar.h" />
     <ClInclude Include="Interface.h" />
     <ClInclude Include="InventoryTab.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="SFMLOrthogonalLayer.hpp" />
     <ClInclude Include="SideMenu.h" />
     <ClInclude Include="Target.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="UIComponent.h" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +177,7 @@
     <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="RunButton.cpp" />
     <ClCompile Include="SideMenu.cpp" />
+    <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Fractal.png" />

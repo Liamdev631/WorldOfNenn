@@ -1,5 +1,6 @@
 #include "S_Entity_NPC.h"
 #include "S_GlobalServer.h"
+#include "LootTable.h"
 
 S_Entity_NPC::S_Entity_NPC(const u16 uid, const EntityType entityType, const Region region)
 	: S_Entity(uid, entityType, region), m_stepTimer(4)
@@ -42,4 +43,10 @@ void S_Entity_NPC::onRespawn()
 void S_Entity_NPC::onDeath()
 {
 	S_Entity::onDeath();
+
+	// Drop from the loot table
+	auto& region = m_movement.getWorldRegion();
+	auto loot = LootGenerator::generateLoot(EntityType::ET_BIGRAT);
+	for (auto& entry : loot)
+		region.addGroundItem(DropableItem(entry, m_movement.getPos()));
 }

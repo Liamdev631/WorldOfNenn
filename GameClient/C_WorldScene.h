@@ -86,6 +86,8 @@ public:
 	void drawGui();
 	void drawGameScene();
 
+	void draw3d();
+
 	//void setRightClickOptions(const Target& optionsTarget, const sf::Vector2f& optionsPos, const std::vector<RightClickOption> options);
 	void setRightClickOptions(const sf::Vector2f& position, const std::vector<RCOption>& options);
 	void processRightClickOptionSelection(const RCOption& selection);

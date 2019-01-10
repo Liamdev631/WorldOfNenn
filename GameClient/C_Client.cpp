@@ -36,6 +36,9 @@ void C_Client::start()
 
 bool C_Client::update()
 {
+	if (C_WorldManager::get().getThisEntity() != nullptr)
+		printf("%u\n", C_WorldManager::get().getThisEntity()->entityType);
+
 	if (!m_client.get()->is_connecting_or_connected())
 		return true;
 
@@ -142,6 +145,7 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 		}
 		m_connectionState = ConnectionState::Connected;
 		C_WorldManager::get().setThisUID(p.uid);
+		printf("setting uid to %u\n", p.uid);
 		m_timer.totalTime = p.timestamp;
 		m_playerInventory.deserialize(packet);
 		break;

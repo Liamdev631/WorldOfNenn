@@ -37,12 +37,10 @@ S_MovementComponent& S_Entity::getMovement()
 
 void S_Entity::onRespawn()
 {
-	m_movement.blinkTo(vec2s(10, 10));
+	
 }
 
 void S_Entity::onDeath()
 {
-	// Drop bones
-	auto& thisRegion = m_movement.getWorldRegion();
-	thisRegion.addGroundItem(DropableItem(ItemStack(ITEM_BONES, 1), m_movement.getPos()));
+
 }

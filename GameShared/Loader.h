@@ -3,7 +3,7 @@
 #include "Global.h"
 #include "Items.h"
 
-constexpr size_t NumberOfItems = 7;
+constexpr size_t NumberOfItems = 4;
 constexpr size_t NumberOfEntityTypes = 4;
 
 // Globalization

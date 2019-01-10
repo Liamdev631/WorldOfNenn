@@ -22,7 +22,7 @@ public:
 	WPacket& getBuffer() const;
 
 	// Attemps to remove the given DropableItem from the world and add it to the player's inventory
-	bool pickUpItem(const DropableItem& item);
+	bool pickUpItem(DropableItem item);
 
 	// Attempts to remove an item from the players inventory, notifying the player if it does
 	void dropItemFromInventory(const ItemStack& stack, const uint8_t& slot);
@@ -34,6 +34,8 @@ public:
 	void addExperience(Skill skill, exp_val amount);
 
 	// Overrides
+	void onRespawn() override;
+
 	void onDeath() override;
 };
 

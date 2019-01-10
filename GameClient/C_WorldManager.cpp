@@ -17,10 +17,14 @@ void C_WorldManager::clearEntities()
 		delete (*iter);
 }
 
-void C_WorldManager::removeEntity(const u16 uid)
+void C_WorldManager::removeEntity(const u16 uidToRemove)
 {
+	// Don't remove this player
+	if (uidToRemove == uid)
+		return;
+
 	for (auto iter = m_activeEntities.begin(); iter != m_activeEntities.end(); iter++)
-		if ((*iter)->uid == uid)
+		if ((*iter)->uid == uidToRemove)
 		{
 			m_activeEntities.erase(iter);
 			return;

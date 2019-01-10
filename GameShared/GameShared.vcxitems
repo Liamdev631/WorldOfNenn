@@ -22,6 +22,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Items.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Loader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LootTable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LootTableValues.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MoveKey.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Packets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RightClickOption.h" />
@@ -38,7 +40,9 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)ItemContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Items.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Loader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LootTable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Skills.cpp" />
   </ItemGroup>
 </Project>

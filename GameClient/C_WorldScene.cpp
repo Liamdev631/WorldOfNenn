@@ -143,13 +143,15 @@ void SceneManager::update(const GameTime& gameTime)
 void SceneManager::draw()
 {
 	/////// World Space ///////
-	//m_window.pushGLStates();
 	//m_window.resetGLStates();
 	drawGameScene();
-	//m_window.popGLStates();
+	//draw3d();
+	//m_window.pushGLStates();
+	//m_window.resetGLStates();
 
 	/////// Screen Space ///////
 	drawGui();
+	//m_window.popGLStates();
 }
 
 void SceneManager::drawGameScene()
@@ -157,8 +159,6 @@ void SceneManager::drawGameScene()
 	//m_gameScene.clear(sf::Color::Magenta);
 	m_gameScene.setActive(true);
 	m_gameScene.clear(sf::Color::Red);
-
-
 
 
 
@@ -191,12 +191,31 @@ void SceneManager::drawGameScene()
 	m_gameScene.draw(m_crosshair);
 	
 	// Done drawing
-	m_gameScene.setActive(false);
 	m_gameScene.display();
+	m_gameScene.setActive(false);
+}
+
+void SceneManager::draw3d()
+{
+	m_gameScene.setActive(true);
+	m_gameScene.clear(sf::Color::Red);
+
+	glBegin(GL_TRIANGLES);
+	glColor3f(1.f, 0.f, 0.f);
+	glVertex3f(-0.5f, -0.5f, 0.f);
+	glColor3f(0.f, 1.f, 0.f);
+	glVertex3f(0.5f, -0.5f, 0.f);
+	glColor3f(0.f, 0.f, 1.f);
+	glVertex3f(-0.5f, 0.5f, 1.f);
+	glEnd();
+
+	m_gameScene.display();
+	m_gameScene.setActive(false);
 }
 
 void SceneManager::drawGui()
 {
+	m_window.setActive(true);
 	m_window.clear(sf::Color::Black);
 
 	// Draw the game scene in the top-left corner
@@ -233,6 +252,11 @@ void SceneManager::drawGui()
 		text.setFillColor(sf::Color::Black);
 		m_window.draw(text);
 	}
+
+
+	// Draw the additional UI components
+	for (auto& component : m_uiComponents)
+		component->draw(m_window);
 
 	// Draw the right-click menu
 	if (m_optionsList.size() > 0)
@@ -279,10 +303,6 @@ void SceneManager::drawGui()
 			m_window.draw(texts[i]);
 		}
 	}
-
-	// Draw the additional UI components
-	for (auto& component : m_uiComponents)
-		component->draw(m_window);
 
 	// End draw
 	m_window.display();
