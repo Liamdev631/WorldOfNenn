@@ -26,7 +26,7 @@ SideMenu::SideMenu()
 
 			if (m_menuTabs[index])
 			{
-				auto texture = &ResourceLoader::get().getSprite("assets/graphics/gui/menu_" + std::to_string(index) + ".png")->texture;
+				auto texture = ResourceLoader::get().getTexture("assets/graphics/gui/menu_" + std::to_string(index) + ".png");
 				tab.setTexture(texture);
 			}
 			else

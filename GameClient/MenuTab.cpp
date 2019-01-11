@@ -11,7 +11,7 @@ MenuTab::~MenuTab()
 
 }
 
-const sf::FloatRect& MenuTab::getBounds()
+const sf::FloatRect& MenuTab::getGlobalBounds()
 {
 	return m_menuBounds;
 }

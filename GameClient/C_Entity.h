@@ -26,7 +26,6 @@ public:
 	const u16 uid;
 	vec2s position;
 	u8 rotation = 0;
-	EntityType entityType;
 	bool expired;
 	float deathAnimationTimer;
 	CombatState combatState;
@@ -36,19 +35,17 @@ public:
 	sf::Vector2f drawPos;
 	float drawRot;
 
-private:
-	std::queue<MoveKey> moveStateHistory;
 
+private:
+	EntityType entityType;
+	std::queue<MoveKey> moveStateHistory;
 	float m_moveTimer;
 	bool m_translating;
-
-	Sprite* m_sprite_body;
-	Sprite* m_sprite_bodyPointer;
-	Sprite* m_sprite_hitmarker;
+	sf::RectangleShape m_bodyShape;
+	//Sprite* m_sprite_hitmarker;
 	sf::Font* m_font_hitsplat;
 	Healthbar m_healthbar;
 	FloatingText m_floatingText;
-
 	float m_counter = 0;
 
 public:
@@ -63,6 +60,11 @@ public:
 
 	void addMoveKey(const MoveKey& key);
 	void setFloatingText(const std::wstring& text);
+
+	const EntityType getEntityType() const;
+	void setEntityType(EntityType type);
+
+	const sf::FloatRect getGlobalBounds() const;
 
 private:
 	

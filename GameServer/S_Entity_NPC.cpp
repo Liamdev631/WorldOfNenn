@@ -46,7 +46,7 @@ void S_Entity_NPC::onDeath()
 
 	// Drop from the loot table
 	auto& region = m_movement.getWorldRegion();
-	auto loot = LootGenerator::generateLoot(EntityType::ET_BIGRAT);
+	auto loot = LootGenerator::generateLoot(entityType);
 	for (auto& entry : loot)
 		region.addGroundItem(DropableItem(entry, m_movement.getPos()));
 }

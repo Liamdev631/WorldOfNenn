@@ -1,7 +1,7 @@
 // Includes & Preprocessor
 #pragma once
 #include "Global.h"
-#include <enetpp\server.h>
+#include <enetpp/server.h>
 #include <string>
 #include <vector>
 #include "RPacket.h"

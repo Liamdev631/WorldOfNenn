@@ -29,7 +29,10 @@ SceneManager::SceneManager()
 	m_worldMap.loadMap("assets/maps/overworld.tmx");
 
 	// Load the interface
-	m_interface = &ResourceLoader::get().getSprite("assets/graphics/gui/interface.png")->sprite;
+	auto interfaceTex = ResourceLoader::get().getTexture("assets/graphics/gui/interface.png");
+	sf::Vector2f interfaceSize((float)interfaceTex->getSize().x, (float)interfaceTex->getSize().y);
+	m_interface.setSize(interfaceSize);
+	m_interface.setTexture(interfaceTex);
 
 	// Load fonts
 	m_font1 = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
@@ -92,6 +95,7 @@ void SceneManager::update(const GameTime& gameTime)
 	// Calculate which cell is pointed to by the mouse
 	float destx = (float)m_mousePos.x + m_worldView.getCenter().x - m_worldView.getSize().x / 2;
 	float desty = (float)m_mousePos.y + m_worldView.getCenter().y - m_worldView.getSize().y / 2;
+	auto mouseWorldPos = sf::Vector2f(destx, desty);
 	if (destx > 0 && desty > 0)
 	{
 		m_mouseTargetCell.x = (u16)(destx / 16.f);
@@ -105,11 +109,16 @@ void SceneManager::update(const GameTime& gameTime)
 
 	m_entitiesUnderMouse.clear();
 	m_itemsUnderMouse.clear();
+	auto mouseCellBounds = sf::FloatRect(
+		(float)m_mouseTargetCell.x * 16.f,
+		(float)m_mouseTargetCell.y * 16.f, 16, 16);
 	if (WorldSceneBounds.contains(m_mousePos))
 	{
 		// Determine which entities are under the mouse
 		for (C_Entity* e : C_WorldManager::get().getActiveEntities())
-			if (e->position == m_mouseTargetCell)
+			//if (e->position == m_mouseTargetCell)
+			//if (e->getGlobalBounds().intersects(mouseCellBounds))
+			if (e->getGlobalBounds().contains(mouseWorldPos))
 				m_entitiesUnderMouse.push_back(e);
 
 		// Determine which items are under the mouse
@@ -158,11 +167,8 @@ void SceneManager::drawGameScene()
 {
 	//m_gameScene.clear(sf::Color::Magenta);
 	m_gameScene.setActive(true);
-	m_gameScene.clear(sf::Color::Red);
+	m_gameScene.clear(sf::Color::Black);
 
-
-
-	
 	// Center the camera on the player
 	auto thisPlayer = C_WorldManager::get().getThisEntity();
 	if (thisPlayer && !thisPlayer->expired)
@@ -178,9 +184,12 @@ void SceneManager::drawGameScene()
 	// Draw all items
 	for (auto& item : C_ItemManager::get().getItemsList())
 	{
-		auto& sprite = ResourceLoader::get().getItemSprite(item.stack);
-		sprite.setPosition(sf::Vector2f(item.pos.x * 16.f + 2, item.pos.y * 16.f + 2));
-		m_gameScene.draw(sprite);
+		auto tex = ResourceLoader::get().getItemTexture(item.stack);
+		sf::RectangleShape itemRec;
+		itemRec.setSize(sf::Vector2f(16.f, 16.f));
+		itemRec.setTexture(tex);
+		itemRec.setPosition(sf::Vector2f(item.pos.x * 16.f, item.pos.y * 16.f));
+		m_gameScene.draw(itemRec);
 	}
 
 	// Draw all entities
@@ -224,7 +233,7 @@ void SceneManager::drawGui()
 	m_window.draw(gameSceneSprite);
 
 	// Draw the interface skin
-	m_window.draw(*m_interface);
+	m_window.draw(m_interface);
 
 	// Draw the chat box
 	Chatbox::get().draw(m_window);
@@ -236,7 +245,7 @@ void SceneManager::drawGui()
 		switch (m_mouseTarget.type)
 		{
 		case TT_ENTITY:
-			str = Loader::get().getEntityName(m_mouseTarget._entity->entityType);
+			str = Loader::get().getEntityName(m_mouseTarget._entity->getEntityType());
 			break;
 
 		case TT_ITEM:
@@ -269,7 +278,7 @@ void SceneManager::drawGui()
 			std::wstring targetName = L"<target-name>";
 			switch (curOption.target.type)
 			{
-			case TT_ENTITY: targetName = Loader::get().getEntityName(curOption.target._entity->entityType); break;
+			case TT_ENTITY: targetName = Loader::get().getEntityName(curOption.target._entity->getEntityType()); break;
 			case TT_ITEM:
 			case TT_INV_ITEM: targetName = Loader::get().getItemName(curOption.target._item.stack.type); break;
 			}
@@ -412,7 +421,7 @@ void SceneManager::processRightClickOptionSelection(const RCOption& selection)
 		switch (selection.target.type)
 		{
 		case TT_ENTITY:
-			Chatbox::get().addText(Loader::get().getEntityDescription(selection.target._entity->entityType));
+			Chatbox::get().addText(Loader::get().getEntityDescription(selection.target._entity->getEntityType()));
 			return;
 
 		case TT_ITEM:

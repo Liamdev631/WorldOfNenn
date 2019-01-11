@@ -10,7 +10,7 @@ public:
 	MenuTab();
 	~MenuTab();
 
-	const sf::FloatRect& getBounds();
+	const sf::FloatRect& getGlobalBounds();
 
 	void onEvent(const sf::Event& ev, const sf::Vector2f& mousePos) override = 0;
 	void update(const GameTime& time, const sf::Vector2f& mousePos) override = 0;

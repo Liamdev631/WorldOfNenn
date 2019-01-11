@@ -144,7 +144,7 @@ void InventoryTab::update(const GameTime& time, const sf::Vector2f& mousePos)
 	for (int i = 0; i < 28; i++)
 		if (inventory.itemStacks[i].count > 0)
 		{
-			auto itemTexture = ResourceLoader::get().getItemSprite(inventory.itemStacks[i]).getTexture();
+			auto itemTexture = ResourceLoader::get().getItemTexture(inventory.itemStacks[i]);
 			m_itemSlotImages[i].setTexture(itemTexture);
 			if (inventory.itemStacks[i].count > 1)
 				m_itemCountText[i].setString(inventory.itemStacks[i].getFormattedCountString());

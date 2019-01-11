@@ -19,13 +19,12 @@ class S_Entity
 public:
 	u16 uid;
 
-private:
-	EntityType m_entityType;
-
 protected:
 	// Components
 	S_CombatComponent m_combat;
 	S_MovementComponent m_movement;
+	
+	EntityType entityType;
 
 public:
 	S_Entity(const u16 uid, const EntityType entityType, const Region region);

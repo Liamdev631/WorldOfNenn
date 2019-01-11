@@ -10,27 +10,25 @@
 C_Entity::C_Entity(const u16 uid)
 	: uid(uid), entityType(ET_COUNT), m_moveTimer(0), m_translating(false), expired(false), rotation(0)
 {
+	SceneManager::get().components.push_back(this);
+
 	position = vec2s(0, 0);
-	drawPos = sf::Vector2f(position.x, position.y);
+	drawPos = sf::Vector2f(0, 0);
 	deathAnimationTimer = 2.0f;
 	m_healthbar.setSize(14, 4);
 
 	loadAssets();
 
-	SceneManager::get().components.push_back(this);
 }
 
 void C_Entity::loadAssets()
 {
-	m_sprite_body = ResourceLoader::get().getSprite("assets/graphics/entities/entity_player.png");
-	m_sprite_body->sprite.setOrigin(10, 10);
-	m_sprite_body->sprite.setScale(16.f / 20.f, 16.f / 20.f);
-	m_sprite_bodyPointer = ResourceLoader::get().getSprite("assets/graphics/entities/entity_pointer.png");
-	m_sprite_bodyPointer->sprite.setOrigin(0, 1);
-	m_sprite_body->sprite.setScale(16.f / 20.f, 16.f / 20.f);
-	m_sprite_hitmarker = ResourceLoader::get().getSprite("assets/graphics/entities/hitmarker.png");
-	m_sprite_hitmarker->sprite.setOrigin(8, 8);
+	//m_sprite_hitmarker = ResourceLoader::get().getTexture("assets/graphics/entities/hitmarker.png");
+	//m_sprite_hitmarker->sprite.setOrigin(8, 8);
+
 	m_font_hitsplat = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
+
+	m_bodyShape.setSize(sf::Vector2f(16.f, 16.f));
 }
 
 C_Entity::~C_Entity()
@@ -98,6 +96,10 @@ void C_Entity::update(const GameTime& gameTime)
 			drawRot = (360 * moveKey.rot) / 8.f;
 		}
 	}
+	auto snappedDrawPos = drawPos * 16.f;
+	snappedDrawPos.x = (float)((int)snappedDrawPos.x);
+	snappedDrawPos.y = (float)((int)snappedDrawPos.y);
+	m_bodyShape.setPosition(snappedDrawPos);
 
 	// Update healthbar
 	if (combatState.currentHealth < combatState.maxHealth)
@@ -115,7 +117,6 @@ void C_Entity::update(const GameTime& gameTime)
 	// Update the floating text
 	m_floatingText.update(gameTime, sf::Vector2f(0, 0));
 	m_floatingText.setCenter(drawPos * 16.f + sf::Vector2f(240, 150));
-	//m_floatingText.setText(L"NIGGERZ!");
 }
 
 void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -123,15 +124,7 @@ void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	if (expired)
 		return;
 
-	// Body
-	m_sprite_body->sprite.setPosition(drawPos.x * 16.f + 8.0f, drawPos.y * 16.f + 8.0f);
-	m_sprite_body->sprite.setColor(getColor());
-	target.draw(*m_sprite_body);
-
-	// Pointer
-	m_sprite_bodyPointer->sprite.setPosition(drawPos.x * 16.f + 8.0f, drawPos.y * 16.f + 8.0f);
-	m_sprite_bodyPointer->sprite.setRotation(drawRot);
-	target.draw(*m_sprite_bodyPointer);
+	target.draw(m_bodyShape);
 
 	// Healthbar
 	if (combatState.currentHealth < combatState.maxHealth)
@@ -143,8 +136,8 @@ void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	int count = 0;
 	for (auto hit = hitMarkers.begin(); hit != hitMarkers.end(); hit++)
 	{
-		sf::CircleShape circle = sf::CircleShape(8.0f, 8);
-		circle.setPosition((float)drawPos.x * 16.f, (drawPos.y * 16.f - 24.f) + (hit->timer * 10) - (count * 16));
+		sf::CircleShape circle = sf::CircleShape(6.0f, 8);
+		circle.setPosition((float)drawPos.x * 16.f, (drawPos.y * 16.f - 32.f) + (hit->timer * 6.f) - (count * 14));
 		if (hit->damage == 0)
 			circle.setFillColor(sf::Color::Blue);
 		else
@@ -187,4 +180,23 @@ void C_Entity::addMoveKey(const MoveKey& key)
 void C_Entity::setFloatingText(const std::wstring& text)
 {
 	m_floatingText.setText(text);
+}
+
+const EntityType C_Entity::getEntityType() const
+{
+	return entityType;
+}
+
+void C_Entity::setEntityType(EntityType type)
+{
+	entityType = type;
+
+	// Set the entities sprite based on EntityType
+	m_bodyShape.setTexture(ResourceLoader::get().getEntityTexture(entityType));
+}
+
+const sf::FloatRect C_Entity::getGlobalBounds() const
+{
+	auto bounds = m_bodyShape.getGlobalBounds();
+	return bounds;
 }

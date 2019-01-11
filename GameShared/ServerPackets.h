@@ -25,13 +25,6 @@ constexpr packet_header SP_EntityStatus_header = 1;
 struct SP_EntityStatus 
 {
 	const packet_header header = SP_EntityStatus_header;
-	u8 numEntities;
-};
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-struct SP_EntityStatus_Elem
-{
 	u16 uid;
 	EntityType entityType;
 	MoveKey move;
@@ -93,16 +86,6 @@ public:
 
 	SP_ItemDropped(const DropableItem& item)
 		: item(item) { }
-};
-#pragma pack(pop)
-
-#pragma pack(push, 1)
-constexpr packet_header SP_EntityMoved_header = 7;
-struct SP_EntityMoved
-{
-	const packet_header header = SP_EntityMoved_header;
-	u16 uid;
-	MoveKey move;
 };
 #pragma pack(pop)
 

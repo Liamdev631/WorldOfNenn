@@ -4,8 +4,10 @@
 RunButton::RunButton()
 	: m_active(false)
 {
-	m_sprite = &ResourceLoader::get().getSprite("assets/graphics/gui/runningmode.png")->sprite;
-	m_sprite->setPosition(sf::Vector2f(523, 4));
+	m_tex = ResourceLoader::get().getTexture("assets/graphics/gui/runningmode.png");
+	m_shape.setTexture(m_tex);
+	m_shape.setSize(sf::Vector2f((float)m_tex->getSize().x / 2.f, (float)m_tex->getSize().y));
+	m_shape.setPosition(sf::Vector2f(523, 4));
 	setActive(m_active); // Sets the proper texture
 }
 
@@ -18,9 +20,10 @@ void RunButton::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 {
 	if (ev.type == sf::Event::MouseButtonPressed)
 		if (ev.mouseButton.button == sf::Mouse::Button::Left)
-			if (m_sprite->getGlobalBounds().contains(mousePos))
+			if (m_shape.getGlobalBounds().contains(mousePos))
 			{
-				setActive(!m_active); // Toggle
+				// Toggle the run state
+				setActive(!m_active);
 				auto hidden = CP_SetRun(m_active);
 				C_Client::get().getPacket().write(hidden);
 			}
@@ -35,7 +38,7 @@ void RunButton::update(const GameTime& time, const sf::Vector2f& mousePos)
 // Called from being added to C_WorldScene::m_uiComponents
 void RunButton::draw(sf::RenderTarget& target) const
 {
-	target.draw(*m_sprite);
+	target.draw(m_shape);
 }
 
 void RunButton::setActive(const bool& active)
@@ -43,8 +46,7 @@ void RunButton::setActive(const bool& active)
 	m_active = active;
 
 	// Set the texture rectangle
-	const auto& texSize = m_sprite->getTexture()->getSize();
-	int iconWidth = texSize.x / 2;
-	auto rect = sf::IntRect(m_active ? iconWidth : 0, 0, iconWidth, texSize.y);
-	m_sprite->setTextureRect(rect);
+	const auto& shapeSize = m_shape.getSize();
+	auto rect = sf::IntRect(m_active ? (int)shapeSize.x : 0, 0, (int)shapeSize.x, (int)shapeSize.y);
+	m_shape.setTextureRect(rect);
 }

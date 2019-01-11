@@ -126,7 +126,7 @@ void S_Server::transmitNewStates()
 	for (auto conn = m_loadedPlayers.begin(); conn != m_loadedPlayers.end(); conn++)
 	{
 		auto& player = *(*conn);
-		WPacket& packet = (*conn)->getBuffer();
+		WPacket& packet = player.getBuffer();
 		S_Region& region = player.getMovement().getWorldRegion();
 
 		// Send updated inventories

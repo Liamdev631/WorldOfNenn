@@ -33,7 +33,7 @@ private:
 	C_WorldMap m_worldMap;
 
 	// GUI
-	sf::Sprite* m_interface;
+	sf::RectangleShape m_interface;
 	std::vector<UIComponent*> m_uiComponents;
 
 	// Mouse 

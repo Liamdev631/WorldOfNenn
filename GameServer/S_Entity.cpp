@@ -4,7 +4,7 @@
 
 /// Constructor
 S_Entity::S_Entity(const u16 uid, const EntityType entityType, const Region region)
-	: uid(uid), m_entityType(entityType), m_combat(*this), m_movement(*this)
+	: uid(uid), entityType(entityType), m_combat(*this), m_movement(*this)
 {
 	m_movement.region = region;
 }
@@ -22,7 +22,7 @@ void S_Entity::update()
 
 const EntityType& S_Entity::getEntityType() const
 {
-	return m_entityType;
+	return entityType;
 }
 
 S_CombatComponent& S_Entity::getCombat()

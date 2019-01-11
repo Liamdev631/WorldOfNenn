@@ -104,20 +104,34 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 	auto& thisRegion = getWorldRegion();
 
 	// If this entity is a player, we will need to tell it everything about the local game state
+	//if (owner.getEntityType() == ET_PLAYER || owner.getEntityType() == ET_ADMIN)
+	//{
+	//	auto& packetBuffer = reinterpret_cast<S_Entity_Player*>(&owner)->getBuffer();
+	//	SP_EntityStatus& addEntitiesPacket = *packetBuffer.writePacket<SP_EntityStatus>();
+	//	assert(thisRegion.getEntities().size() <= 0xFF); // More than 255 entities in the players surroundings. Rediculous!
+	//	addEntitiesPacket.numEntities = (u8)thisRegion.getEntities().size();
+	//	for (auto iter = thisRegion.getEntities().begin();
+	//		iter != thisRegion.getEntities().end(); iter++)
+	//	{
+	//		auto otherEntity = iter->second;
+	//		SP_EntityStatus_Elem& addEntitiesPacketElem = *packetBuffer.writePacket<SP_EntityStatus_Elem>();
+	//		addEntitiesPacketElem.uid = otherEntity->uid;
+	//		addEntitiesPacketElem.entityType = otherEntity->getEntityType();
+	//		addEntitiesPacketElem.move = otherEntity->getMovement().moveKey;
+	//	}
+	//}
+
 	if (owner.getEntityType() == ET_PLAYER || owner.getEntityType() == ET_ADMIN)
 	{
 		auto& packetBuffer = reinterpret_cast<S_Entity_Player*>(&owner)->getBuffer();
-		SP_EntityStatus& addEntitiesPacket = *packetBuffer.writePacket<SP_EntityStatus>();
-		assert(thisRegion.getEntities().size() <= 0xFF); // More than 255 entities in the players surroundings. Rediculous!
-		addEntitiesPacket.numEntities = (u8)thisRegion.getEntities().size();
 		for (auto iter = thisRegion.getEntities().begin();
 			iter != thisRegion.getEntities().end(); iter++)
 		{
 			auto otherEntity = iter->second;
-			SP_EntityStatus_Elem& addEntitiesPacketElem = *packetBuffer.writePacket<SP_EntityStatus_Elem>();
-			addEntitiesPacketElem.uid = otherEntity->uid;
-			addEntitiesPacketElem.entityType = otherEntity->getEntityType();
-			addEntitiesPacketElem.move = otherEntity->getMovement().moveKey;
+			SP_EntityStatus& p = *packetBuffer.writePacket<SP_EntityStatus>();
+			p.uid = otherEntity->uid;
+			p.entityType = otherEntity->getEntityType();
+			p.move = otherEntity->getMovement().moveKey;
 		}
 	}
 
@@ -128,13 +142,10 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 			continue;
 		auto& buffer = iter->second->getBuffer();
 
-		SP_EntityStatus& addEntitiesPacket = *buffer.writePacket<SP_EntityStatus>();
-		addEntitiesPacket.numEntities = 1;
-
-		SP_EntityStatus_Elem& addEntitiesPacketElem = *buffer.writePacket<SP_EntityStatus_Elem>();
-		addEntitiesPacketElem.uid = owner.uid;
-		addEntitiesPacketElem.entityType = owner.getEntityType();
-		addEntitiesPacketElem.move = moveKey;
+		auto& p = *buffer.writePacket<SP_EntityStatus>();
+		p.uid = owner.uid;
+		p.entityType = owner.getEntityType();
+		p.move = moveKey;
 	}
 }
 
@@ -217,10 +228,12 @@ void S_MovementComponent::stepTowards(const vec2s& target)
 	}
 
 	// Transmit the new m_moveKey.pos
-	auto nearbyPlayers = getWorldRegion().getConnections();
-	SP_EntityMoved p = SP_EntityMoved();
+	auto p = SP_EntityStatus();
 	p.uid = owner.uid;
 	p.move = moveKey;
+	p.entityType = owner.getEntityType();
+
+	auto nearbyPlayers = getWorldRegion().getConnections();
 	for (auto iter = nearbyPlayers.begin(); iter != nearbyPlayers.end(); iter++)
 	{
 		auto& packet = iter->second->getBuffer();

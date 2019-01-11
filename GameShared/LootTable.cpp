@@ -23,13 +23,54 @@ namespace hidden
 
 	void buildLootTables()
 	{
-		// 2 - Rat
-		addLootTable(EntityType::ET_RAT, &Table_SingleBone);
+		/*
 
-		// 3 - Big Rat
-		addLootTable(EntityType::ET_BIGRAT, &Table_SingleBone);
-		addAlwaysDrop(EntityType::ET_BIGRAT, LootEntry(ItemType::ITEM_RAW_RAT_MEAT));
-		addAlwaysDrop(EntityType::ET_BIGRAT, LootEntry(ItemType::ITEM_COINS, 3, 5));
+		How to build loot tables!
+
+		If you want to add an item that always drops, use addAlwaysDrop().
+
+		If you want varying drops, add a drop table. Drop tables have a list of items and their
+		probabilities of being dropped. Only one item from the drop table is selected. Make sure
+		add the drops with a higher drop rate first. The arguments for LootEntry are:
+
+			LootEntry(item type, drop rate, quantity, range)
+
+		The quantity of loot dropped is random from quantity to quantity + range.
+		If you want to drop between 10 and 15 gold you can use:
+
+			LootEntry(ItemType::IT_COINS, DR_QUARTER, 10, 5)
+
+		You can use these values for drop rates or pick your own by hand
+		#define DR_ALWAYS 8192
+		#define DR_HALF 4096
+		#define DR_QUARTER 2048
+		#define DR_EIGTH 1024
+		#define DR_COMMON (DR_ALWAYS / 16)
+		#define DR_UNCOMMON (DR_ALWAYS / 32)
+		#define DR_RARE (DR_ALWAYS / 128)
+		#define DR_SUPER_RARE (DR_ALWAYS / 256)
+		#define DR_MEGA_RARE (DR_ALWAYS / 2048)
+		#define DR_MIN 1
+
+		For example, of you want a rat to have a 50% chance to drop bones and a 25% chance to drop meat, the code
+		would look like this...
+		addNewLootTable(EntityType::ET_RAT, new LootTable({
+			LootEntry(ItemType::ITEM_BONES, DR_HALF, 1, 0),
+			LootEntry(ItemType::ITEM_RAW_RAT_MEAT, DR_QUARTER, 1, 0),
+		));
+
+		There also premade loot tables and loot entries in LootTableValues.h that you can use and add to.
+
+		*/
+
+		// 2 - Rat
+		addAlwaysDrop(EntityType::ET_RAT, Entry_SingleBone); // This is an example of a premade loot entry
+		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_RAW_RAT_MEAT));
+		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_COINS, 3, 5));
+
+		// 3 - Pig
+		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_BONES));
+		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_COINS, 5, 10));
 	}
 
 	LootTableList emptyList = LootTableList();

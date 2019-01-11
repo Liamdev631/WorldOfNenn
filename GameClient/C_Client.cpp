@@ -10,12 +10,11 @@ C_Client::C_Client()
 {
 	m_connectionState = ConnectionState::Disconnected;
 	m_client = make_unique<enetpp::client>();
-	//m_gui = new C_WindowComponent();
 	m_packetBuffer = new WPacket(512);
 	m_timer.totalTime = 0;
 	m_timer.deltaTime = 0;
 
-	// Load all the game info preemptively
+	// Load all the game data preemptively
 	Loader::get();
 }
 
@@ -36,9 +35,6 @@ void C_Client::start()
 
 bool C_Client::update()
 {
-	if (C_WorldManager::get().getThisEntity() != nullptr)
-		printf("%u\n", C_WorldManager::get().getThisEntity()->entityType);
-
 	if (!m_client.get()->is_connecting_or_connected())
 		return true;
 
@@ -155,22 +151,9 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 	{
 		// Entity Status
 		const SP_EntityStatus& p = *packet.read<SP_EntityStatus>();
-		if (LOG_PACKET_HEADERS) {
-			printf("Processing P_EntityStatus. entities:%u\n", p.numEntities);
-			printBytes(p);
-		}
-		assert(p.numEntities >= 1);
-		for (int i = 0; i < p.numEntities; i++)
-		{
-			const SP_EntityStatus_Elem& p2 = *packet.read<SP_EntityStatus_Elem>();
-			C_Entity* entity = C_WorldManager::get().getEntity(p2.uid);
-			entity->entityType = p2.entityType;
-			entity->addMoveKey(p2.move);
-			if (LOG_PACKET_HEADERS) {
-				printf("Processing P_EntityStatus_Elem elem:%u uid:%#06x type:%#04x pos:(%#06x,%#06x)\n", i, p2.uid, p2.entityType, p2.move.pos.x, p2.move.pos.y);
-				printBytes(p);
-			}
-		}
+		C_Entity* entity = C_WorldManager::get().getEntity(p.uid);
+		entity->setEntityType(p.entityType);
+		entity->addMoveKey(p.move);
 		break;
 	}
 
@@ -234,22 +217,6 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 			printBytes(p);
 		}
 		C_ItemManager::get().dropItemFromInventory(p.item);
-		break;
-	}
-
-	case SP_EntityMoved_header:
-	{
-		const SP_EntityMoved& p = *packet.read<SP_EntityMoved>();
-		auto entity = C_WorldManager::get().getEntity(p.uid);
-		if (!entity)
-			break;
-		entity->addMoveKey(p.move);
-
-		if (LOG_PACKET_HEADERS) {
-			printf("Processing SP_EntityMoved. pos:(%u,%u) rot:%u\n", p.move.pos.x, p.move.pos.y, p.move.rot);
-			printBytes(p);
-		}
-
 		break;
 	}
 

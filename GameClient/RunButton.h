@@ -5,7 +5,8 @@ class RunButton : public UIComponent
 {
 private:
 	bool m_active;
-	sf::Sprite* m_sprite;
+	sf::Texture* m_tex;
+	sf::RectangleShape m_shape;
 
 public:
 	static RunButton& get()
