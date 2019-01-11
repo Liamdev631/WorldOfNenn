@@ -69,7 +69,7 @@ namespace hidden
 		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_COINS, 3, 5));
 
 		// 3 - Pig
-		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_BONES));
+		addAlwaysDrop(EntityType::ET_PIG, Entry_SingleBone);
 		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_COINS, 5, 10));
 	}
 

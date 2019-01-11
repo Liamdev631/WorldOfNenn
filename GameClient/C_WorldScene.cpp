@@ -116,8 +116,6 @@ void SceneManager::update(const GameTime& gameTime)
 	{
 		// Determine which entities are under the mouse
 		for (C_Entity* e : C_WorldManager::get().getActiveEntities())
-			//if (e->position == m_mouseTargetCell)
-			//if (e->getGlobalBounds().intersects(mouseCellBounds))
 			if (e->getGlobalBounds().contains(mouseWorldPos))
 				m_entitiesUnderMouse.push_back(e);
 
