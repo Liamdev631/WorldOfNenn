@@ -20,7 +20,7 @@ public:
 	S_Region& getRegion(const Region region) const;
 
 	void update();
-	void registerNPC(const u16 npcid, const EntityType entityType);
+	S_Entity_NPC* registerNPC(const u16 npcid, const EntityType entityType);
 	void registerPlayer(S_Entity_Player* connection);
 	void deregisterPlayer(S_Entity_Player* connection);
 

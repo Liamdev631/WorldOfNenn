@@ -50,9 +50,8 @@ void S_LoginManager::loadPlayers()
 				m_connectionsToLoad.pop();
 
 				// Load the players character
-				//S_Entity* newPlayer = new S_Entity((u16)conn->uid, ET_PLAYER, R_Overworld);
-				conn->getMovement().moveKey.pos = vec2<u16>(40 + rand() % 10, 40 + rand() % 10);
 				conn->getMovement().region = R_Overworld;
+				conn->getMovement().blinkTo(vec2s(115, 115));
 
 				// Add to the list of loaded players
 				m_readyPlayers.push(conn);

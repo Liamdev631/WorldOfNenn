@@ -26,7 +26,7 @@ SceneManager::SceneManager()
 	m_worldView = sf::View(sf::Vector2f(0, 0), sf::Vector2f((float)WorldSceneSize.x, (float)WorldSceneSize.y));
 
 	// Load the map
-	m_worldMap.loadMap("assets/maps/overworld.tmx");
+	m_worldMap.loadMap("assets/maps/region_overworld.tmx");
 
 	// Load the interface
 	auto interfaceTex = ResourceLoader::get().getTexture("assets/graphics/gui/interface.png");

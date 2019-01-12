@@ -161,11 +161,12 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 	{
 		// Remove entity
 		const SP_RemoveEntity& p = *packet.read<SP_RemoveEntity>();
-		C_WorldManager::get().removeEntity(p.uid);
 		if (LOG_PACKET_HEADERS) {
 			printf("Processing P_RemoveEntity. uid:%u\n", p.uid);
 			printBytes(p);
 		}
+		if (C_WorldManager::get().getThisEntity()->uid == p.uid)
+			C_WorldManager::get().removeEntity(p.uid);
 		break;
 	}
 

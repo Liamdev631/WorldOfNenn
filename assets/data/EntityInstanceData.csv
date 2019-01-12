@@ -1,0 +1,5 @@
+Id,Type,Level,BoundsX,BoundsY,BoundsW,BoundsH,Note
+0,2,1,105,110,3,3,Rat
+1,2,1,107,112,3,3,Rat
+2,3,3,110,116,3,3,Pig
+3,3,3,113,119,3,4,Pig

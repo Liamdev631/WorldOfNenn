@@ -88,7 +88,7 @@ void C_Entity::update(const GameTime& gameTime)
 			if (cellDiff.x != 0 && cellDiff.y != 0)
 				positionStepSize *= 1.41f;
 
-			velocity = velocity * positionStepSize;
+			velocity = velocity * positionStepSize * 0.8f;
 			drawPos = drawPos + velocity;
 
 			// Integrate for rotation

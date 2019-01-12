@@ -5,8 +5,8 @@ class S_Entity_NPC : public S_Entity
 {
 private:
 	u8 m_stepTimer;
-	vec2<u16> boundsLocation;
-	vec2<u8> boundsSize;
+	vec2<u16> m_boundsLocation;
+	vec2<u8> m_boundsSize;
 
 protected:
 
@@ -17,5 +17,7 @@ public:
 	void update() override;
 	void onRespawn() override;
 	void onDeath() override;
+
+	void setBounds(const vec2<u16>& position, const vec2<u8>& size);
 };
 

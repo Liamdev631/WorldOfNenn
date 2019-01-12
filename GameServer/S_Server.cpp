@@ -3,6 +3,7 @@
 #include "WPacket.h"
 #include "Packets.h"
 #include "UseItem.h"
+#include "CSVReader.h"
 
 S_Server::S_Server()
 {
@@ -34,13 +35,27 @@ void S_Server::start()
 		.set_listen_port(801)
 		.set_initialize_client_function(init_client_func));
 
-	printf("Data tables loaded!\n");
-
 	printf("Loading NPCs.\n");
-	u16 npcsToAdd = 6;
-	for (u16 i = 0; i < npcsToAdd; i++)
-		m_worldManager->registerNPC(i, ET_RAT);
-	printf("Loaded %u NPCs.\n", npcsToAdd);
+
+	//auto npc1 = m_worldManager->registerNPC(0, ET_RAT);
+	//npc1->getMovement().blinkTo(vec2s(50, 50));
+
+	CSVReader reader;
+	reader.open("assets/data/EntityInstanceData.csv");
+	reader.readNextRow(); // Skip the first line
+	while (reader.size() > 1)
+	{
+		u16 uid = std::stoi(reader[0]);
+		EntityType type = (EntityType)std::stoi(reader[1]);
+		u16 level = std::stoi(reader[2]);
+		vec2<u16> boundsPos = vec2<u16>(std::stoi(reader[3]), std::stoi(reader[4]));
+		vec2<u8> boundsSize = vec2<u8>(std::stoi(reader[5]), std::stoi(reader[6]));
+		// reader[7] is notes
+		auto npc = m_worldManager->registerNPC(uid, type);
+		npc->setBounds(boundsPos, boundsSize);
+		npc->getMovement().blinkTo(boundsPos);
+		reader.readNextRow();
+	}
 }
 
 void S_Server::addConnectedPlayers()

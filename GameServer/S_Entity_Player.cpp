@@ -5,7 +5,7 @@
 S_Entity_Player::S_Entity_Player()
 	: S_Entity(9999, EntityType::ET_PLAYER, R_Overworld), m_buffer(new WPacket(1024 * 16))
 {
-
+	
 }
 
 S_Entity_Player::~S_Entity_Player()
@@ -155,5 +155,5 @@ void S_Entity_Player::onDeath()
 
 void S_Entity_Player::onRespawn()
 {
-	m_movement.blinkTo(vec2s(50, 50));
+	m_movement.blinkTo(vec2s(115, 115));
 }

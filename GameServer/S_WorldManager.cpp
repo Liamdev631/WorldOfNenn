@@ -61,12 +61,13 @@ void S_WorldManager::update()
 		entity->getCombat().update();
 }
 
-void S_WorldManager::registerNPC(const u16 npcid, const EntityType entityType)
+S_Entity_NPC* S_WorldManager::registerNPC(const u16 npcid, const EntityType entityType)
 {
-	S_Entity* entity = new S_Entity_NPC((u16)(MAX_PLAYERS + npcid), entityType, R_Overworld);
+	S_Entity_NPC* entity = new S_Entity_NPC((u16)(MAX_PLAYERS + npcid), entityType, R_Overworld);
 	m_entities[entity->uid] = entity;
 	m_entitiesList.push_back(entity);
 	m_regions[entity->getMovement().region]->addEntity(*entity);
+	return entity;
 }
 
 void S_WorldManager::registerPlayer(S_Entity_Player* connection)
