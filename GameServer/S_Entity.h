@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "S_CombatComponent.h"
 #include "S_MovementComponent.h"
+#include "EntityType.h"
 
 class S_Region;
 

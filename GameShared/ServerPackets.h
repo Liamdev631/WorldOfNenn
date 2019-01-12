@@ -4,6 +4,7 @@
 #include "CombatState.h"
 #include "MoveKey.h"
 #include "Skills.h"
+#include "EntityType.h"
 
 typedef u8 packet_header;
 

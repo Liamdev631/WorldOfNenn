@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include "Items.h"
+#include "EntityType.h"
 
 class ResourceLoader
 {

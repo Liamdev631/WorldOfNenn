@@ -24,7 +24,7 @@ void Loader::loadItemsInfo()
 	CSVReader reader;
 	reader.open("assets/data/ItemData.csv");
 	reader.readNextRow(); // Skip header
-	for (int i = 0; i < NumberOfItems; i++)
+	for (int i = 0; i < ItemType::ITEM_COUNT; i++)
 	{
 		m_itemNames[i] = reader[2];
 		m_itemMaxStack[i] = std::stoi(reader[1]);
@@ -40,7 +40,7 @@ void Loader::loadEntityInfo()
 	CSVReader reader;
 	reader.open("assets/data/EntityData.csv");
 	reader.readNextRow(); // Skip header
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < EntityType::ET_COUNT; i++)
 	{
 		m_entityNames[i] = reader[1 + (int)m_language * 2];
 		m_entityDescription[i] = reader[2 + (int)m_language * 2];

@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Items.h"
 #include <string>
+#include "EntityType.h"
 
 typedef u8 packet_header;
 

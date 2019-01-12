@@ -147,15 +147,6 @@ inline vec2f lerp(const vec2s& v1, const vec2s& v2, const float& t)
 	return vec2f(v1.x + (v2.x - v1.x) * t, v1.y + (v2.y - v1.y) * t);
 }
 
-enum EntityType : u16
-{
-	ET_ADMIN = 0,
-	ET_PLAYER = 1,
-	ET_RAT = 2,
-	ET_PIG = 3,
-	ET_COUNT
-};
-
 enum Region : u8
 {
 	R_Overworld = 0,

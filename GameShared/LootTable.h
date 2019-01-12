@@ -2,6 +2,7 @@
 #include <vector>
 #include "Global.h"
 #include "Items.h"
+#include "EntityType.h"
 
 // Common drop rates
 #define DR_ALWAYS 8192

@@ -2,9 +2,11 @@
 #include <vector>
 #include "Global.h"
 #include "Items.h"
+#include "EntityType.h"
+#include "ItemType.h"
 
-constexpr size_t NumberOfItems = 4;
-constexpr size_t NumberOfEntityTypes = 4;
+//constexpr size_t NumberOfItems = 4;
+//constexpr size_t NumberOfEntityTypes = 4;
 
 // Globalization
 enum Language
@@ -21,13 +23,13 @@ private:
 	const Language m_language;
 
 	// Items
-	std::wstring	m_itemNames[NumberOfItems];
-	u32				m_itemMaxStack[NumberOfItems];
-	std::wstring	m_itemDescription[NumberOfItems];
+	std::wstring	m_itemNames[ItemType::ITEM_COUNT];
+	u32				m_itemMaxStack[ItemType::ITEM_COUNT];
+	std::wstring	m_itemDescription[ItemType::ITEM_COUNT];
 
 	// Entities
-	std::wstring	m_entityNames[NumberOfEntityTypes];
-	std::wstring	m_entityDescription[NumberOfEntityTypes];
+	std::wstring	m_entityNames[EntityType::ET_COUNT];
+	std::wstring	m_entityDescription[EntityType::ET_COUNT];
 
 public:
 	~Loader();

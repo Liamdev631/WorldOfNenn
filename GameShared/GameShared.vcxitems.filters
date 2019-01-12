@@ -28,6 +28,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LootTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LootTableValues.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)EntityType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ItemType.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)npctable.csv" />

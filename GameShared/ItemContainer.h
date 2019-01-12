@@ -4,33 +4,34 @@
 #include "WPacket.h"
 #include "RPacket.h"
 
-class Inventory
+template<u16 Size>
+class ItemContainer
 {
 public:
-	ItemStack itemStacks[28];
+	ItemStack itemStacks[Size];
 	bool dirty;
 
 public:
-	Inventory()
+	ItemContainer()
 		: dirty(true)
 	{
-		for (int i = 0; i < 28; i++)
+		for (int i = 0; i < Size; i++)
 			itemStacks[i] = ItemStack(ITEM_BONES, 0);
 	}
-	~Inventory()
+	~ItemContainer()
 	{
 
 	}
 
 	void serialize(WPacket& packet)
 	{
-		for (int i = 0; i < 28; i++)
+		for (int i = 0; i < Size; i++)
 			packet.write<ItemStack>(itemStacks[i]);
 	}
 
 	void deserialize(RPacket& packet)
 	{
-		for (int i = 0; i < 28; i++)
+		for (int i = 0; i < Size; i++)
 			itemStacks[i] = *packet.read<ItemStack>();
 	}
 
@@ -54,7 +55,7 @@ public:
 			else
 			{
 				// Remove the first stack with the correct type 
-				for (int i = 0; i < 28; i++)
+				for (int i = 0; i < Size; i++)
 				{
 					if (i == slotRemovedFrom)
 						continue; // Already checked this one
@@ -66,7 +67,7 @@ public:
 						return true;
 					}
 				}
-				return false; // No stacks in the inventory contain this unstackable item
+				return false; // No stacks in the ItemContainer contain this unstackable item
 			}
 		}
 		else
@@ -82,12 +83,12 @@ public:
 				}
 				else
 				{
-					// The item is in the inventory, but not in great enough quantity
+					// The item is in the ItemContainer, but not in great enough quantity
 					return false;
 				}
 
 			// The item was not found in the given slot
-			for (int i = 0; i < 28; i++)
+			for (int i = 0; i < Size; i++)
 			{
 				if (i == slotRemovedFrom)
 					continue; // Already checked this slot
@@ -109,7 +110,7 @@ public:
 	{
 		if (getItemCount(type) >= amount)
 		{
-			for (int i = 0; i < 28; i++)
+			for (int i = 0; i < Size; i++)
 				if (itemStacks[i].type == type)
 				{
 					if (itemStacks[i].count <= amount)
@@ -131,7 +132,7 @@ public:
 
 	bool removeOneItem(ItemType type)
 	{
-		for (int i = 0; i < 28; i++)
+		for (int i = 0; i < Size; i++)
 			if (itemStacks[i].type == type && itemStacks[i].count > 0)
 			{
 				itemStacks[i].count--;
@@ -157,7 +158,7 @@ public:
 	// Returns true if a stack was found and false if it was not found
 	bool firstSlotContaining(ItemType type, u8& out_slot) const
 	{
-		for (out_slot = 0; out_slot < 28; out_slot++)
+		for (out_slot = 0; out_slot < Size; out_slot++)
 			if (itemStacks[out_slot].type && itemStacks[out_slot].count > 0)
 				return true;
 		return false;
@@ -166,7 +167,7 @@ public:
 	// Returns true if the container has any stacks of the given ItemType
 	bool containsItemType(ItemType type) const
 	{
-		for (int i = 0; i < 28; i++)
+		for (int i = 0; i < Size; i++)
 			if (itemStacks[i].type == type && itemStacks[i].count > 0)
 				return true;
 		return false;
@@ -176,10 +177,13 @@ public:
 	u32 getItemCount(ItemType type) const
 	{
 		u32 count = 0;
-		for (int i = 0; i < 28; i++)
+		for (int i = 0; i < Size; i++)
 			if (itemStacks[i].type == type)
 				count += itemStacks[i].count;
 		return count;
 	}
 
 };
+
+typedef ItemContainer<28> Inventory;
+typedef ItemContainer<256> Bank;
