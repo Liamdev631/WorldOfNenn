@@ -1,4 +1,5 @@
 #pragma once
+#include <GL/glew.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 #include <vector>
@@ -10,6 +11,7 @@
 #include "Chatbox.h"
 #include "RightClickOption.h"
 #include "RCOption.h"
+#include "OrbitCamera.h"
 
 //  _______________________
 // |				|	   |
@@ -31,6 +33,10 @@ private:
 	sf::RenderTexture m_gameScene;
 	sf::View m_worldView;
 	C_WorldMap m_worldMap;
+
+	// 3D
+	OrbitCamera m_cam;
+	sf::Shader m_shader;
 
 	// GUI
 	sf::RectangleShape m_interface;

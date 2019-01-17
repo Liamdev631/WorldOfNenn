@@ -50,7 +50,7 @@ public:
 	void resetMovement();
 
 	/// Called at the beginning of every tick
-	void reset();
+	void endUpdate();
 
 	/// Returns true if the given entity is within 16 units of this entity
 	bool isNear(const u16 entity) const;

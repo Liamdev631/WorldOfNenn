@@ -105,7 +105,9 @@ void C_Entity::update(const GameTime& gameTime)
 	if (combatState.currentHealth < combatState.maxHealth)
 	{
 		m_healthbar.setValue((float)combatState.currentHealth / (float)combatState.maxHealth);
-		const sf::Vector2f healthbarPosition = sf::Vector2f(drawPos.x * 16, drawPos.y * 16 - 10);
+		sf::Vector2f healthbarPosition = sf::Vector2f(snappedDrawPos.x * 16, snappedDrawPos.y * 16 - 10);
+		healthbarPosition.x = std::floorf(healthbarPosition.x);
+		healthbarPosition.y = std::floorf(healthbarPosition.y);
 		m_healthbar.setCenter(healthbarPosition);
 		// Change color if poisoned
 		if (combatState.poisoned)
@@ -116,7 +118,7 @@ void C_Entity::update(const GameTime& gameTime)
 
 	// Update the floating text
 	m_floatingText.update(gameTime, sf::Vector2f(0, 0));
-	m_floatingText.setCenter(drawPos * 16.f + sf::Vector2f(240, 150));
+	m_floatingText.setCenter(snappedDrawPos * 16.f + sf::Vector2f(240, 150));
 }
 
 void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -137,7 +139,10 @@ void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	for (auto hit = hitMarkers.begin(); hit != hitMarkers.end(); hit++)
 	{
 		sf::CircleShape circle = sf::CircleShape(6.0f, 8);
-		circle.setPosition((float)drawPos.x * 16.f, (drawPos.y * 16.f - 32.f) + (hit->timer * 6.f) - (count * 14));
+		auto hitmarkerPos = sf::Vector2f((float)drawPos.x * 16.f, (drawPos.y * 16.f - 32.f) + (hit->timer * 6.f) - (count * 14));
+		hitmarkerPos.x = (float)((int)hitmarkerPos.x);
+		hitmarkerPos.y = (float)((int)hitmarkerPos.y); // Lock to integer coordinates
+		circle.setPosition(hitmarkerPos);
 		if (hit->damage == 0)
 			circle.setFillColor(sf::Color::Blue);
 		else

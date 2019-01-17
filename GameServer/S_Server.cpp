@@ -4,6 +4,7 @@
 #include "Packets.h"
 #include "UseItem.h"
 #include "CSVReader.h"
+#include "SaveState.h"
 
 S_Server::S_Server()
 {
@@ -63,6 +64,23 @@ void S_Server::addConnectedPlayers()
 	auto newConnection = m_loginManager->popPlayer();
 	while (newConnection)
 	{
+		if (newConnection->forceDisconnect)
+		{
+			newConnection->getBuffer().write(SP_LoginResult(LoginResult::PasswordIncorrect));
+			newConnection->getBuffer().getTimestamp() = timestamp; // Set the ts at the beginning of the packet
+			m_server->send_packet_to(newConnection->uid, 0, newConnection->getBuffer().getData(), newConnection->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
+			newConnection->getBuffer().endUpdate();
+			//enet_peer_disconnect_now(, ENET_PACKET_FLAG_RELIABLE);
+			continue;
+		}
+		else
+		{
+			newConnection->getBuffer().write(SP_LoginResult(LoginResult::Success));
+			newConnection->getBuffer().getTimestamp() = timestamp; // Set the ts at the beginning of the packet
+			m_server->send_packet_to(newConnection->uid, 0, newConnection->getBuffer().getData(), newConnection->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
+			newConnection->getBuffer().endUpdate();
+		}
+
 		m_worldManager->registerPlayer(newConnection);
 		m_loadedPlayers.push_back(newConnection);
 		auto& packet = newConnection->getBuffer();
@@ -72,20 +90,33 @@ void S_Server::addConnectedPlayers()
 		p.uid = newConnection->uid;
 		packet.write(p);
 		newConnection->inventory.serialize(packet);
-
 		newConnection->getMovement().blinkTo(newConnection->getMovement().getPos()); // This sends updates to nearby players
+		newConnection->getBuffer().write(SP_ExperienceTable(newConnection->exp));
 
 		printf("Client (%d) added as a player.\n", newConnection->uid);
 		newConnection = m_loginManager->popPlayer();
 	}
 }
 
-void S_Server::disconnectPlayer(S_Entity_Player& connection)
+void S_Server::disconnectPlayer(S_Entity_Player& player)
 {
-	auto iter = std::find(m_loadedPlayers.begin(), m_loadedPlayers.end(), &connection);
+	auto iter = std::find(m_loadedPlayers.begin(), m_loadedPlayers.end(), &player);
 	assert(iter != m_loadedPlayers.end());
 	m_loadedPlayers.erase(iter);
-	m_worldManager->deregisterPlayer(&connection);
+	m_worldManager->deregisterPlayer(&player);
+
+	// Save the player's state
+	std::string filename = "assets\\saves\\save_" + std::string(player.username) + ".sav";
+	SaveState newState;
+	SaveState::savePlayerState(newState, &player);
+	//fstream file(filename, ios::out | ios::app | ios::binary | ios::trunc);
+	//file.clear();
+	//file.write((const char*)(&newState), sizeof(SaveState));
+	//file.close();
+	FILE* file;
+	auto result = fopen_s(&file, filename.c_str(), "w+b");
+	fwrite(&newState, sizeof(SaveState), 1, file);
+	fclose(file);
 
 	// Send a message to the nearby players
 	for (iter = m_loadedPlayers.begin(); iter != m_loadedPlayers.end(); iter++)
@@ -96,8 +127,8 @@ void S_Server::disconnectPlayer(S_Entity_Player& connection)
 		buff.write(p);
 	}
 
-	printf("Client (%d) disconnected.\n", connection.uid);
-	m_connections[connection.uid] = nullptr;
+	printf("Client (%d) disconnected.\n", player.uid);
+	m_connections[player.uid] = nullptr;
 }
 
 void S_Server::update()
@@ -114,7 +145,7 @@ void S_Server::update()
 		{
 			c->getBuffer().getTimestamp() = timestamp; // Set the ts at the beginning of the packet
 			m_server->send_packet_to(c->uid, 0, c->getBuffer().getData(), c->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-			c->getBuffer().reset();
+			c->getBuffer().endUpdate();
 		}
 
 }
@@ -184,7 +215,6 @@ void S_Server::clientInitFunc(S_Entity_Player& client, const char* ip)
 void S_Server::onClientConnected(S_Entity_Player& client)
 {
 	printf("Client (%u) connected.\n", client.uid);
-	m_loginManager->registerNewConnection(&client);
 }
 
 /// Called when a client disconnects from the server
@@ -193,6 +223,8 @@ void S_Server::onClientDisconnected(S_Entity_Player& client)
 	disconnectPlayer(client);
 }
 
+constexpr BOOL DEBUG_PRINT_PACKET_HEADER = TRUE;
+
 /// Called when the server recieves data from a connected client
 void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 {
@@ -200,6 +232,8 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 	while (packet.getBytesRead() < packet.getSize())
 	{
 		const u8 header = packet.peek<u8>();
+		if (DEBUG_PRINT_PACKET_HEADER)
+			printf("Received packet (packet_header:%u)\n", header);
 		switch (header)
 		{
 			case CP_AttackEntity_header:
@@ -257,8 +291,17 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 
 			case CP_UseItem_header:
 			{
-				const CP_UseItem p = *packet.read<CP_UseItem>();
+				const CP_UseItem& p = *packet.read<CP_UseItem>();
 				UseItem::use(player, p.itemType, p.slot);
+				continue;
+			}
+
+			case CP_Login_header:
+			{
+				const auto& p = *packet.read<CP_Login>();
+				memcpy(player.username, p.username, 12);
+				memcpy(player.password, p.password, 12);
+				m_loginManager->registerNewConnection(&player);
 				continue;
 			}
 

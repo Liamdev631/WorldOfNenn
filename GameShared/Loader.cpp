@@ -17,6 +17,7 @@ void Loader::load()
 {
 	loadItemsInfo();
 	loadEntityInfo();
+	loadWeaponsInfo();
 }
 
 void Loader::loadItemsInfo()
@@ -48,6 +49,21 @@ void Loader::loadEntityInfo()
 	}
 }
 
+void Loader::loadWeaponsInfo()
+{
+	CSVReader reader;
+	reader.open("assets/data/WeaponData.csv");
+	reader.readNextRow();
+	auto& weaponData = m_weaponData[(ItemType)std::stoi(reader[0])];
+	weaponData.stab = (u8)std::stoi(reader[1]);
+	weaponData.slash = (u8)std::stoi(reader[2]);
+	weaponData.crush = (u8)std::stoi(reader[3]);
+	weaponData.fire = (u8)std::stoi(reader[4]);
+	weaponData.frost = (u8)std::stoi(reader[5]);
+	weaponData.shock = (u8)std::stoi(reader[6]);
+	weaponData.special = (u8)std::stoi(reader[7]);
+}
+
 const std::wstring& Loader::getItemName(const ItemType& item) const
 {
 	return m_itemNames[item];
@@ -71,4 +87,20 @@ const std::wstring& Loader::getEntityName(const EntityType type) const
 const std::wstring& Loader::getEntityDescription(const EntityType type) const
 {
 	return m_entityDescription[type];
+}
+
+const WeaponStats* Loader::getWeaponData(ItemType type) const
+{
+	auto weapon = m_weaponData.find(type);
+	if (weapon == m_weaponData.end())
+		return nullptr;
+	return &weapon->second;
+}
+
+bool Loader::isWeapon(ItemType type)
+{
+	for (auto weapon = m_weaponData.begin(); weapon != m_weaponData.end(); weapon++)
+		if (weapon->first == type)
+			return true;
+	return false;
 }

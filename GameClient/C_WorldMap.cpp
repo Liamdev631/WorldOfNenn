@@ -52,7 +52,7 @@ void C_WorldMap::mapLoadingThread()
 	while (m_running)
 	{
 		auto thisEntity = C_WorldManager::get().getThisEntity();
-		if (thisEntity)
+		if (thisEntity && !thisEntity->combatState.dead)
 		{
 			sf::Vector2u playerPos = sf::Vector2u(thisEntity->position.x, thisEntity->position.y);
 			float distance = std::sqrtf(

@@ -1,6 +1,7 @@
 #include "S_Entity.h"
 #include <assert.h>
 #include "S_GlobalServer.h"
+#include "S_Entity_Player.h"
 
 /// Constructor
 S_Entity::S_Entity(const u16 uid, const EntityType entityType, const Region region)
@@ -23,6 +24,13 @@ void S_Entity::update()
 const EntityType& S_Entity::getEntityType() const
 {
 	return entityType;
+}
+
+S_Entity_Player* S_Entity::asPlayer()
+{
+	if (entityType != ET_PLAYER)
+		return nullptr;
+	return reinterpret_cast<S_Entity_Player*>(this);
 }
 
 S_CombatComponent& S_Entity::getCombat()

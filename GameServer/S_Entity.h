@@ -7,6 +7,7 @@
 #include "EntityType.h"
 
 class S_Region;
+class S_Entity_Player;
 
 struct EntitySettings
 {
@@ -38,6 +39,9 @@ public:
 
 	/// Returns this entity's type
 	const EntityType& getEntityType() const;
+
+	/// Returns this object cast as a player
+	S_Entity_Player* asPlayer();
 	
 	//---- Components ----//
 	S_CombatComponent& getCombat();

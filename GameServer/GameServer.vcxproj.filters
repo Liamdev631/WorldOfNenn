@@ -42,6 +42,7 @@
     <ClCompile Include="UseItem.cpp">
       <Filter>Items</Filter>
     </ClCompile>
+    <ClCompile Include="SaveState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="S_GlobalServer.h" />
@@ -74,5 +75,6 @@
     <ClInclude Include="UseItemFunctions.h">
       <Filter>Items</Filter>
     </ClInclude>
+    <ClInclude Include="SaveState.h" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,9 @@
 #include "S_LoginManager.h"
+#include <filesystem>
+#include <fstream>
+#include "SaveState.h"
+
+namespace fs = std::experimental::filesystem;
 
 S_LoginManager::S_LoginManager()
 {
@@ -49,9 +54,37 @@ void S_LoginManager::loadPlayers()
 				auto conn = m_connectionsToLoad.front();
 				m_connectionsToLoad.pop();
 
-				// Load the players character
-				conn->getMovement().region = R_Overworld;
-				conn->getMovement().blinkTo(vec2s(115, 115));
+				// Load the players save file
+				std::string filename = "assets\\saves\\save_" + std::string(conn->username) + ".sav";
+				//fstream file;
+				//file.open(filename, ios::in | ios::out | ios::binary);
+				//file.write("send nudez please", sizeof("send nudez please"));
+				//file.close();
+
+				fstream file;
+				SaveState state;
+				if (fs::exists(filename))
+				{
+					printf("Loading user:%s's save.\n", conn->username);
+					file.open(filename, ios::in | ios::out | ios::app | ios::binary);
+					file.read((char*)(&state), sizeof(SaveState));
+
+					// Check to see if the given password is incorrect
+					if (strncmp(state.password, conn->password, 12) != 0)
+					{
+						printf("User:%s provided an incorrect password!\n", conn->username);
+						conn->forceDisconnect = true;
+					}
+				}
+				else
+				{
+					printf("Creating a save file for user:%s\n", conn->username);
+					file.open(filename, ios::in | ios::out | ios::app | ios::binary);
+					state = SaveState::newSave(conn);
+					file.write((const char*)(&state), sizeof(SaveState));
+				}
+				SaveState::loadPlayersState(state, conn);
+				file.close();
 
 				// Add to the list of loaded players
 				m_readyPlayers.push(conn);

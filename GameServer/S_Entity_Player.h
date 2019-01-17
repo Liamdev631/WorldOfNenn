@@ -10,6 +10,9 @@ class S_Entity_Player : public S_Entity
 public:
 	Inventory inventory;
 	ExperienceTable exp;
+	char username[12];
+	char password[12];
+	bool forceDisconnect;
 
 private:
 	WPacket* m_buffer;

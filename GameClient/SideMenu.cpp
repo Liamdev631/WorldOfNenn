@@ -37,9 +37,9 @@ SideMenu::SideMenu()
 
 SideMenu::~SideMenu()
 {
-	for (int i = 0; i < SideMenuTab::Tab_COUNT; i++)
-		if (m_menuTabs[i])
-			delete m_menuTabs[i];
+	//for (int i = 0; i < SideMenuTab::Tab_COUNT; i++)
+	//	if (m_menuTabs[i])
+	//		delete m_menuTabs[i];
 }
 
 void SideMenu::setTab(SideMenuTab tab)

@@ -20,7 +20,7 @@ C_Client::C_Client()
 
 C_Client::~C_Client()
 {
-
+	m_client->disconnect();
 }
 
 void C_Client::start()
@@ -30,13 +30,44 @@ void C_Client::start()
 		.set_channel_count(1)
 		.set_server_host_name_and_port(SERVER_IP, 801));
 	m_connectionState = ConnectionState::SayingHello;
-	//m_gui->loadResources();
+
+	SceneManager::get();
+
+	// Ask for login info and send it to the server
+	printf("Username?\n");
+	char username[12];
+	fflush(stdout);
+	fgets(username, 12, stdin);
+	for (int i = 0; i < 12; i++)
+		if (username[i] == '\n')
+		{
+			username[i] = '\0';
+			break;
+		}
+
+	printf("Password?\n");
+	char password[12];
+	fflush(stdout);
+	fgets(password, 12, stdin);
+	for (int i = 0; i < 12; i++)
+		if (password[i] == '\n')
+		{
+			password[i] = '\0';
+			break;
+		}
+
+	printf("user: %s\n", username);
+	printf("pass: %s\n", password);
+
+	m_packetBuffer->write(CP_Login(username, password, 5));
+	m_client->send_packet(0, m_packetBuffer->getData(), m_packetBuffer->getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
+	m_packetBuffer->endUpdate();
 }
 
 bool C_Client::update()
 {
-	if (!m_client.get()->is_connecting_or_connected())
-		return true;
+	//if (!m_client.get()->is_connecting_or_connected())
+	//	return true;
 
 	auto start = std::chrono::high_resolution_clock::now();
 
@@ -59,11 +90,12 @@ bool C_Client::update()
 	if (m_packetBuffer->getBytesWritten() > 0)
 	{
 		m_client->send_packet(0, m_packetBuffer->getData(), m_packetBuffer->getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-		m_packetBuffer->reset();
+		m_packetBuffer->endUpdate();
 	}
 
 	// Render
-	SceneManager::get().draw();
+	if (m_connectionState == ConnectionState::LoggedIn)
+		SceneManager::get().draw();
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto dt = (float)std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
@@ -139,7 +171,7 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 			printf("Processing P_Hello. uid:%u time:%u\n", p.uid, p.timestamp);
 			printBytes(p);
 		}
-		m_connectionState = ConnectionState::Connected;
+		m_connectionState = ConnectionState::LoggedIn;
 		C_WorldManager::get().setThisUID(p.uid);
 		printf("setting uid to %u\n", p.uid);
 		m_timer.totalTime = p.timestamp;
@@ -260,6 +292,29 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 		const auto& p = *packet.read<SP_PrintMessage>();
 		auto message = std::wstring(p.message);
 		Chatbox::get().addText(message);
+		break;
+	}
+
+	case SP_LoginResult_header:
+	{
+		const auto& p = *packet.read<SP_LoginResult>();
+		switch (p.result)
+		{
+			case LoginResult::Success:
+				printf("Successfully logged into the server!\n");
+				break;
+				
+			case LoginResult::PasswordIncorrect:
+			{
+				printf("Failed to login. Password incorrect!\n");
+				m_client->disconnect();
+				std::this_thread::sleep_for(200ms);
+				exit(4);
+			}
+
+			default:
+				break;
+		}
 		break;
 	}
 

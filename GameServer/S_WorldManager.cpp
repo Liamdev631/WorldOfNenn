@@ -44,9 +44,9 @@ void S_WorldManager::update()
 {
 	// Reset temporary states
 	for (S_Entity* entity : m_entitiesList)
-		entity->getMovement().reset();
+		entity->getMovement().endUpdate();
 	for (S_Entity* entity : m_entitiesList)
-		entity->getCombat().reset();
+		entity->getCombat().endUpdate();
 	
 	// Generic tick
 	for (S_Entity* entity : m_entitiesList)

@@ -3,7 +3,7 @@
 #include "ServerPackets.h"
 
 S_Entity_Player::S_Entity_Player()
-	: S_Entity(9999, EntityType::ET_PLAYER, R_Overworld), m_buffer(new WPacket(1024 * 16))
+	: S_Entity(9999, EntityType::ET_PLAYER, R_Overworld), m_buffer(new WPacket(1024 * 16)), forceDisconnect(false)
 {
 	
 }

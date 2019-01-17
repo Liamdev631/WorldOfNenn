@@ -3,6 +3,7 @@
 #include "Items.h"
 #include <string>
 #include "EntityType.h"
+#include "Login.h"
 
 typedef u8 packet_header;
 
@@ -100,4 +101,43 @@ struct CP_UseItem
 };
 #pragma pack(pop)
 
+#define CP_Login_header 7
+#pragma pack(push, 1)
+struct CP_Login
+{
+	const packet_header header = CP_Login_header;
+	char username[12];
+	char password[12];
+	u16 buildNumber;
 
+	CP_Login(const std::string& user, const std::string& pass, u16 build)
+	{
+		buildNumber = build;
+		//if (user.length() <= 11)
+		//{
+		//	//auto size = sizeof(char) * NAME_LENGTH;
+		//	//memcpy_s(&username, size, user.c_str(), size);
+		//	//username[user.length()] = '\0';
+		//}
+
+		//if (pass.length() <= 11)
+		//{
+		//	//auto size = sizeof(char) * NAME_LENGTH;
+		//	//memcpy_s(&password, size, pass.c_str(), size);
+		//	//username[pass.length()] = '\0';
+		//}
+		strcpy_s(username, 12, user.c_str());
+		strcpy_s(password, 12, pass.c_str());
+	}
+
+	std::string getUsername() const
+	{
+		return std::string(username);
+	}
+
+	std::string getPassword() const
+	{
+		return std::string(password);
+	}
+};
+#pragma pack(pop)

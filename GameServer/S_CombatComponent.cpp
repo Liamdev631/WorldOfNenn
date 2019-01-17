@@ -23,7 +23,7 @@ void S_CombatComponent::update()
 	{
 		if (respawnTimer-- == 0)
 		{
-			combatState.reset();
+			combatState.endUpdate();
 			owner.onRespawn();
 			owner.getMovement().forcePositionUpdate();
 		}
@@ -36,7 +36,14 @@ void S_CombatComponent::update()
 	if (!isInCombat)
 		return;
 
-	if (inRange(*target))
+	auto targetEntity = g_server->getWorldManager().getEntity(target);
+	if (!targetEntity)
+	{
+		totalReset();
+		return;
+	}
+
+	if (inRange(*targetEntity))
 	{
 		// Attack
 		attackTimer = attackSpeed;
@@ -50,7 +57,7 @@ void S_CombatComponent::update()
 		if (damage > 0)
 		{
 			// Deal damage
-			target->getCombat().takeDamage(*this, damage);
+			targetEntity->getCombat().takeDamage(*this, damage);
 
 			// Give combat xp
 			if (owner.getEntityType() == EntityType::ET_PLAYER)
@@ -61,7 +68,7 @@ void S_CombatComponent::update()
 			}
 
 			// Stop combat if dead
-			if (target->getCombat().combatState.dead)
+			if (targetEntity->getCombat().combatState.dead)
 			{
 				owner.getMovement().resetMovement();
 				isInCombat = false;
@@ -72,16 +79,17 @@ void S_CombatComponent::update()
 
 void S_CombatComponent::initiateCombat(S_Entity& newTarget)
 {
-	//if (!isMulticombat)
-	if (isInCombat)
+	if (newTarget.getCombat().isInCombat && newTarget.getCombat().target != owner.uid)
+	{
+		auto player = owner.asPlayer();
+		if (player)
+			player->printInChatbox(L"That target is already in combat.");
 		return;
-	//if (newTarget.getCombat().isInCombat)
-	//	return;
-	//}
+	}
 
-	target = &newTarget;
+	target = newTarget.uid;
 	isInCombat = true;
-	owner.getMovement().startFollow(*target);
+	owner.getMovement().startFollow(newTarget);
 }
 
 void S_CombatComponent::takeDamage(S_CombatComponent& attacker, u8 damage)
@@ -89,24 +97,17 @@ void S_CombatComponent::takeDamage(S_CombatComponent& attacker, u8 damage)
 	if (combatState.dead)
 		return;
 
-	// Retaliate
-	//if (target->autoRetaliate)
-	if (!isInCombat)
-		initiateCombat(attacker.owner);
-
-	auto et = owner.getEntityType();
-	//if (et != ET_PLAYER && et != ET_ADMIN) // Temp make playesr immune to damage
+	if (damage >= combatState.currentHealth)
 	{
-		if (damage >= combatState.currentHealth)
-		{
-			// Entity has no health left
-			die();
-		}
-		else
-		{
-			// Take damage
-			combatState.currentHealth -= damage;
-		}
+		// Entity has no health left
+		die();
+	}
+	else
+	{
+		// Take damage
+		combatState.currentHealth -= damage;
+		if (!isInCombat)
+			initiateCombat(attacker.owner); // Retaliate
 	}
 
 	// Tell nearby players about the hit
@@ -139,7 +140,7 @@ bool S_CombatComponent::inRange(S_Entity& other) const
 	return owner.getMovement().isWithinDistance(other.getMovement().getPos(), getRange());
 }
 
-void S_CombatComponent::reset()
+void S_CombatComponent::endUpdate()
 {
 	hits.clear();
 	justDied = false;
@@ -147,6 +148,6 @@ void S_CombatComponent::reset()
 
 void S_CombatComponent::totalReset()
 {
-	reset();
-	combatState.reset();
+	endUpdate();
+	combatState.endUpdate();
 }

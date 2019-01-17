@@ -10,7 +10,7 @@ InventoryTab::InventoryTab()
 	const auto tabSize = sf::Vector2f(32, 32);
 	for (int i = 0; i < 28; i++)
 	{
-		// Calculate the bounds of the item sprite
+		// Calculate the bounds of the item spriteS
 		sf::Vector2f centerPos;
 		int x = i % 4, y = i / 4;
 		centerPos.x = m_menuBounds.left + (m_menuBounds.width / 5.f) * (x + 1);

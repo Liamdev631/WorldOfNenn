@@ -18,12 +18,14 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)CombatState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CSVReader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EntityType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Equipment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameTime.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Global.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Items.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Loader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Login.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LootTable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)LootTableValues.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MoveKey.h" />
@@ -32,6 +34,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RPacket.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ServerPackets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Skills.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Weapons.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WPacket.h" />
   </ItemGroup>
   <ItemGroup>

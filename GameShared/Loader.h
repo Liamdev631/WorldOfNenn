@@ -4,6 +4,8 @@
 #include "Items.h"
 #include "EntityType.h"
 #include "ItemType.h"
+#include "Equipment.h"
+#include <map>
 
 //constexpr size_t NumberOfItems = 4;
 //constexpr size_t NumberOfEntityTypes = 4;
@@ -31,6 +33,9 @@ private:
 	std::wstring	m_entityNames[EntityType::ET_COUNT];
 	std::wstring	m_entityDescription[EntityType::ET_COUNT];
 
+	// Weapons
+	std::map<ItemType, WeaponStats> m_weaponData;
+
 public:
 	~Loader();
 
@@ -40,14 +45,22 @@ public:
 		return l;
 	}
 	
+	// Items
 	const std::wstring&	getItemName(const ItemType& item) const;
 	const u32&			getItemMaxStack(const ItemType& item) const;
 	const std::wstring&	getItemDescription(const ItemType& item) const;
+	
+	// Entities
 	const std::wstring& getEntityName(const EntityType type) const;
 	const std::wstring& getEntityDescription(const EntityType type) const;
+
+	// Weapons
+	const WeaponStats* getWeaponData(ItemType type) const;
+	bool isWeapon(ItemType type);
 
 private:
 	void load();
 	void loadItemsInfo();
 	void loadEntityInfo();
+	void loadWeaponsInfo();
 };

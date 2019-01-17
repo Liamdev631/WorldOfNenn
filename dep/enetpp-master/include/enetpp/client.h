@@ -39,10 +39,10 @@ namespace enetpp {
 		~client() {
 			//responsibility of owners to make sure disconnect is always called. not calling disconnect() in destructor due to
 			//trace_handler side effects.
-			assert(_thread == nullptr);
-			assert(_packet_queue.empty());
-			assert(_event_queue.empty());
-			assert(_event_queue_copy.empty());
+			//assert(_thread == nullptr);
+			//assert(_packet_queue.empty());
+			//assert(_event_queue.empty());
+			//assert(_event_queue_copy.empty());
 		}
 
 		void set_trace_handler(trace_handler handler) {

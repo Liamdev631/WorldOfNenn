@@ -161,3 +161,27 @@ struct SP_PrintMessage
 	}
 };
 #pragma pack(pop)
+
+enum LoginResult
+{
+	None,
+	Success,
+	PasswordIncorrect,
+	ServerFull,
+};
+
+constexpr packet_header SP_LoginResult_header = 13;
+#pragma pack(push, 1)
+struct SP_LoginResult
+{
+	const packet_header header = SP_LoginResult_header;
+	LoginResult result;
+
+	SP_LoginResult(LoginResult result)
+		: result(result)
+	{
+
+	}
+};
+#pragma pack(pop)
+

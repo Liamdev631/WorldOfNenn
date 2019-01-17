@@ -71,6 +71,9 @@ namespace hidden
 		// 3 - Pig
 		addAlwaysDrop(EntityType::ET_PIG, Entry_SingleBone);
 		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_COINS, 5, 10));
+		addLootTable(EntityType::ET_PIG, new LootTable {
+			LootEntry(ItemType::ITEM_BRONZE_SWORD, DR_HALF, 1, 1),
+			});
 	}
 
 	LootTableList emptyList = LootTableList();
@@ -97,7 +100,7 @@ std::vector<ItemStack> LootGenerator::generateLoot(EntityType entityType)
 	for (auto& lootTable : getEntityLootTables(entityType))
 	{
 		u16 amount;
-		if (lootTable->size() == 1)
+		if (lootTable->size() == 1 && lootTable[0].size() == 1)
 		{
 			// Only one item in the table. Add it.
 			const auto& item = (*lootTable)[0];
@@ -109,7 +112,7 @@ std::vector<ItemStack> LootGenerator::generateLoot(EntityType entityType)
 		else
 		{
 			u16 cumulativeChance = rand() % DR_ALWAYS;
-			for (u8 i = (u8)lootTable->size() - 1; i >= 0; i--)
+			for (int i = lootTable->size() - 1; i >= 0; i--)
 			{
 				auto& dr = (*lootTable)[i].dropRate;
 
@@ -124,9 +127,7 @@ std::vector<ItemStack> LootGenerator::generateLoot(EntityType entityType)
 					break;
 				}
 				else
-				{
 					cumulativeChance -= dr;
-				}
 			}
 		}
 	}

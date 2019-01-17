@@ -30,6 +30,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LootTableValues.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EntityType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ItemType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Login.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Weapons.h">
+      <Filter>Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Equipment.h">
+      <Filter>Equipment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)npctable.csv" />
@@ -45,6 +52,9 @@
   <ItemGroup>
     <Filter Include="Packets">
       <UniqueIdentifier>{1c32b3fa-a4d9-44bc-a0f6-e4a5b000b2d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Equipment">
+      <UniqueIdentifier>{8eace47a-360d-458b-bbb2-412cb7819de3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

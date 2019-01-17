@@ -18,7 +18,8 @@ enum ConnectionState
 {
 	Disconnected,
 	SayingHello,
-	Connected
+	Connected,
+	LoggedIn,
 };
 
 class C_Client

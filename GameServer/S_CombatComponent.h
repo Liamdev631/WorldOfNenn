@@ -11,7 +11,7 @@ private:
 	S_Entity& owner;
 
 public:
-	S_Entity* target;
+	u16 target;
 	CombatState combatState;
 	std::vector<u8> hits;
 	bool isInCombat;
@@ -32,7 +32,7 @@ public:
 
 	bool inRange(S_Entity& other) const;
 	void initiateCombat(S_Entity& target);
-	void reset();
+	void endUpdate();
 	void totalReset();
 	void update();
 	void takeDamage(S_CombatComponent& attacker, u8 damage);

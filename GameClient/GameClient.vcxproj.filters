@@ -79,6 +79,9 @@
     <ClInclude Include="GLHelper.h">
       <Filter>Graphics\graphics3d</Filter>
     </ClInclude>
+    <ClInclude Include="OrbitCamera.h">
+      <Filter>Graphics\graphics3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C_Client.cpp" />
@@ -126,6 +129,9 @@
       <Filter>Graphics\Menus</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
+      <Filter>Graphics\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="OrbitCamera.cpp">
       <Filter>Graphics\graphics3d</Filter>
     </ClCompile>
   </ItemGroup>

@@ -78,7 +78,7 @@ public:
 		return m_writeOffset - m_data;
 	}
 
-	void reset()
+	void endUpdate()
 	{
 		m_writeOffset = m_data + sizeof(u32);
 	}

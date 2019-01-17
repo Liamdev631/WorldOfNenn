@@ -7,8 +7,6 @@
 #include "SideMenu.h"
 #include "RunButton.h"
 #include "C_Client.h"
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
 
 SceneManager::SceneManager()
 {
@@ -19,6 +17,15 @@ SceneManager::SceneManager()
 	settings.stencilBits = 0;
 	m_window.create(sf::VideoMode(GuiSize.x, GuiSize.y), "World of Nenn", sf::Style::Default, settings);
 	m_window.setVerticalSyncEnabled(true);
+
+	// Initialize GLEW
+	glewExperimental = true;
+	GLenum err = glewInit();
+	if (err)
+	{
+		/* Problem: glewInit failed, something is seriously wrong. */
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+	}
 
 	// Create the render texture for the game world
 	if (!m_gameScene.create(WorldSceneSize.x, WorldSceneSize.y, settings))
@@ -39,6 +46,13 @@ SceneManager::SceneManager()
 
 	// Set the default menu tab
 	SideMenu::get();
+
+	// Move the camera to it's starting position
+	m_cam.setPitch(0.2f);
+
+	// Load shaders
+	m_shader.loadFromFile("assets/shaders/red.vert", "assets/shaders/red.frag");
+	//m_shader.loadFromFile()
 
 	m_uiComponents.push_back(&Chatbox::get());
 	m_uiComponents.push_back(&SideMenu::get());
@@ -78,6 +92,11 @@ void SceneManager::checkEvents()
 				else if (ev.mouseButton.button == sf::Mouse::Button::Right)
 					onRightClick();
 				break;
+			}
+
+			case sf::Event::Closed:
+			{
+				exit(0);
 			}
 		}
 
@@ -150,14 +169,13 @@ void SceneManager::update(const GameTime& gameTime)
 void SceneManager::draw()
 {
 	/////// World Space ///////
-	//m_window.resetGLStates();
-	drawGameScene();
-	//draw3d();
-	//m_window.pushGLStates();
-	//m_window.resetGLStates();
+	//drawGameScene();
+	draw3d();
 
 	/////// Screen Space ///////
+	m_window.pushGLStates();
 	drawGui();
+	m_window.popGLStates();
 	//m_window.popGLStates();
 }
 
@@ -204,9 +222,24 @@ void SceneManager::drawGameScene()
 
 void SceneManager::draw3d()
 {
+	// Prep for drawing
 	m_gameScene.setActive(true);
-	m_gameScene.clear(sf::Color::Red);
+	m_gameScene.clear(sf::Color::Black);
 
+	// Camera
+	m_cam.addRotation(0.02f);
+
+	glMatrixMode(GL_PROJECTION);
+	auto projection = m_cam.getProjection();
+	auto view = m_cam.getView();
+	auto vp = view * projection;
+	//glLoadMatrixf(&vp[0][0]);
+
+	//glUseProgram(m_shader.getNativeHandle());
+	sf::Shader::bind(&m_shader);
+
+	// Draw the triangle
+	glMatrixMode(GL_MODELVIEW);
 	glBegin(GL_TRIANGLES);
 	glColor3f(1.f, 0.f, 0.f);
 	glVertex3f(-0.5f, -0.5f, 0.f);
@@ -216,6 +249,9 @@ void SceneManager::draw3d()
 	glVertex3f(-0.5f, 0.5f, 1.f);
 	glEnd();
 
+	sf::Shader::bind(NULL);
+
+	// Swap buffers
 	m_gameScene.display();
 	m_gameScene.setActive(false);
 }
@@ -276,9 +312,16 @@ void SceneManager::drawGui()
 			std::wstring targetName = L"<target-name>";
 			switch (curOption.target.type)
 			{
-			case TT_ENTITY: targetName = Loader::get().getEntityName(curOption.target._entity->getEntityType()); break;
-			case TT_ITEM:
-			case TT_INV_ITEM: targetName = Loader::get().getItemName(curOption.target._item.stack.type); break;
+				case TT_ENTITY: targetName = Loader::get().getEntityName(curOption.target._entity->getEntityType()); break;
+				case TT_ITEM:
+				case TT_INV_ITEM:
+				{
+					auto& itemTarget = curOption.target._item;
+					targetName = Loader::get().getItemName(curOption.target._item.stack.type);
+					if (itemTarget.stack.count > 1)
+						targetName += + L" (" + std::to_wstring(itemTarget.stack.count) + L")";
+					break;
+				}
 			}
 			texts[i] = sf::Text(RightClickOptionNames[m_optionsList[i].option] + L" " + targetName, *m_font1, 14);
 			texts[i].setFillColor(sf::Color::Black);

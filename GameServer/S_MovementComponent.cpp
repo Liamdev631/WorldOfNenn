@@ -18,7 +18,8 @@ S_MovementComponent::~S_MovementComponent()
 void S_MovementComponent::update()
 {
 	// This is by far the most common case so dont put it in switch
-	if (moveKey.state == MoveState::Idle)
+	if (moveKey.state == MoveState::Idle
+		|| owner.getCombat().combatState.dead)
 		return;
 
 	// If the move timer hasn't expired, we shouldnt do anything here
@@ -219,7 +220,11 @@ void S_MovementComponent::stepTowards(const vec2s& target)
 	if (owner.getCombat().isInCombat)
 	{
 		// Face the combat target
-		moveKey.rot = directionFromTo(moveKey.pos, owner.getCombat().target->getMovement().getPos());
+		auto target = g_server->getWorldManager().getEntity(owner.getCombat().target);
+		if (target != nullptr)
+		{
+			moveKey.rot = directionFromTo(moveKey.pos, target->getMovement().getPos());
+		}
 	}
 	else
 	{
@@ -266,7 +271,7 @@ S_Region& S_MovementComponent::getWorldRegion() const
 	return g_server->getWorldManager().getRegion(region);
 }
 
-void S_MovementComponent::reset()
+void S_MovementComponent::endUpdate()
 {
 	m_hasMoved = false;
 	m_forcePositionUpdate = false;
