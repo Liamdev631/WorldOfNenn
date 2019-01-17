@@ -4,6 +4,6 @@ World of Nenn is an open world RPG in its most early stages of development. The 
 
 Please feel free to provide feedback, as questions, or if you feel like it I would appreciate any direct contributions. Email me at liamdev631@gmail.com, message me in github (is that a thing?), or join the game's Discord here: https://discord.gg/Y3x7qKv.
 
-The latest build is v0.4 (1/10/2019)
-Download link: https://www.mediafire.com/file/aou308j2ugunk2v/WorldOfNenn_0_4.zip/file
+The latest build is v0.4 (1/12/2019)
+Download link: https://www.mediafire.com/file/bo9o49jom8gxgo9/WorldOfNenn_0_4.zip/file.
 Everyone should be able to run this without installing additional libraries.
