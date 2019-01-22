@@ -83,12 +83,13 @@ void C_Entity::update(const GameTime& gameTime)
 			// Integrate for position
 			auto velocity = (targetPos - drawPos) / distanceToTarget; // Normalize
 			float positionStepSize = gameTime.deltaTime * S_TICKS_PER_SECOND / moveKey.speed;
-			// Move faster along diagonals
-			auto cellDiff = moveKey.pos - position;
-			if (cellDiff.x != 0 && cellDiff.y != 0)
-				positionStepSize *= 1.41f;
+			
+			// Move faster along diagonals (FIX)
+			//auto cellDiff = moveKey.pos - position;
+			//if (cellDiff.x != 0 && cellDiff.y != 0)
+			//	positionStepSize *= 1.41f;
 
-			velocity = velocity * positionStepSize * 0.8f;
+			velocity = velocity * positionStepSize * 0.95f;
 			drawPos = drawPos + velocity;
 
 			// Integrate for rotation
@@ -105,7 +106,7 @@ void C_Entity::update(const GameTime& gameTime)
 	if (combatState.currentHealth < combatState.maxHealth)
 	{
 		m_healthbar.setValue((float)combatState.currentHealth / (float)combatState.maxHealth);
-		sf::Vector2f healthbarPosition = sf::Vector2f(snappedDrawPos.x * 16, snappedDrawPos.y * 16 - 10);
+		sf::Vector2f healthbarPosition = sf::Vector2f(snappedDrawPos.x, snappedDrawPos.y - 10);
 		healthbarPosition.x = std::floorf(healthbarPosition.x);
 		healthbarPosition.y = std::floorf(healthbarPosition.y);
 		m_healthbar.setCenter(healthbarPosition);
@@ -117,8 +118,11 @@ void C_Entity::update(const GameTime& gameTime)
 	}
 
 	// Update the floating text
-	m_floatingText.update(gameTime, sf::Vector2f(0, 0));
-	m_floatingText.setCenter(snappedDrawPos * 16.f + sf::Vector2f(240, 150));
+	if (!m_floatingText.isExpired())
+	{
+		m_floatingText.update(gameTime, sf::Vector2f(0, 0));
+		m_floatingText.setCenter(snappedDrawPos + sf::Vector2f(0, -24));
+	}
 }
 
 void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -149,7 +153,7 @@ void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			circle.setFillColor(sf::Color::Red);
 
 		sf::Text text;
-		text.setPosition(circle.getPosition() + sf::Vector2f(4, 0));
+		text.setPosition(circle.getPosition() + sf::Vector2f(4, -3));
 		text.setFont(*m_font_hitsplat);
 		text.setCharacterSize(12);
 		text.setFillColor(sf::Color::Black);
@@ -161,7 +165,8 @@ void C_Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 	// Floating chat text
-	m_floatingText.draw(target);
+	if (!m_floatingText.isExpired())
+		m_floatingText.draw(target);
 }
 
 const sf::Color C_Entity::getColor() const

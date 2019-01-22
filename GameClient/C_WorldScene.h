@@ -1,5 +1,16 @@
 #pragma once
-#include <GL/glew.h>
+//#include <Magnum/Magnum.h>
+//#include <Magnum/GL/Buffer.h>
+//#include <Magnum/GL/DefaultFramebuffer.h>
+//#include <Magnum/GL/Mesh.h>
+//#include <Magnum/GL/Context.h>
+//#include <Magnum/Shaders/VertexColor.h>
+//#include <Magnum/Platform/GLContext.h>
+//#include <Magnum/SceneGraph/Camera.h>
+//#include <Magnum/SceneGraph/Drawable.h>
+//#include <Magnum/SceneGraph/MatrixTransformation3D.h>
+//#include <Magnum/SceneGraph/Object.h>
+//#include <Magnum/SceneGraph/Scene.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 #include <vector>
@@ -12,6 +23,8 @@
 #include "RightClickOption.h"
 #include "RCOption.h"
 #include "OrbitCamera.h"
+#include <memory>
+#include "Terrain.h"
 
 //  _______________________
 // |				|	   |
@@ -21,6 +34,12 @@
 // |________________|	   |
 // |	CHATBOX		|	   |
 // |________________|______|
+
+using namespace std;
+
+//typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
+//typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
+//typedef SceneGraph::Camera3D //<SceneGraph::MatrixTransformation3D> Camera3D;
 
 class SceneManager
 {
@@ -35,8 +54,15 @@ private:
 	C_WorldMap m_worldMap;
 
 	// 3D
-	OrbitCamera m_cam;
-	sf::Shader m_shader;
+	//std::unique_ptr<Platform::GLContext> m_context;
+	//Scene3D m_scene;
+	//GL::Mesh m_mesh {NoCreate};
+	//Shaders::VertexColor3D m_shader {NoCreate};
+	//SceneGraph::DrawableGroup3D m_drawables;
+	//unique_ptr<Terrain> m_terrain;
+	
+	//Object3D* m_cameraObject;
+	//SceneGraph::Camera3D* m_camera;
 
 	// GUI
 	sf::RectangleShape m_interface;

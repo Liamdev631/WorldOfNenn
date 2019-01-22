@@ -55,7 +55,7 @@ void S_LoginManager::loadPlayers()
 				m_connectionsToLoad.pop();
 
 				// Load the players save file
-				std::string filename = "assets\\saves\\save_" + std::string(conn->username) + ".sav";
+				std::string filename = "saves/save_" + std::string(conn->username) + ".sav";
 				//fstream file;
 				//file.open(filename, ios::in | ios::out | ios::binary);
 				//file.write("send nudez please", sizeof("send nudez please"));
@@ -81,6 +81,8 @@ void S_LoginManager::loadPlayers()
 					printf("Creating a save file for user:%s\n", conn->username);
 					file.open(filename, ios::in | ios::out | ios::app | ios::binary);
 					state = SaveState::newSave(conn);
+					state.position.x += rand() % 4;
+					state.position.y += rand() % 4;
 					file.write((const char*)(&state), sizeof(SaveState));
 				}
 				SaveState::loadPlayersState(state, conn);

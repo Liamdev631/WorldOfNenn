@@ -17,6 +17,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ClientPackets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CombatState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CSVReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)StatSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EntityType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Equipment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameTime.h" />

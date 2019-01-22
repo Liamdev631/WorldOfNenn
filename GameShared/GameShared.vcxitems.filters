@@ -37,6 +37,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Equipment.h">
       <Filter>Equipment</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)StatSet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)npctable.csv" />

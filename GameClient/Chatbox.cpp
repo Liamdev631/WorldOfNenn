@@ -24,7 +24,7 @@ Chatbox::Chatbox()
 	m_inputBufferText.setFillColor(sf::Color::Black);
 	m_inputBufferText.setCharacterSize(15);
 	m_inputBufferText.setPosition((float)ChatboxPos.x + 6.f, ChatboxPos.y + ChatboxSize.y - 18.f);
-	m_inputBufferText.setString(L"Chat: *");
+	m_inputBufferText.setString(L"?: *");
 
 	setScrollValue(0.0f);
 }
@@ -70,15 +70,14 @@ void Chatbox::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 			break;
 		if (ev.key.code == sf::Keyboard::Key::Enter)
 		{
-			// Press enter to print the typed text
-			//addText(L"Chat: " + m_inputBuffer);
-
 			// Send the text to the server
 			C_Client::get().getPacket().write(CP_ChatText(m_inputBuffer.toWideString()));
 
 			// Reset
 			m_inputBuffer.clear();
-			m_inputBufferText.setString(L"Chat: *");
+			auto thisPlayer = C_WorldManager::get().getThisEntity();
+			if (thisPlayer != nullptr)
+				m_inputBufferText.setString(thisPlayer->username + L": *");
 			break;
 		}
 		break;
@@ -89,7 +88,9 @@ void Chatbox::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 		if (!m_active)
 			break;
 		m_inputBuffer += ev.text.unicode;
-		m_inputBufferText.setString(L"Chat: " + m_inputBuffer + L"*");
+		auto thisPlayer = C_WorldManager::get().getThisEntity();
+		if (thisPlayer != nullptr)
+			m_inputBufferText.setString(thisPlayer->username + L": " + m_inputBuffer + L"*");
 		break;
 	}
 
@@ -101,7 +102,9 @@ void Chatbox::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 
 void Chatbox::update(const GameTime& time, const sf::Vector2f& mousePos)
 {
-
+	auto thisPlayer = C_WorldManager::get().getThisEntity();
+	if (thisPlayer != nullptr)
+		m_inputBufferText.setString(thisPlayer->username + L": " + m_inputBuffer + L"*");
 }
 
 void Chatbox::draw(sf::RenderTarget& target) const

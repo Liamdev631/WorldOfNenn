@@ -23,8 +23,20 @@ C_Client::~C_Client()
 	m_client->disconnect();
 }
 
+#ifdef WIN32
+#include <windows.h>
+std::string getexepath()
+{
+	char result[MAX_PATH];
+	return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
+}
+#endif
+
 void C_Client::start()
 {
+#ifdef WIN32
+	printf("WINDOWS: Client running from %s.\n", getexepath().c_str());
+#endif
 	printf("Client is looking for server!\n");
 	m_client->connect(enetpp::client_connect_params()
 		.set_channel_count(1)
@@ -186,6 +198,7 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 		C_Entity* entity = C_WorldManager::get().getEntity(p.uid);
 		entity->setEntityType(p.entityType);
 		entity->addMoveKey(p.move);
+		entity->username = sf::String(p.username);
 		break;
 	}
 
@@ -267,14 +280,16 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 		const SP_ChatText& p = *packet.read<SP_ChatText>();
 		std::wstring str = std::wstring(p.message);
 
+		auto speaker = C_WorldManager::get().getEntity(p.speaker);
+
 		// Send the text to chat
 		std::wstringstream textBuilder;
-		textBuilder << L"Player " << p.speaker << L": " << str;
+		//textBuilder << L"Player " << p.speaker << L": " << str;
+		textBuilder << speaker->username.toWideString() << L": " << str;
 		Chatbox::get().addText(textBuilder.str());
 
 		// Set the floating text above the player
-		auto speaker = C_WorldManager::get().getEntity(p.speaker);
-		//speaker->setFloatingText(str);
+		speaker->setFloatingText(str);
 
 		break;
 	}

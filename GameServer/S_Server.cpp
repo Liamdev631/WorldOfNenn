@@ -25,7 +25,6 @@ void S_Server::start()
 {
 	timestamp = 0;
 
-	printf("Listening on port 801.\n");
 	auto init_client_func = [&](S_Entity_Player& client, const char* ip) {
 		clientInitFunc(client, ip);
 	};
@@ -35,12 +34,11 @@ void S_Server::start()
 		.set_channel_count(1)
 		.set_listen_port(801)
 		.set_initialize_client_function(init_client_func));
+	printf("Listening on port 801.\n");
 
 	printf("Loading NPCs.\n");
-
 	//auto npc1 = m_worldManager->registerNPC(0, ET_RAT);
 	//npc1->getMovement().blinkTo(vec2s(50, 50));
-
 	CSVReader reader;
 	reader.open("assets/data/EntityInstanceData.csv");
 	reader.readNextRow(); // Skip the first line
@@ -90,7 +88,9 @@ void S_Server::addConnectedPlayers()
 		p.uid = newConnection->uid;
 		packet.write(p);
 		newConnection->inventory.serialize(packet);
+
 		newConnection->getMovement().blinkTo(newConnection->getMovement().getPos()); // This sends updates to nearby players
+		
 		newConnection->getBuffer().write(SP_ExperienceTable(newConnection->exp));
 
 		printf("Client (%d) added as a player.\n", newConnection->uid);
@@ -106,7 +106,7 @@ void S_Server::disconnectPlayer(S_Entity_Player& player)
 	m_worldManager->deregisterPlayer(&player);
 
 	// Save the player's state
-	std::string filename = "assets\\saves\\save_" + std::string(player.username) + ".sav";
+	std::string filename = "saves/save_" + std::string(player.username) + ".sav";
 	SaveState newState;
 	SaveState::savePlayerState(newState, &player);
 	//fstream file(filename, ios::out | ios::app | ios::binary | ios::trunc);

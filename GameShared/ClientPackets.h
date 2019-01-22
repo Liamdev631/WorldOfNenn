@@ -82,7 +82,7 @@ struct CP_ChatText
 	{
 		if (text.length() >= 64)
 			return;
-		memcpy_s(&message, sizeof(wchar_t) * 64, text.c_str(), 64);
+		memcpy_s(&message, sizeof(wchar_t) * 64, text.c_str(), sizeof(wchar_t) * 64);
 		message[text.length()] = '\0';
 	}
 };

@@ -129,10 +129,12 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 			iter != thisRegion.getEntities().end(); iter++)
 		{
 			auto otherEntity = iter->second;
-			SP_EntityStatus& p = *packetBuffer.writePacket<SP_EntityStatus>();
+			auto& p = *packetBuffer.writePacket<SP_EntityStatus>();
 			p.uid = otherEntity->uid;
 			p.entityType = otherEntity->getEntityType();
 			p.move = otherEntity->getMovement().moveKey;
+			if (otherEntity->asPlayer() != nullptr)
+				p.setUsername(otherEntity->asPlayer()->username);
 		}
 	}
 
@@ -147,6 +149,8 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 		p.uid = owner.uid;
 		p.entityType = owner.getEntityType();
 		p.move = moveKey;
+		if (iter->second->asPlayer() != nullptr)
+			p.setUsername(iter->second->asPlayer()->username);
 	}
 }
 
@@ -237,6 +241,8 @@ void S_MovementComponent::stepTowards(const vec2s& target)
 	p.uid = owner.uid;
 	p.move = moveKey;
 	p.entityType = owner.getEntityType();
+	if (owner.asPlayer() != nullptr)
+		p.setUsername(owner.asPlayer()->username);
 
 	auto nearbyPlayers = getWorldRegion().getConnections();
 	for (auto iter = nearbyPlayers.begin(); iter != nearbyPlayers.end(); iter++)

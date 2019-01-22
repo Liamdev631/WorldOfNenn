@@ -30,6 +30,7 @@ public:
 	float deathAnimationTimer;
 	CombatState combatState;
 	std::deque<HitMarker> hitMarkers;
+	sf::String username;
 
 	// Animation
 	sf::Vector2f drawPos;

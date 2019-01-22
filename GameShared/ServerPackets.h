@@ -5,6 +5,7 @@
 #include "MoveKey.h"
 #include "Skills.h"
 #include "EntityType.h"
+#include <string>
 
 typedef u8 packet_header;
 
@@ -29,6 +30,11 @@ struct SP_EntityStatus
 	u16 uid;
 	EntityType entityType;
 	MoveKey move;
+	char username[12];
+
+	void setUsername(char* user) {
+		strcpy_s(username, 12, user);
+	}
 };
 #pragma pack(pop)
 

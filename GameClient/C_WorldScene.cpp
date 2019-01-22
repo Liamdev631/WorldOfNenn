@@ -7,6 +7,7 @@
 #include "SideMenu.h"
 #include "RunButton.h"
 #include "C_Client.h"
+//#include <GL/glew.h>
 
 SceneManager::SceneManager()
 {
@@ -17,15 +18,9 @@ SceneManager::SceneManager()
 	settings.stencilBits = 0;
 	m_window.create(sf::VideoMode(GuiSize.x, GuiSize.y), "World of Nenn", sf::Style::Default, settings);
 	m_window.setVerticalSyncEnabled(true);
+	m_window.setActive(true);
 
-	// Initialize GLEW
-	glewExperimental = true;
-	GLenum err = glewInit();
-	if (err)
-	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-	}
+	//m_context = std::make_unique<Platform::GLContext>();
 
 	// Create the render texture for the game world
 	if (!m_gameScene.create(WorldSceneSize.x, WorldSceneSize.y, settings))
@@ -48,11 +43,30 @@ SceneManager::SceneManager()
 	SideMenu::get();
 
 	// Move the camera to it's starting position
-	m_cam.setPitch(0.2f);
-
-	// Load shaders
-	m_shader.loadFromFile("assets/shaders/red.vert", "assets/shaders/red.frag");
-	//m_shader.loadFromFile()
+	//m_cameraObject = new Object3D(&m_scene);
+	//m_camera = new SceneGraph::Camera3D(*m_cameraObject);
+	//struct TriangleVertex {
+	//	Vector3 position;
+	//	Color3 color;
+	//};
+	//const TriangleVertex data[]{
+	//	{ {-0.5f, -0.5f, 0.f}, 0xff0000_rgbf },    /* Left vertex, red color */
+	//	{ { 0.5f, -0.5f, 0.f}, 0x00ff00_rgbf },    /* Right vertex, green color */
+	//	{ { 0.0f,  0.5f, 0.f}, 0x0000ff_rgbf }     /* Top vertex, blue color */
+	//};
+	//
+	//GL::Buffer buffer;
+	//buffer.setData(data);
+	////m_mesh = make_unique<GL::Mesh>();
+	//m_mesh = GL::Mesh(GL::MeshPrimitive::Triangles);
+	//m_mesh.setPrimitive(GL::MeshPrimitive::Triangles)
+	//	.setCount(3)
+	//	.addVertexBuffer(std::move(buffer), 0,
+	//		Shaders::VertexColor3D::Position(),
+	//		Shaders::VertexColor3D::Color3());
+	//m_shader = Shaders::VertexColor3D();
+	//m_drawables.add(m_mesh);
+	//m_terrain = make_unique<Terrain>(32, 32, m_scene, m_drawables);
 
 	m_uiComponents.push_back(&Chatbox::get());
 	m_uiComponents.push_back(&SideMenu::get());
@@ -169,8 +183,8 @@ void SceneManager::update(const GameTime& gameTime)
 void SceneManager::draw()
 {
 	/////// World Space ///////
-	//drawGameScene();
-	draw3d();
+	drawGameScene();
+	//draw3d();
 
 	/////// Screen Space ///////
 	m_window.pushGLStates();
@@ -224,36 +238,17 @@ void SceneManager::draw3d()
 {
 	// Prep for drawing
 	m_gameScene.setActive(true);
-	m_gameScene.clear(sf::Color::Black);
 
-	// Camera
-	m_cam.addRotation(0.02f);
+	//GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth)
+	//	.bind();
 
-	glMatrixMode(GL_PROJECTION);
-	auto projection = m_cam.getProjection();
-	auto view = m_cam.getView();
-	auto vp = view * projection;
-	//glLoadMatrixf(&vp[0][0]);
+	//m_shader.setTransformationProjectionMatrix(m_camera->projectionMatrix());
+	//m_mesh.draw(m_shader);
+	//m_camera->draw(m_drawables);
 
-	//glUseProgram(m_shader.getNativeHandle());
-	sf::Shader::bind(&m_shader);
-
-	// Draw the triangle
-	glMatrixMode(GL_MODELVIEW);
-	glBegin(GL_TRIANGLES);
-	glColor3f(1.f, 0.f, 0.f);
-	glVertex3f(-0.5f, -0.5f, 0.f);
-	glColor3f(0.f, 1.f, 0.f);
-	glVertex3f(0.5f, -0.5f, 0.f);
-	glColor3f(0.f, 0.f, 1.f);
-	glVertex3f(-0.5f, 0.5f, 1.f);
-	glEnd();
-
-	sf::Shader::bind(NULL);
-
-	// Swap buffers
 	m_gameScene.display();
 	m_gameScene.setActive(false);
+	//GL::Context::current().resetState();
 }
 
 void SceneManager::drawGui()
@@ -410,6 +405,9 @@ void SceneManager::onRightClick()
 			// Add entities
 			for (size_t i = 0; i < m_entitiesUnderMouse.size(); i++)
 			{
+				if (m_entitiesUnderMouse[i]->uid == C_WorldManager::get().getThisEntity()->uid)
+					continue; // You can't click on this player
+
 				// Add an entity to the rco menu options list
 				// TODO: Entities with a higher level than the player have the attack option shown last
 				Target t;
