@@ -142,6 +142,7 @@
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="C_Client.h" />
     <ClInclude Include="C_Entity.h" />
+    <ClInclude Include="C_ObjectManager.h" />
     <ClInclude Include="C_WorldManager.h" />
     <ClInclude Include="C_ItemManager.h" />
     <ClInclude Include="C_MouseState.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="Crosshair.cpp" />
     <ClCompile Include="C_Client.cpp" />
     <ClCompile Include="C_Entity.cpp" />
+    <ClCompile Include="C_ObjectManager.cpp" />
     <ClCompile Include="C_WorldManager.cpp" />
     <ClCompile Include="C_ItemManager.cpp" />
     <ClCompile Include="C_Main.cpp" />
@@ -184,10 +186,6 @@
     <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="RunButton.cpp" />
     <ClCompile Include="SideMenu.cpp" />
-    <ClCompile Include="Terrain.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Fractal.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TerrainFragmentShader.frag" />

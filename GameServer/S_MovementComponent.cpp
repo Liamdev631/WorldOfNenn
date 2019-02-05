@@ -139,7 +139,7 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 	}
 
 	// Tell nearby players that the entity has appeared
-	for (auto iter = thisRegion.getConnections().begin(); iter != thisRegion.getConnections().end(); iter++)
+	for (auto iter = thisRegion.getPlayers().begin(); iter != thisRegion.getPlayers().end(); iter++)
 	{
 		if (iter->second == &owner)
 			continue;
@@ -244,7 +244,7 @@ void S_MovementComponent::stepTowards(const vec2s& target)
 	if (owner.asPlayer() != nullptr)
 		p.setUsername(owner.asPlayer()->username);
 
-	auto nearbyPlayers = getWorldRegion().getConnections();
+	auto nearbyPlayers = getWorldRegion().getPlayers();
 	for (auto iter = nearbyPlayers.begin(); iter != nearbyPlayers.end(); iter++)
 	{
 		auto& packet = iter->second->getBuffer();

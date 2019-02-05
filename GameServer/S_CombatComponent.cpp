@@ -77,9 +77,19 @@ void S_CombatComponent::update()
 	}
 }
 
-void S_CombatComponent::initiateCombat(S_Entity& newTarget)
+void S_CombatComponent::initiateCombat(S_CombatComponent& newTarget)
 {
-	if (newTarget.getCombat().isInCombat && newTarget.getCombat().target != owner.uid)
+	// Can't attack self
+	if (newTarget.owner.uid == owner.uid)
+	{
+		auto player = owner.asPlayer();
+		if (player)
+			player->printInChatbox(L"You can't attack yourself, goofball!.");
+		return;
+	}
+
+	// Can't attack something that is already in combat unless this is a multicombat zone
+	if (newTarget.isInCombat)
 	{
 		auto player = owner.asPlayer();
 		if (player)
@@ -87,9 +97,9 @@ void S_CombatComponent::initiateCombat(S_Entity& newTarget)
 		return;
 	}
 
-	target = newTarget.uid;
+	target = newTarget.owner.uid;
 	isInCombat = true;
-	owner.getMovement().startFollow(newTarget);
+	owner.getMovement().startFollow(newTarget.owner);
 }
 
 void S_CombatComponent::takeDamage(S_CombatComponent& attacker, u8 damage)
@@ -107,16 +117,13 @@ void S_CombatComponent::takeDamage(S_CombatComponent& attacker, u8 damage)
 		// Take damage
 		combatState.currentHealth -= damage;
 		if (!isInCombat)
-			initiateCombat(attacker.owner); // Retaliate
+			initiateCombat(attacker); // Retaliate
 	}
 
 	// Tell nearby players about the hit
-	auto& connectionList = owner.getMovement().getWorldRegion().getConnections();
+	auto& connectionList = owner.getMovement().getWorldRegion().getPlayers();
 	for (auto& conn : connectionList)
-	{
-		auto& buffer = conn.second->getBuffer();
-		buffer.write(SP_EntityTookDamage(owner.uid, damage, combatState));
-	}
+		conn.second->getBuffer().write(SP_EntityTookDamage(owner.uid, damage, combatState));
 }
 
 void S_CombatComponent::die()
@@ -150,4 +157,26 @@ void S_CombatComponent::totalReset()
 {
 	endUpdate();
 	combatState.endUpdate();
+}
+
+bool S_CombatComponent::heal(u8 amount)
+{
+	if (combatState.currentHealth == combatState.maxHealth)
+		return false;
+
+	combatState.currentHealth += amount;
+	if (combatState.currentHealth > combatState.maxHealth)
+		combatState.currentHealth = combatState.maxHealth;
+
+	// Notify nearby players
+	auto region = owner.getMovement().getWorldRegion();
+	for (auto player : region.getPlayers())
+		player.second->getBuffer().write(SP_CombatStateChange(owner.uid, combatState));
+
+	return true;
+}
+
+void S_CombatComponent::heal()
+{
+	combatState.currentHealth = combatState.maxHealth;
 }

@@ -43,6 +43,9 @@
       <Filter>Items</Filter>
     </ClCompile>
     <ClCompile Include="SaveState.cpp" />
+    <ClCompile Include="S_ObjectManager.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="S_GlobalServer.h" />
@@ -76,5 +79,8 @@
       <Filter>Items</Filter>
     </ClInclude>
     <ClInclude Include="SaveState.h" />
+    <ClInclude Include="S_ObjectManager.h">
+      <Filter>World</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

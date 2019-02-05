@@ -164,6 +164,14 @@ public:
 		return false;
 	}
 
+	bool getPreferredSlot(ItemType type, u8& slot) const
+	{
+		if (itemStacks[slot].type == type)
+			return true;
+		else
+			return firstSlotContaining(type, slot);
+	}
+
 	// Returns true if the container has any stacks of the given ItemType
 	bool containsItemType(ItemType type) const
 	{

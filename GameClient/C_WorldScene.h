@@ -59,7 +59,7 @@ private:
 	//GL::Mesh m_mesh {NoCreate};
 	//Shaders::VertexColor3D m_shader {NoCreate};
 	//SceneGraph::DrawableGroup3D m_drawables;
-	//unique_ptr<Terrain> m_terrain;
+	unique_ptr<Terrain> m_terrain;
 	
 	//Object3D* m_cameraObject;
 	//SceneGraph::Camera3D* m_camera;

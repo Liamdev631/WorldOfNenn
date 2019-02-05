@@ -4,6 +4,7 @@
 #include "Global.h"
 #include "Skills.h"
 #include "ItemContainer.h"
+#include "Object.h"
 
 class S_Entity_Player : public S_Entity
 {
@@ -35,6 +36,11 @@ public:
 
 	// Adds experience to a skill and notifies the player of a change
 	void addExperience(Skill skill, exp_val amount);
+
+	// Sends a list of all objects close to the player's position
+	void sendAllNearbyObjects() const;
+
+	void sendObject(Object& object);
 
 	// Overrides
 	void onRespawn() override;

@@ -3,7 +3,7 @@
 #include <functional>
 #include <map>
 
-typedef std::function<void(S_Entity_Player&, u8)> useItemFunc;
+typedef std::function<void(S_Entity_Player& user, ItemType type, u8 slot)> useItemFunc;
 std::map<ItemType, useItemFunc> funcHashes;
 
 UseItem::UseItem()
@@ -15,9 +15,17 @@ UseItem::~UseItem()
 
 }
 
+inline void addFunc(ItemType type, useItemFunc func)
+{
+	funcHashes[type] = func;
+}
+
 void UseItem::init()
 {
-	funcHashes[ITEM_BONES] = buryRegBones;
+	//funcHashes[ITEM_BONES] = buryRegBones;
+	addFunc(ITEM_BONES, buryRegBones);
+	addFunc(ITEM_RAW_RAT_MEAT, eatFood_1);
+	addFunc(ITEM_COOKED_RAT_MEAT, eatFood_3);
 }
 
 void UseItem::use(S_Entity_Player& player, ItemType itemType, u8 slot)
@@ -41,5 +49,5 @@ void UseItem::use(S_Entity_Player& player, ItemType itemType, u8 slot)
 	}
 
 	// Call the use function
-	func->second(player, slot);
+	func->second(player, itemType, slot);
 }

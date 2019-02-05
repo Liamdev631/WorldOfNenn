@@ -11,7 +11,7 @@ SideMenu::SideMenu()
 	m_menuTabs[SideMenuTab::Tab_Experience] = &ExperienceTab::get();
 
 	// Create the buttons for switching tabs
-	sf::Vector2f tabPos = sf::Vector2f(522, 168);
+	sf::Vector2f tabPos = sf::Vector2f(520, 168);
 	sf::Vector2f tabSize = sf::Vector2f(30, 37);
 
 	for (int y = 0; y < 2; y++)
@@ -20,7 +20,7 @@ SideMenu::SideMenu()
 			int index = x + y * 8;
 			auto& tab = m_tabButtons[index];
 			tab = sf::RectangleShape(tabSize);
-			tab.setPosition(tabPos + sf::Vector2f(tabSize.x * x, 298.f * y));
+			tab.setPosition(tabPos + sf::Vector2f(tabSize.x * x - 1, 298.f * y));
 			tab.setSize(tabSize);
 			tab.setOutlineColor(sf::Color::Red);
 

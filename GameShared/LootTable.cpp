@@ -66,13 +66,13 @@ namespace hidden
 		// 2 - Rat
 		addAlwaysDrop(EntityType::ET_RAT, Entry_SingleBone); // This is an example of a premade loot entry
 		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_RAW_RAT_MEAT));
-		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_COINS, 3, 5));
+		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_COINS, 1, 3));
 
 		// 3 - Pig
 		addAlwaysDrop(EntityType::ET_PIG, Entry_SingleBone);
-		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_COINS, 5, 10));
+		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_COINS, 2, 5));
 		addLootTable(EntityType::ET_PIG, new LootTable {
-			LootEntry(ItemType::ITEM_BRONZE_SWORD, DR_HALF, 1, 1),
+			LootEntry(ItemType::ITEM_BRONZE_SWORD, DR_COMMON, 1, 1),
 			});
 	}
 
@@ -100,7 +100,7 @@ std::vector<ItemStack> LootGenerator::generateLoot(EntityType entityType)
 	for (auto& lootTable : getEntityLootTables(entityType))
 	{
 		u16 amount;
-		if (lootTable->size() == 1 && lootTable[0].size() == 1)
+		if (lootTable->size() == 1 && lootTable->at(0).dropRate == DR_ALWAYS)
 		{
 			// Only one item in the table. Add it.
 			const auto& item = (*lootTable)[0];
@@ -111,13 +111,13 @@ std::vector<ItemStack> LootGenerator::generateLoot(EntityType entityType)
 		}
 		else
 		{
-			u16 cumulativeChance = rand() % DR_ALWAYS;
+			u16 random = rand() % DR_ALWAYS, counter = 0;
 			for (int i = lootTable->size() - 1; i >= 0; i--)
 			{
-				auto& dr = (*lootTable)[i].dropRate;
+				counter += (*lootTable)[i].dropRate;
 
 				// Entries with a lower index have the highest drop rate
-				if (cumulativeChance < dr)
+				if (counter > random)
 				{
 					const auto& item = (*lootTable)[i];
 					amount = item.amount;
@@ -126,8 +126,6 @@ std::vector<ItemStack> LootGenerator::generateLoot(EntityType entityType)
 					ret.push_back(ItemStack(item.type, amount));
 					break;
 				}
-				else
-					cumulativeChance -= dr;
 			}
 		}
 	}

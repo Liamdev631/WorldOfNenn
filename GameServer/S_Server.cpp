@@ -5,6 +5,7 @@
 #include "UseItem.h"
 #include "CSVReader.h"
 #include "SaveState.h"
+#include "S_ObjectManager.h"
 
 S_Server::S_Server()
 {
@@ -14,10 +15,13 @@ S_Server::S_Server()
 	m_loginManager = new S_LoginManager();
 	m_worldManager = new S_WorldManager();
 	m_loadedPlayers.reserve(MAX_PLAYERS);
+	S_ObjectManager::get();
 }
 
 S_Server::~S_Server()
 {
+	for (auto& player : m_loadedPlayers)
+		disconnectPlayer(*player);
 	m_server->stop_listening();
 }
 
@@ -62,6 +66,7 @@ void S_Server::addConnectedPlayers()
 	auto newConnection = m_loginManager->popPlayer();
 	while (newConnection)
 	{
+		// Send the connection state packet
 		if (newConnection->forceDisconnect)
 		{
 			newConnection->getBuffer().write(SP_LoginResult(LoginResult::PasswordIncorrect));
@@ -79,19 +84,26 @@ void S_Server::addConnectedPlayers()
 			newConnection->getBuffer().endUpdate();
 		}
 
+		// Add the okayer to the world manager
 		m_worldManager->registerPlayer(newConnection);
 		m_loadedPlayers.push_back(newConnection);
 		auto& packet = newConnection->getBuffer();
 
+		// Send the hello packet
 		SP_Hello p = SP_Hello();
 		p.timestamp = timestamp;
 		p.uid = newConnection->uid;
 		packet.write(p);
 		newConnection->inventory.serialize(packet);
 
+		// Move the player and tell everyone else
 		newConnection->getMovement().blinkTo(newConnection->getMovement().getPos()); // This sends updates to nearby players
 		
+		// Send the player their new exp table
 		newConnection->getBuffer().write(SP_ExperienceTable(newConnection->exp));
+
+		// Send the player all nearby objects
+		//newConnection->sendAllNearbyObjects();
 
 		printf("Client (%d) added as a player.\n", newConnection->uid);
 		newConnection = m_loginManager->popPlayer();
@@ -240,7 +252,7 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 			{
 				// Request to attack
 				const CP_AttackEntity& p = *packet.read<CP_AttackEntity>();
-				player.getCombat().initiateCombat(*m_worldManager->getEntity(p.uid));
+				player.getCombat().initiateCombat(m_worldManager->getEntity(p.uid)->getCombat());
 				continue;
 			}
 

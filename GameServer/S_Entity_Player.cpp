@@ -1,6 +1,7 @@
 #include "S_Entity_Player.h"
 #include "S_Region.h"
 #include "ServerPackets.h"
+#include "S_ObjectManager.h"
 
 S_Entity_Player::S_Entity_Player()
 	: S_Entity(9999, EntityType::ET_PLAYER, R_Overworld), m_buffer(new WPacket(1024 * 16)), forceDisconnect(false)
@@ -156,4 +157,18 @@ void S_Entity_Player::onDeath()
 void S_Entity_Player::onRespawn()
 {
 	m_movement.blinkTo(vec2s(115, 115));
+}
+
+void S_Entity_Player::sendAllNearbyObjects() const
+{
+	auto& objectManager = S_ObjectManager::get();
+	m_buffer->write(SP_ObjectInstance((u16)objectManager.getObjects().size()));
+	for (auto& object : objectManager.get().getObjects())
+		m_buffer->write<Object>(object);
+}
+
+void S_Entity_Player::sendObject(Object& object)
+{
+	m_buffer->write(SP_ObjectInstance(1));
+	m_buffer->write(object);
 }

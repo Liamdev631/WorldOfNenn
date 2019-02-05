@@ -5,6 +5,7 @@
 #include "C_WorldScene.h"
 #include "RunButton.h"
 #include "ExperienceTab.h"
+#include "C_ObjectManager.h"
 
 C_Client::C_Client()
 {
@@ -37,14 +38,6 @@ void C_Client::start()
 #ifdef WIN32
 	printf("WINDOWS: Client running from %s.\n", getexepath().c_str());
 #endif
-	printf("Client is looking for server!\n");
-	m_client->connect(enetpp::client_connect_params()
-		.set_channel_count(1)
-		.set_server_host_name_and_port(SERVER_IP, 801));
-	m_connectionState = ConnectionState::SayingHello;
-
-	SceneManager::get();
-
 	// Ask for login info and send it to the server
 	printf("Username?\n");
 	char username[12];
@@ -71,6 +64,14 @@ void C_Client::start()
 	printf("user: %s\n", username);
 	printf("pass: %s\n", password);
 
+	printf("Client is looking for server!\n");
+	m_client->connect(enetpp::client_connect_params()
+		.set_channel_count(1)
+		.set_server_host_name_and_port(SERVER_IP, 801));
+	m_connectionState = ConnectionState::SayingHello;
+
+	SceneManager::get();
+
 	m_packetBuffer->write(CP_Login(username, password, 5));
 	m_client->send_packet(0, m_packetBuffer->getData(), m_packetBuffer->getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
 	m_packetBuffer->endUpdate();
@@ -95,7 +96,7 @@ bool C_Client::update()
 	//	return false;
 	C_WorldManager::get().update(m_timer);
 	SceneManager::get().update(m_timer);
-
+
 	// END GAME LOGIC
 
 	// Send the packet buffer
@@ -330,6 +331,21 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 			default:
 				break;
 		}
+		break;
+	}
+
+	case SP_CombatStateChange_header:
+	{
+		const auto& p = *packet.read<SP_CombatStateChange>();
+		C_WorldManager::get().getEntity(p.entity)->combatState = p.newState;
+		break;
+	}
+
+	case SP_ObjectInstance_header:
+	{
+		const auto& p = *packet.read<SP_ObjectInstance>();
+		for (int i = 0; i < p.numObjects; i++)
+			C_ObjectManager::get().addObject(*packet.read<Object>());
 		break;
 	}
 

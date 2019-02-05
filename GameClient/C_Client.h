@@ -11,7 +11,7 @@
 #include "ItemContainer.h"
 #include "EntityType.h"
 
-constexpr auto SERVER_IP = "216.66.125.123";// "localhost";
+constexpr auto SERVER_IP = "localhost";
 constexpr bool LOG_PACKET_HEADERS = false;
 
 enum ConnectionState

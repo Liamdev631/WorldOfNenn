@@ -9,6 +9,7 @@ C_WorldMap::C_WorldMap()
 	: m_loaded(false), m_running(true), m_mapLoadingThread(&C_WorldMap::mapLoadingThread, this)
 {
 	m_mapSize = vec2s(640 / 16 + (u16)MaxCenterOffset * 2 + 2, 480 / 16 + (u16)MaxCenterOffset * 2 + 2);
+	m_mapLayers = new MapLayer*[2];
 }
 
 C_WorldMap::~C_WorldMap()
@@ -41,8 +42,10 @@ void C_WorldMap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 	m_mapLayerMutex.lock();
 	{
-		if (m_mapLayer)
-			target.draw(*m_mapLayer);
+		if (m_mapLayers[0])
+			target.draw(*m_mapLayers[0]);
+		if (m_mapLayers[1])
+			target.draw(*m_mapLayers[1]);
 	}
 	m_mapLayerMutex.unlock();
 }
@@ -77,7 +80,8 @@ void C_WorldMap::loadMapAtPoint(const sf::Vector2u& pos)
 	if (mapy < 0)
 		mapy = 0;
 	auto start = std::chrono::high_resolution_clock::now();
-	MapLayer* newLayer = new MapLayer(m_map, 0, tmx::IntRect(mapx, mapy, m_mapSize.x, m_mapSize.y));
+	auto m0 = new MapLayer(m_map, 0, tmx::IntRect(mapx, mapy, m_mapSize.x, m_mapSize.y));
+	auto m1 = new MapLayer(m_map, 1, tmx::IntRect(mapx, mapy, m_mapSize.x, m_mapSize.y));
 	auto finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	printf("Map loaded at (%u,%u) in %f seconds\n", pos.x, pos.y, (float)elapsed.count());
@@ -86,7 +90,8 @@ void C_WorldMap::loadMapAtPoint(const sf::Vector2u& pos)
 	m_mapLayerMutex.lock();
 	//if (m_mapLayer)
 	//	delete m_mapLayer;
-	m_mapLayer = newLayer;
+	m_mapLayers[0] = m0;
+	m_mapLayers[1] = m1;
 	m_mapLayerMutex.unlock();
 }
 

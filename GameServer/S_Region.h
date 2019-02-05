@@ -23,7 +23,7 @@ public:
 
 	void update();
 
-	std::map<u16, S_Entity_Player*>& getConnections();
+	std::map<u16, S_Entity_Player*>& getPlayers();
 	
 	// Entities
 	std::map<u16, S_Entity*>& getEntities();

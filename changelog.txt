@@ -1,1 +1,13 @@
- 
+Build 0.6
+-Eating raw meat now heals 1 hp.
+-Eating cooked rat meat now heals for 3 hp.
+-BUG: Removed the ability to right click your own player.
+-BUG: Removed the ability to attack yourself, you goofball.
+-BUG: Only the first layer of the map was being redered. All layers are rendered now.
+-BUG: Drop tables were always only dropping the first item in their table.
+
+Build 0.5
+-Added saving
+-Port forwarded server
+-BUG: healthbars no longer appear off screen
+-Chatbox text now shows the username of the player who spoke

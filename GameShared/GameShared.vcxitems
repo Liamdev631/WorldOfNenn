@@ -17,6 +17,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ClientPackets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CombatState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CSVReader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Object.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)StatSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)EntityType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Equipment.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)RPacket.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ServerPackets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Skills.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Types.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Weapons.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WPacket.h" />
   </ItemGroup>

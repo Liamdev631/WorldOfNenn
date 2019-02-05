@@ -24,7 +24,7 @@ private:
 	string m_filename; 
 	bool m_loaded;
 	tmx::Map m_map;
-	MapLayer* m_mapLayer;
+	MapLayer** m_mapLayers;
 	std::atomic_bool m_running;
 	mutable std::mutex m_mapLayerMutex;
 	sf::Vector2u m_mapPosition;

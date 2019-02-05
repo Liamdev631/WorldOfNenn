@@ -4,6 +4,7 @@
 #include <cmath>
 #include <assert.h>
 #include <string>
+#include "Types.h"
 #undef min
 #undef max
 
@@ -23,15 +24,6 @@ constexpr auto MAX_ENTITIES = (MAX_PLAYERS + MAX_NPCS); // Includes players
 
 static const int directionDeltaX[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
 static const int directionDeltaY[] = { 1, 1, 0, -1, -1, -1, 0, 1 };
-
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-typedef int16_t s8;
-typedef int16_t s16;
-typedef int32_t s32;
-typedef int64_t s64;
 
 struct rgba
 {
@@ -108,29 +100,29 @@ static u8 directionFromTo(const vec2s& from, const vec2s& to)
 }
 
 template <typename T>
-struct Vec3
+struct vec3
 {
 	T x, y, z;
 
-	Vec3(T x, T y, T z)
+	vec3(T x, T y, T z)
 		: x(x), y(y), z(z) { }
-	Vec3() : x(0), y(0), z(0) { }
+	vec3() : x(0), y(0), z(0) { }
 
-	Vec3<T> operator*(const T& rhs) { return Vec3((T)(x * rhs), (T)(y * rhs), (T)(z * rhs)); }
-	Vec3<T> operator/(const T& rhs) { return Vec3((T)(x / rhs), (T)(y / rhs), (T)(z * rhs)); }
-	Vec3<T> operator/=(const T& rhs) { *this = *this / rhs; return *this; }
-	Vec3<T> operator-(const Vec3<T>& rhs) { return Vec3((T)(x - rhs.x), (T)(y - rhs.x), (T)(z - rhs.z)); }
-	Vec3<T> operator+(const Vec3<T>& rhs) { return Vec3((T)(x + rhs.x), (T)(y + rhs.x), (T)(z + rhs.z)); }
-	Vec3<T>& operator+=(const Vec3<T>& rhs) { *this = *this + rhs; return *this; }
-	bool operator==(const Vec3<T>& rhs) { return x == rhs.x && y == rhs.y && z == rhs.z; }
-	bool operator!=(const Vec3<T>& rhs) { return x != rhs.x || y != rhs.y || z != rhs.z; }
+	vec3<T> operator*(const T& rhs) { return vec3((T)(x * rhs), (T)(y * rhs), (T)(z * rhs)); }
+	vec3<T> operator/(const T& rhs) { return vec3((T)(x / rhs), (T)(y / rhs), (T)(z * rhs)); }
+	vec3<T> operator/=(const T& rhs) { *this = *this / rhs; return *this; }
+	vec3<T> operator-(const vec3<T>& rhs) { return vec3((T)(x - rhs.x), (T)(y - rhs.x), (T)(z - rhs.z)); }
+	vec3<T> operator+(const vec3<T>& rhs) { return vec3((T)(x + rhs.x), (T)(y + rhs.x), (T)(z + rhs.z)); }
+	vec3<T>& operator+=(const vec3<T>& rhs) { *this = *this + rhs; return *this; }
+	bool operator==(const vec3<T>& rhs) { return x == rhs.x && y == rhs.y && z == rhs.z; }
+	bool operator!=(const vec3<T>& rhs) { return x != rhs.x || y != rhs.y || z != rhs.z; }
 
 	float length()
 	{
 		return sqrtf(x * x + y * y + z * z);
 	}
 };
-typedef Vec3<float> Vec3f;
+typedef vec3<float> vec3f;
 
 inline float lerp(const float& x1, const float& x2, const float& t)
 {

@@ -43,7 +43,7 @@ std::map<u16, S_Entity*>& S_Region::getEntities()
 	return m_entitiesList;
 }
 
-std::map<u16, S_Entity_Player*>& S_Region::getConnections()
+std::map<u16, S_Entity_Player*>& S_Region::getPlayers()
 {
 	return m_regionConnections;
 }

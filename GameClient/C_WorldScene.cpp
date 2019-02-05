@@ -26,6 +26,7 @@ SceneManager::SceneManager()
 	if (!m_gameScene.create(WorldSceneSize.x, WorldSceneSize.y, settings))
 		printf("Failed to create game scene render texture (res:(x:%u y:%u))!\n", WorldSceneSize.x, WorldSceneSize.y);
 	m_worldView = sf::View(sf::Vector2f(0, 0), sf::Vector2f((float)WorldSceneSize.x, (float)WorldSceneSize.y));
+	//m_worldView.zoom(0.5f);
 
 	// Load the map
 	m_worldMap.loadMap("assets/maps/region_overworld.tmx");
@@ -71,6 +72,8 @@ SceneManager::SceneManager()
 	m_uiComponents.push_back(&Chatbox::get());
 	m_uiComponents.push_back(&SideMenu::get());
 	m_uiComponents.push_back(&RunButton::get());
+
+	m_terrain = Terrain::loadTerrain("assets/terrain/overworld.png", 2.0f);
 }
 
 SceneManager::~SceneManager()
@@ -138,7 +141,7 @@ void SceneManager::update(const GameTime& gameTime)
 
 	// If a right click option is showing, determine which option is currently being pointed to
 	if (m_optionsList.size() != 0)
-		m_highlightedOption = max<int>(min<int>((int)(m_mousePos.y - m_optionsPos.y) / 16, (int)m_optionsList.size() - 1), 0);
+		m_highlightedOption = std::max<int>(std::min<int>((int)(m_mousePos.y - m_optionsPos.y) / 16, (int)m_optionsList.size() - 1), 0);
 
 	m_entitiesUnderMouse.clear();
 	m_itemsUnderMouse.clear();
@@ -150,7 +153,10 @@ void SceneManager::update(const GameTime& gameTime)
 		// Determine which entities are under the mouse
 		for (C_Entity* e : C_WorldManager::get().getActiveEntities())
 			if (e->getGlobalBounds().contains(mouseWorldPos))
-				m_entitiesUnderMouse.push_back(e);
+			{
+				if (e != C_WorldManager::get().getThisEntity())
+					m_entitiesUnderMouse.push_back(e);
+			}
 
 		// Determine which items are under the mouse
 		for (DropableItem& item : C_ItemManager::get().getItemsList())
@@ -239,12 +245,42 @@ void SceneManager::draw3d()
 	// Prep for drawing
 	m_gameScene.setActive(true);
 
-	//GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth)
-	//	.bind();
+	{
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glTranslatef(0.0f, 0.0f, -10.0f);
+		glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
+		glRotatef(-20, 0.0f, 1.0f, 0.0f);
 
-	//m_shader.setTransformationProjectionMatrix(m_camera->projectionMatrix());
-	//m_mesh.draw(m_shader);
-	//m_camera->draw(m_drawables);
+		GLfloat ambientColor[] = { 0.4f, 0.4f, 0.4f, 1.0f };
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+
+		GLfloat lightColor0[] = { 0.6f, 0.6f, 0.6f, 1.0f };
+		GLfloat lightPos0[] = { -0.5f, 0.8f, 0.1f, 0.0f };
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
+		glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
+
+		float scale = 5.0f / std::max(m_terrain->width() - 1, m_terrain->length() - 1);
+		glScalef(scale, scale, scale);
+		glTranslatef(-(float)(m_terrain->width() - 1) / 2,
+			0.0f,
+			-(float)(m_terrain->length() - 1) / 2);
+
+		glColor3f(0.3f, 0.9f, 0.0f);
+		for (int z = 0; z < m_terrain->length() - 1; z++) {
+			//Makes OpenGL draw a triangle at every three consecutive vertices
+			glBegin(GL_TRIANGLE_STRIP);
+			for (int x = 0; x < m_terrain->width(); x++) {
+				glm::fvec3 normal = m_terrain->getNormal(x, z);
+				glNormal3f(normal[0], normal[1], normal[2]);
+				glVertex3f((float)x, m_terrain->getHeight(x, z), (float)z);
+				normal = m_terrain->getNormal(x, z + 1);
+				glNormal3f(normal[0], normal[1], normal[2]);
+				glVertex3f((float)x, m_terrain->getHeight(x, z + 1), (float)z + 1);
+			}
+			glEnd();
+		}
+	}
 
 	m_gameScene.display();
 	m_gameScene.setActive(false);
