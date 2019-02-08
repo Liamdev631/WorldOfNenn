@@ -13,8 +13,8 @@ C_WorldManager::~C_WorldManager()
 
 void C_WorldManager::clearEntities()
 {
-	for (auto iter = m_activeEntities.begin(); iter != m_activeEntities.end(); iter++)
-		delete (*iter);
+	//for (auto iter = m_activeEntities.begin(); iter != m_activeEntities.end(); iter++)
+	//	delete (*iter);
 }
 
 void C_WorldManager::removeEntity(const u16 uidToRemove)

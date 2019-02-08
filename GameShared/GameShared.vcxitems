@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\GameServer\ObjectManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ClientPackets.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CombatState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)CSVReader.h" />
@@ -44,6 +45,7 @@
     <None Include="$(MSBuildThisFileDirectory)npctable.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\GameServer\ObjectManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)CSVReader.cpp">
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>

@@ -161,7 +161,7 @@ void S_Entity_Player::onRespawn()
 
 void S_Entity_Player::sendAllNearbyObjects() const
 {
-	auto& objectManager = S_ObjectManager::get();
+	auto& objectManager = ObjectManager::get();
 	m_buffer->write(SP_ObjectInstance((u16)objectManager.getObjects().size()));
 	for (auto& object : objectManager.get().getObjects())
 		m_buffer->write<Object>(object);

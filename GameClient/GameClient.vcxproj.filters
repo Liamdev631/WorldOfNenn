@@ -42,16 +42,10 @@
     <ClInclude Include="Terrain.h">
       <Filter>graphics\graphics3d</Filter>
     </ClInclude>
-    <ClInclude Include="GLHelper.h">
-      <Filter>graphics\graphics3d</Filter>
-    </ClInclude>
     <ClInclude Include="OrbitCamera.h">
       <Filter>graphics\graphics3d</Filter>
     </ClInclude>
     <ClInclude Include="C_WorldMap.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="C_WorldScene.h">
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="ResourceLoader.h">
@@ -81,7 +75,12 @@
     <ClInclude Include="RunButton.h">
       <Filter>graphics\interface</Filter>
     </ClInclude>
-    <ClInclude Include="C_ObjectManager.h" />
+    <ClInclude Include="SceneManager.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>graphics\graphics3d</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C_Client.cpp" />
@@ -107,9 +106,6 @@
     <ClCompile Include="C_WorldMap.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="C_WorldScene.cpp">
-      <Filter>graphics</Filter>
-    </ClCompile>
     <ClCompile Include="ResourceLoader.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
@@ -131,13 +127,27 @@
     <ClCompile Include="RunButton.cpp">
       <Filter>graphics\interface</Filter>
     </ClCompile>
-    <ClCompile Include="C_ObjectManager.cpp" />
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>graphics\graphics3d</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>graphics\graphics3d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="TerrainFragmentShader.frag">
       <Filter>shaders</Filter>
     </None>
     <None Include="TerrainVertexShader.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\red.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\assets\shaders\red.vert">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

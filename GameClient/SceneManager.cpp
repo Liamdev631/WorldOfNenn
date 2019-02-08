@@ -1,4 +1,4 @@
-#include "C_WorldScene.h"
+#include "SceneManager.h"
 #include "Global.h"
 #include "C_Client.h"
 #include "Packets.h"
@@ -7,7 +7,7 @@
 #include "SideMenu.h"
 #include "RunButton.h"
 #include "C_Client.h"
-//#include <GL/glew.h>
+#include "C_WorldManager.h"
 
 SceneManager::SceneManager()
 {
@@ -16,17 +16,23 @@ SceneManager::SceneManager()
 	settings.antialiasingLevel = 8;
 	settings.depthBits = 16;
 	settings.stencilBits = 0;
+	settings.majorVersion = 3;
+	settings.minorVersion = 3;
+	//settings.attributeFlags |= sf::ContextSettings::Attribute::Core;
 	m_window.create(sf::VideoMode(GuiSize.x, GuiSize.y), "World of Nenn", sf::Style::Default, settings);
 	m_window.setVerticalSyncEnabled(true);
 	m_window.setActive(true);
 
-	//m_context = std::make_unique<Platform::GLContext>();
+	// Initialize glew
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
 	// Create the render texture for the game world
 	if (!m_gameScene.create(WorldSceneSize.x, WorldSceneSize.y, settings))
 		printf("Failed to create game scene render texture (res:(x:%u y:%u))!\n", WorldSceneSize.x, WorldSceneSize.y);
 	m_worldView = sf::View(sf::Vector2f(0, 0), sf::Vector2f((float)WorldSceneSize.x, (float)WorldSceneSize.y));
-	//m_worldView.zoom(0.5f);
 
 	// Load the map
 	m_worldMap.loadMap("assets/maps/region_overworld.tmx");
@@ -40,40 +46,15 @@ SceneManager::SceneManager()
 	// Load fonts
 	m_font1 = ResourceLoader::get().getFont("assets/fonts/Candara.ttf");
 
-	// Set the default menu tab
 	SideMenu::get();
-
-	// Move the camera to it's starting position
-	//m_cameraObject = new Object3D(&m_scene);
-	//m_camera = new SceneGraph::Camera3D(*m_cameraObject);
-	//struct TriangleVertex {
-	//	Vector3 position;
-	//	Color3 color;
-	//};
-	//const TriangleVertex data[]{
-	//	{ {-0.5f, -0.5f, 0.f}, 0xff0000_rgbf },    /* Left vertex, red color */
-	//	{ { 0.5f, -0.5f, 0.f}, 0x00ff00_rgbf },    /* Right vertex, green color */
-	//	{ { 0.0f,  0.5f, 0.f}, 0x0000ff_rgbf }     /* Top vertex, blue color */
-	//};
-	//
-	//GL::Buffer buffer;
-	//buffer.setData(data);
-	////m_mesh = make_unique<GL::Mesh>();
-	//m_mesh = GL::Mesh(GL::MeshPrimitive::Triangles);
-	//m_mesh.setPrimitive(GL::MeshPrimitive::Triangles)
-	//	.setCount(3)
-	//	.addVertexBuffer(std::move(buffer), 0,
-	//		Shaders::VertexColor3D::Position(),
-	//		Shaders::VertexColor3D::Color3());
-	//m_shader = Shaders::VertexColor3D();
-	//m_drawables.add(m_mesh);
-	//m_terrain = make_unique<Terrain>(32, 32, m_scene, m_drawables);
 
 	m_uiComponents.push_back(&Chatbox::get());
 	m_uiComponents.push_back(&SideMenu::get());
 	m_uiComponents.push_back(&RunButton::get());
 
-	m_terrain = Terrain::loadTerrain("assets/terrain/overworld.png", 2.0f);
+	m_glShader = make_shared<Shader>();
+	m_glShader->loadShader("assets/shaders/red.vert", NULL, NULL, NULL, "assets/shaders/red.frag");
+	m_terrain = Terrain::loadTerrain("assets/terrain/overworld.png", 2.0f, m_glShader);
 }
 
 SceneManager::~SceneManager()
@@ -194,9 +175,9 @@ void SceneManager::draw()
 
 	/////// Screen Space ///////
 	m_window.pushGLStates();
+	m_window.resetGLStates();
 	drawGui();
 	m_window.popGLStates();
-	//m_window.popGLStates();
 }
 
 void SceneManager::drawGameScene()
@@ -215,7 +196,7 @@ void SceneManager::drawGameScene()
 	m_gameScene.setView(m_worldView);
 
 	// Draw the map
-	m_gameScene.draw(m_worldMap);
+	//m_gameScene.draw(m_worldMap);
 
 	// Draw all items
 	for (auto& item : C_ItemManager::get().getItemsList())
@@ -245,46 +226,23 @@ void SceneManager::draw3d()
 	// Prep for drawing
 	m_gameScene.setActive(true);
 
-	{
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glTranslatef(0.0f, 0.0f, -10.0f);
-		glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
-		glRotatef(-20, 0.0f, 1.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		GLfloat ambientColor[] = { 0.4f, 0.4f, 0.4f, 1.0f };
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	auto m = glm::identity<mat4x4>();
+	auto v = glm::lookAt(fvec3(-10, -10, 10), { 5, 5, 0 }, { 0, 0, 1 });
+	auto p = glm::perspective(glm::radians(45.0f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, 100.0f);
+	auto mvp = p * v * m;
 
-		GLfloat lightColor0[] = { 0.6f, 0.6f, 0.6f, 1.0f };
-		GLfloat lightPos0[] = { -0.5f, 0.8f, 0.1f, 0.0f };
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
-		glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
-
-		float scale = 5.0f / std::max(m_terrain->width() - 1, m_terrain->length() - 1);
-		glScalef(scale, scale, scale);
-		glTranslatef(-(float)(m_terrain->width() - 1) / 2,
-			0.0f,
-			-(float)(m_terrain->length() - 1) / 2);
-
-		glColor3f(0.3f, 0.9f, 0.0f);
-		for (int z = 0; z < m_terrain->length() - 1; z++) {
-			//Makes OpenGL draw a triangle at every three consecutive vertices
-			glBegin(GL_TRIANGLE_STRIP);
-			for (int x = 0; x < m_terrain->width(); x++) {
-				glm::fvec3 normal = m_terrain->getNormal(x, z);
-				glNormal3f(normal[0], normal[1], normal[2]);
-				glVertex3f((float)x, m_terrain->getHeight(x, z), (float)z);
-				normal = m_terrain->getNormal(x, z + 1);
-				glNormal3f(normal[0], normal[1], normal[2]);
-				glVertex3f((float)x, m_terrain->getHeight(x, z + 1), (float)z + 1);
-			}
-			glEnd();
-		}
-	}
+	m_glShader->bind();
+	//glUniformMatrix4fv(glGetUniformLocation(m_glShader->getHandle(), "MVP"), 1, GL_FALSE, &mvp[0][0]);
+	m_terrain->draw();
+	m_glShader->unbind();
 
 	m_gameScene.display();
 	m_gameScene.setActive(false);
-	//GL::Context::current().resetState();
 }
 
 void SceneManager::drawGui()

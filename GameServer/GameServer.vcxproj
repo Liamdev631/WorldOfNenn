@@ -27,7 +27,6 @@
     <ClCompile Include="S_LoginManager.cpp" />
     <ClCompile Include="S_Main.cpp" />
     <ClCompile Include="S_MovementComponent.cpp" />
-    <ClCompile Include="S_ObjectManager.cpp" />
     <ClCompile Include="S_Region.cpp" />
     <ClCompile Include="S_Server.cpp" />
     <ClCompile Include="S_WorldManager.cpp" />
@@ -42,7 +41,6 @@
     <ClInclude Include="S_GlobalServer.h" />
     <ClInclude Include="S_LoginManager.h" />
     <ClInclude Include="S_MovementComponent.h" />
-    <ClInclude Include="S_ObjectManager.h" />
     <ClInclude Include="S_Region.h" />
     <ClInclude Include="S_Server.h" />
     <ClInclude Include="S_WorldManager.h" />

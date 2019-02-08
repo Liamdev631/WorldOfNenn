@@ -3,6 +3,7 @@
 #include <map>
 #include "S_Entity_Player.h"
 #include "Items.h"
+#include "ObjectManager.h"
 
 class S_WorldManager;
 
@@ -15,8 +16,11 @@ private:
 	std::map<u16, S_Entity*> m_entitiesList;
 	std::map<u16, S_Entity_Player*> m_regionConnections;
 
+	ObjectManager m_objectManager;
+
 	// Items
 	std::vector<DropableItem> m_itemsList;
+
 public:
 	S_Region(S_WorldManager& worldManager);
 	~S_Region();
@@ -34,6 +38,10 @@ public:
 	// Items
 	// Returns a const reference to the list of items.
 	const std::vector<DropableItem>& getItems();
+
+	// Objects
+	// Injects an object into this regions list of objects
+	void injectObject(Object& object);
 
 	// Places an item on the ground with the given parameters and notifies all nearby players.
 	void addGroundItem(const DropableItem& item);

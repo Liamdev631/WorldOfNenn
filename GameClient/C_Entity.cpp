@@ -3,14 +3,14 @@
 #include "SFML/Main.hpp"
 #include "SFML/Graphics.hpp"
 #include <string>
-#include "C_WorldScene.h"
+#include "SceneManager.h"
 #include <math.h>
 #include <string>
 
 C_Entity::C_Entity(const u16 uid)
 	: uid(uid), entityType(ET_COUNT), m_moveTimer(0), m_translating(false), expired(false), rotation(0)
 {
-	SceneManager::get().components.push_back(this);
+	C_WorldManager::get().getActiveEntities().push_back(this);
 
 	position = vec2s(0, 0);
 	drawPos = sf::Vector2f(0, 0);
@@ -33,7 +33,7 @@ void C_Entity::loadAssets()
 
 C_Entity::~C_Entity()
 {
-	auto c = SceneManager::get().components;
+	auto c = C_WorldManager::get().getActiveEntities();
 	c.erase(std::remove(c.begin(), c.end(), this), c.end());
 }
 

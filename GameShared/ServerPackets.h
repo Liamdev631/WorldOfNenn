@@ -222,3 +222,18 @@ struct SP_ObjectInstance
 };
 #pragma pack(pop)
 
+constexpr packet_header SP_NearbyObjects_header = 16;
+#pragma pack(push, 1)
+struct SP_NearbyObjects
+{
+	const packet_header header = SP_NearbyObjects_header;
+	u16 numObjects;
+
+	SP_NearbyObjects(u16 numObjects)
+		: numObjects(numObjects)
+	{
+
+	}
+};
+#pragma pack(pop)
+

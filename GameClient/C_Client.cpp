@@ -2,7 +2,7 @@
 #include "Packets.h"
 #include <chrono>
 #include <thread>
-#include "C_WorldScene.h"
+#include "SceneManager.h"
 #include "RunButton.h"
 #include "ExperienceTab.h"
 #include "C_ObjectManager.h"
@@ -42,24 +42,26 @@ void C_Client::start()
 	printf("Username?\n");
 	char username[12];
 	fflush(stdout);
-	fgets(username, 12, stdin);
+	//fgets(username, 12, stdin);
 	for (int i = 0; i < 12; i++)
 		if (username[i] == '\n')
 		{
 			username[i] = '\0';
 			break;
 		}
+	strcpy(username, "liam");
 
 	printf("Password?\n");
 	char password[12];
 	fflush(stdout);
-	fgets(password, 12, stdin);
+	//fgets(password, 12, stdin);
 	for (int i = 0; i < 12; i++)
 		if (password[i] == '\n')
 		{
 			password[i] = '\0';
 			break;
 		}
+	strcpy(password, "nigger");
 
 	printf("user: %s\n", username);
 	printf("pass: %s\n", password);
@@ -96,7 +98,8 @@ bool C_Client::update()
 	//	return false;
 	C_WorldManager::get().update(m_timer);
 	SceneManager::get().update(m_timer);
-
+
+
 	// END GAME LOGIC
 
 	// Send the packet buffer

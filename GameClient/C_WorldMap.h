@@ -21,11 +21,10 @@ constexpr float MaxCenterOffset = 8.0f;
 class C_WorldMap : public sf::Drawable
 {
 private:
-	string m_filename; 
-	bool m_loaded;
+	string m_filename;
 	tmx::Map m_map;
 	MapLayer** m_mapLayers;
-	std::atomic_bool m_running;
+	std::atomic_bool m_running, m_loaded;
 	mutable std::mutex m_mapLayerMutex;
 	sf::Vector2u m_mapPosition;
 	std::thread m_mapLoadingThread;

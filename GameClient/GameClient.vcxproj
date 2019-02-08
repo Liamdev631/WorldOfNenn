@@ -83,7 +83,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\dep\glew-2.1.0\include;..\dep\tmxlite\include;..\dep\SFML-2.5.0\include;..\dep\enetpp-master\include;..\dep\glm;..\dep\enet-1.3.13\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PreprocessorDefinitions>SDL_MAIN_HANDLED;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -142,15 +142,13 @@
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="C_Client.h" />
     <ClInclude Include="C_Entity.h" />
-    <ClInclude Include="C_ObjectManager.h" />
     <ClInclude Include="C_WorldManager.h" />
     <ClInclude Include="C_ItemManager.h" />
     <ClInclude Include="C_MouseState.h" />
     <ClInclude Include="C_WorldMap.h" />
-    <ClInclude Include="C_WorldScene.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ExperienceTab.h" />
     <ClInclude Include="FloatingText.h" />
-    <ClInclude Include="GLHelper.h" />
     <ClInclude Include="Healthbar.h" />
     <ClInclude Include="Interface.h" />
     <ClInclude Include="InventoryTab.h" />
@@ -160,6 +158,7 @@
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="RunButton.h" />
     <ClInclude Include="SFMLOrthogonalLayer.hpp" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="SideMenu.h" />
     <ClInclude Include="Target.h" />
     <ClInclude Include="Terrain.h" />
@@ -170,12 +169,11 @@
     <ClCompile Include="Crosshair.cpp" />
     <ClCompile Include="C_Client.cpp" />
     <ClCompile Include="C_Entity.cpp" />
-    <ClCompile Include="C_ObjectManager.cpp" />
     <ClCompile Include="C_WorldManager.cpp" />
     <ClCompile Include="C_ItemManager.cpp" />
     <ClCompile Include="C_Main.cpp" />
     <ClCompile Include="C_WorldMap.cpp" />
-    <ClCompile Include="C_WorldScene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ExperienceTab.cpp" />
     <ClCompile Include="FloatingText.cpp" />
     <ClCompile Include="Healthbar.cpp" />
@@ -185,9 +183,13 @@
     <ClCompile Include="OrbitCamera.cpp" />
     <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="RunButton.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="SideMenu.cpp" />
+    <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\shaders\red.frag" />
+    <None Include="..\assets\shaders\red.vert" />
     <None Include="TerrainFragmentShader.frag" />
     <None Include="TerrainVertexShader.vert" />
   </ItemGroup>

@@ -23,8 +23,9 @@ bool C_WorldMap::loadMap(const string& filename)
 	if (filename == m_filename)
 		return true; // Already loaded
 	
-	// Load the TMX map
 	m_loaded = false;
+
+	// Load the TMX map
 	m_filename = filename;
 	m_loaded = m_map.load(m_filename);
 
@@ -92,6 +93,7 @@ void C_WorldMap::loadMapAtPoint(const sf::Vector2u& pos)
 	//	delete m_mapLayer;
 	m_mapLayers[0] = m0;
 	m_mapLayers[1] = m1;
+	m_loaded = true;
 	m_mapLayerMutex.unlock();
 }
 

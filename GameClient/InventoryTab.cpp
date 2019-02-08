@@ -2,7 +2,9 @@
 #include "C_Client.h"
 #include "ResourceLoader.h"
 #include "Packets.h"
-#include "C_WorldScene.h"
+#include "C_WorldManager.h"
+#include "RCOption.h"
+#include "SceneManager.h"
 
 InventoryTab::InventoryTab()
 {

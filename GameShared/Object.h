@@ -9,20 +9,25 @@ enum ObjectType : u16
 	OT_TREE = 2,
 };
 
+union ObjectState
+{
+	struct
+	{
+		bool cut : 1;
+	} tree;
+};
+
+typedef u16 ObjectUID;
 struct Object
 {
+	ObjectUID uid;
 	ObjectType type;
+	ObjectState state;
 	vec2s position;
-	union
-	{
-		struct tree
-		{
-			bool cut : 1;
-		};
-	};
+	Region region;
 
 	bool operator ==(const Object& rhs)
 	{
-		return type == rhs.type && position == rhs.position;
+		return uid == rhs.uid;
 	}
 };

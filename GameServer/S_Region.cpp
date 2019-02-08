@@ -16,7 +16,11 @@ S_Region::~S_Region()
 
 void S_Region::update()
 {
+	// Send every player their nearby items
+	for (auto& player : m_regionConnections)
+	{
 
+	}
 }
 
 #pragma region Entities
@@ -61,6 +65,7 @@ void S_Region::addGroundItem(const DropableItem& item)
 {
 	m_itemsList.push_back(item);
 	for (auto& connPair : m_regionConnections)
+
 	{
 		auto& buffer = connPair.second->getBuffer();
 		buffer.write(SP_ItemDropped(item));
@@ -80,3 +85,12 @@ void S_Region::removeGroundItem(std::vector<DropableItem>::const_iterator& item)
 }
 
 #pragma endregion
+
+#pragma region Objects
+
+void S_Region::injectObject(Object& object)
+{
+	m_objectManager.addObject(object);
+}
+
+#pragma endregion 

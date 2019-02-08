@@ -1,5 +1,6 @@
 #include "S_WorldManager.h"
 #include <assert.h>
+#include "CSVReader.h"
 
 S_WorldManager::S_WorldManager()
 {
@@ -12,6 +13,23 @@ S_WorldManager::S_WorldManager()
 	m_regions = new S_Region*[NUM_REGIONS];
 	for (size_t i = 0; i < NUM_REGIONS; i++)
 		m_regions[i] = new S_Region(*this);
+
+	// Load objects into regions
+	CSVReader reader;
+	reader.open("assets/data/ObjectInstanceData.csv");
+	reader.readNextRow();
+	int counter = 0;
+	while (reader.size() > 1)
+	{
+		Object o;
+		o.uid = counter++;
+		o.type = (ObjectType)std::stoi(reader[0]);
+		o.position.x = (u16)std::stoi(reader[1]);
+		o.position.y = (u16)std::stoi(reader[2]);
+		o.region = (Region)std::stoi(reader[3]);
+		m_regions[o.region]->injectObject(o);
+		reader.readNextRow();
+	}
 }
 
 S_WorldManager::~S_WorldManager()

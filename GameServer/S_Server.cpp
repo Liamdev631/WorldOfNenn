@@ -15,7 +15,7 @@ S_Server::S_Server()
 	m_loginManager = new S_LoginManager();
 	m_worldManager = new S_WorldManager();
 	m_loadedPlayers.reserve(MAX_PLAYERS);
-	S_ObjectManager::get();
+	ObjectManager::get();
 }
 
 S_Server::~S_Server()
@@ -235,7 +235,7 @@ void S_Server::onClientDisconnected(S_Entity_Player& client)
 	disconnectPlayer(client);
 }
 
-constexpr BOOL DEBUG_PRINT_PACKET_HEADER = TRUE;
+constexpr bool DEBUG_PRINT_PACKET_HEADER = false;
 
 /// Called when the server recieves data from a connected client
 void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)

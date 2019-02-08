@@ -12,6 +12,7 @@
 //#include <Magnum/SceneGraph/Object.h>
 //#include <Magnum/SceneGraph/Scene.h>
 #include <SFML/Graphics.hpp>
+#include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <vector>
 #include "C_WorldMap.h"
@@ -25,6 +26,7 @@
 #include "OrbitCamera.h"
 #include <memory>
 #include "Terrain.h"
+#include "shader.h"
 
 //  _______________________
 // |				|	   |
@@ -52,6 +54,8 @@ private:
 	sf::RenderTexture m_gameScene;
 	sf::View m_worldView;
 	C_WorldMap m_worldMap;
+	GLuint vertex_buffer, index_buffer;
+	GLint mvp_location, vpos_location, vcol_location;
 
 	// 3D
 	//std::unique_ptr<Platform::GLContext> m_context;
@@ -60,7 +64,9 @@ private:
 	//Shaders::VertexColor3D m_shader {NoCreate};
 	//SceneGraph::DrawableGroup3D m_drawables;
 	unique_ptr<Terrain> m_terrain;
-	
+	sf::Shader m_shader;
+	shared_ptr<Shader> m_glShader;
+
 	//Object3D* m_cameraObject;
 	//SceneGraph::Camera3D* m_camera;
 
