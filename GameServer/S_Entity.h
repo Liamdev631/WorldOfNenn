@@ -42,6 +42,9 @@ public:
 
 	/// Returns this object cast as a player
 	S_Entity_Player* asPlayer();
+
+	/// Returns whether or not this entity is a player.
+	bool isPlayer() const;
 	
 	//---- Components ----//
 	S_CombatComponent& getCombat();

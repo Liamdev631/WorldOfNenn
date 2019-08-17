@@ -106,30 +106,6 @@ public:
 		}
 	}
 
-	/*bool tryRemoveItem(const ItemType type, int amount)
-	{
-		if (getItemCount(type) >= amount)
-		{
-			for (int i = 0; i < Size; i++)
-				if (itemStacks[i].type == type)
-				{
-					if (itemStacks[i].count <= amount)
-					{
-						itemStacks[i].count -= amount;
-						return true;
-					}
-					else
-					{
-						amount -= itemStacks[i].count;
-						itemStacks[i].count = 0;
-						if (amount == 0)
-							return true;
-					}
-				}
-		}
-		return false;
-	}*/
-
 	bool removeOneItem(ItemType type)
 	{
 		for (int i = 0; i < Size; i++)
@@ -164,7 +140,10 @@ public:
 		return false;
 	}
 
-	bool getPreferredSlot(ItemType type, u8& slot) const
+	// If the item type is in the slot, returns the slot.
+	// Otherwise returns the first slot containing that item type.
+	// Returns -1 if that item type is not in the inventory.
+	bool getPreferredSlot(ItemType type, u8 slot) const
 	{
 		if (itemStacks[slot].type == type)
 			return true;
@@ -191,7 +170,72 @@ public:
 		return count;
 	}
 
+	// Swaps the contents of two slots. If the 'to' slot is empty, just moves the item to the new slot.
+	void swapSlots(u8 from, u8 to)
+	{
+		if (itemStacks[to].count == 0)
+		{
+			itemStacks[to] = itemStacks[from];
+			itemStacks[from].count = 0;
+		}
+		else
+			std::swap(itemStacks[from], itemStacks[to]);
+	}
+
+	// Returns the index of the first empty slot in this item container.
+	int getFirstEmptySlot() const
+	{
+		for (int i = 0; i < Size; i++)
+			if (itemStacks[i].count == 0)
+				return i;
+		return -1;
+	}
+
+	int getFirstSlotOfType(ItemType type) const
+	{
+		for (int i = 0; i < Size; i++)
+			if (itemStacks[i].type == type)
+				return i;
+		return -1;
+	}
+
+	bool insertItemStack(const ItemStack& stack)
+	{
+		u32 maxStack = Loader::get().getItemMaxStack(stack.type);
+		int slot = -1;
+
+		if (maxStack == 1)
+		{
+			// Add an unstackable item
+			slot = getFirstEmptySlot();
+			if (slot < 0)
+				return false;
+			itemStacks[slot] = stack;
+			dirty = true;
+			return true;
+		}
+		else
+		{
+			slot = getFirstSlotOfType(stack.type);
+			if (slot < 0)
+			{
+				// This item is not in the container yet, put it in an empty slot
+				slot = getFirstEmptySlot();
+				if (slot < 0)// No slots left
+					return false;
+				itemStacks[slot] = stack;
+				return true;
+			}
+			else
+			{
+				// Add the items to the existing slot
+				itemStacks[slot].count += stack.count;
+				dirty = true;
+				return true;
+			}
+		}
+	}
 };
 
-typedef ItemContainer<28> Inventory;
+typedef ItemContainer<30> Inventory;
 typedef ItemContainer<256> Bank;

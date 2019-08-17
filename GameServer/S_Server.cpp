@@ -1,3 +1,4 @@
+
 #include "S_Server.h"
 #include <queue>
 #include "WPacket.h"
@@ -5,17 +6,15 @@
 #include "UseItem.h"
 #include "CSVReader.h"
 #include "SaveState.h"
-#include "S_ObjectManager.h"
 
 S_Server::S_Server()
 {
 	m_server = make_unique<enetpp::server<S_Entity_Player>>();
 	for (int i = 0; i < MAX_PLAYERS; i++)
 		m_connections[i] = nullptr;
-	m_loginManager = new S_LoginManager();
-	m_worldManager = new S_WorldManager();
+	m_loginManager = make_unique<S_LoginManager>();
+	m_worldManager = make_unique<S_World>();
 	m_loadedPlayers.reserve(MAX_PLAYERS);
-	ObjectManager::get();
 }
 
 S_Server::~S_Server()
@@ -40,25 +39,7 @@ void S_Server::start()
 		.set_initialize_client_function(init_client_func));
 	printf("Listening on port 801.\n");
 
-	printf("Loading NPCs.\n");
-	//auto npc1 = m_worldManager->registerNPC(0, ET_RAT);
-	//npc1->getMovement().blinkTo(vec2s(50, 50));
-	CSVReader reader;
-	reader.open("assets/data/EntityInstanceData.csv");
-	reader.readNextRow(); // Skip the first line
-	while (reader.size() > 1)
-	{
-		u16 uid = std::stoi(reader[0]);
-		EntityType type = (EntityType)std::stoi(reader[1]);
-		u16 level = std::stoi(reader[2]);
-		vec2<u16> boundsPos = vec2<u16>(std::stoi(reader[3]), std::stoi(reader[4]));
-		vec2<u8> boundsSize = vec2<u8>(std::stoi(reader[5]), std::stoi(reader[6]));
-		// reader[7] is notes
-		auto npc = m_worldManager->registerNPC(uid, type);
-		npc->setBounds(boundsPos, boundsSize);
-		npc->getMovement().blinkTo(boundsPos);
-		reader.readNextRow();
-	}
+	m_worldManager->loadMaps();
 }
 
 void S_Server::addConnectedPlayers()
@@ -127,8 +108,14 @@ void S_Server::disconnectPlayer(S_Entity_Player& player)
 	//file.close();
 	FILE* file;
 	auto result = fopen_s(&file, filename.c_str(), "w+b");
-	fwrite(&newState, sizeof(SaveState), 1, file);
-	fclose(file);
+	if (result)
+	{
+		fwrite(&newState, sizeof(SaveState), 1, file);
+		fclose(file);
+	}
+	else
+		printf("Error creating save for (user:%u)", player.uid);
+	
 
 	// Send a message to the nearby players
 	for (iter = m_loadedPlayers.begin(); iter != m_loadedPlayers.end(); iter++)
@@ -203,7 +190,7 @@ void S_Server::stop()
 	m_server->stop_listening();
 }
 
-S_WorldManager& S_Server::getWorldManager() const
+S_World& S_Server::getWorldManager() const
 {
 	return *m_worldManager;
 }
@@ -294,7 +281,6 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 				// Apply a chat filter
 				std::wstring str = std::wstring(p.message);
 
-
 				// Relay the message to nearby players
 				for (auto& p : m_loadedPlayers)
 					p->getBuffer().write(SP_ChatText(str, player.uid));
@@ -314,6 +300,23 @@ void S_Server::onDataRecieved(S_Entity_Player& player, RPacket packet)
 				memcpy(player.username, p.username, 12);
 				memcpy(player.password, p.password, 12);
 				m_loginManager->registerNewConnection(&player);
+				continue;
+			}
+
+			case CP_SubmitItem_header:
+			{
+				const auto& p = *packet.read<CP_SubmitItem>();
+				if (false) // if (player.currentAction == Action::Trading)
+				{
+
+				}
+				else
+				{
+					// Swapping item slots in the inventory
+					const MoveItemOptions& t = p.moveItem;
+					player.inventory.swapSlots(t.from, t.to);
+					player.inventory.dirty = true;
+				}
 				continue;
 			}
 

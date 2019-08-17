@@ -33,6 +33,11 @@ S_Entity_Player* S_Entity::asPlayer()
 	return reinterpret_cast<S_Entity_Player*>(this);
 }
 
+bool S_Entity::isPlayer() const
+{
+	return uid < MAX_PLAYERS;
+}
+
 S_CombatComponent& S_Entity::getCombat()
 {
 	return m_combat;

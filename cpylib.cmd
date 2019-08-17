@@ -1,0 +1,1 @@
+XCOPY /E /Y dep\bin\debug\* Debug\

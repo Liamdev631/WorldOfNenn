@@ -3,7 +3,7 @@
 #include "Items.h"
 #include "ServerPackets.h"
 
-S_Region::S_Region(S_WorldManager& worldManager)
+S_Region::S_Region(S_World& worldManager)
 	: m_worldManager(worldManager)
 {
 
@@ -85,12 +85,3 @@ void S_Region::removeGroundItem(std::vector<DropableItem>::const_iterator& item)
 }
 
 #pragma endregion
-
-#pragma region Objects
-
-void S_Region::injectObject(Object& object)
-{
-	m_objectManager.addObject(object);
-}
-
-#pragma endregion 

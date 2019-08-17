@@ -5,7 +5,6 @@
 #include "SceneManager.h"
 #include "RunButton.h"
 #include "ExperienceTab.h"
-#include "C_ObjectManager.h"
 
 C_Client::C_Client()
 {
@@ -341,14 +340,6 @@ void C_Client::processPacket(const u8 header, RPacket &packet)
 	{
 		const auto& p = *packet.read<SP_CombatStateChange>();
 		C_WorldManager::get().getEntity(p.entity)->combatState = p.newState;
-		break;
-	}
-
-	case SP_ObjectInstance_header:
-	{
-		const auto& p = *packet.read<SP_ObjectInstance>();
-		for (int i = 0; i < p.numObjects; i++)
-			C_ObjectManager::get().addObject(*packet.read<Object>());
 		break;
 	}
 

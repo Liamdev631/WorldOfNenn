@@ -23,7 +23,7 @@ void S_CombatComponent::update()
 	{
 		if (respawnTimer-- == 0)
 		{
-			combatState.endUpdate();
+			combatState.reset();
 			owner.onRespawn();
 			owner.getMovement().forcePositionUpdate();
 		}
@@ -70,7 +70,7 @@ void S_CombatComponent::update()
 			// Stop combat if dead
 			if (targetEntity->getCombat().combatState.dead)
 			{
-				owner.getMovement().resetMovement();
+				owner.getMovement().stop();
 				isInCombat = false;
 			}
 		}
@@ -133,7 +133,7 @@ void S_CombatComponent::die()
 	justDied = true;
 	isInCombat = false;
 	respawnTimer = respawnDelay;
-	owner.getMovement().resetMovement();
+	owner.getMovement().stop();
 	owner.onDeath();
 }
 
@@ -156,7 +156,7 @@ void S_CombatComponent::endUpdate()
 void S_CombatComponent::totalReset()
 {
 	endUpdate();
-	combatState.endUpdate();
+	combatState.reset();
 }
 
 bool S_CombatComponent::heal(u8 amount)

@@ -1,10 +1,9 @@
 #include "S_Entity_Player.h"
 #include "S_Region.h"
 #include "ServerPackets.h"
-#include "S_ObjectManager.h"
 
 S_Entity_Player::S_Entity_Player()
-	: S_Entity(9999, EntityType::ET_PLAYER, R_Overworld), m_buffer(new WPacket(1024 * 16)), forceDisconnect(false)
+	: S_Entity(9999, EntityType::ET_PLAYER, R_Overworld), m_buffer(new WPacket(1024 * 16)), forceDisconnect(false), m_trade(*this)
 {
 	
 }
@@ -19,12 +18,42 @@ WPacket& S_Entity_Player::getBuffer() const
 	return *m_buffer;
 }
 
-bool S_Entity_Player::pickUpItem(DropableItem item)
+S_TradeComponent& S_Entity_Player::getTrade()
+{
+	return m_trade;
+}
+
+void S_Entity_Player::pickUpItem(DropableItem itemToPick)
 {
 	auto& region = getMovement().getWorldRegion();
 
-	bool taken = false;
+	// Find out if the item exists in the world
+	bool canTake = false;
+	for (auto iter = region.getItems().begin(); iter != region.getItems().end(); iter++)
+		if (*iter == itemToPick)
+			canTake = true;
+	if (!canTake)
+		return;
 
+	// Find out if the item can fit in the players inventory or not
+	const auto& stack = itemToPick.stack;
+	bool taken = inventory.insertItemStack(stack);
+
+	// If the item was added to the inventory, remove it from the world
+	if (taken)
+	{
+		// Tell nearby players that the item was packed up
+		for (auto& player : region.getPlayers())
+		{
+			WPacket& buffer = player.second->getBuffer();
+			buffer.write<u8>(0x05);
+			buffer.write<DropableItem>(itemToPick);
+		}
+	}
+
+	// Remove the item from the world
+
+	/*
 	// First, try to take the item from the world
 	for (auto iter = region.getItems().begin(); iter != region.getItems().end(); iter++)
 		if (*iter == item)
@@ -105,7 +134,7 @@ bool S_Entity_Player::pickUpItem(DropableItem item)
 			break;
 		}
 
-	return taken;
+	return taken;*/
 }
 
 void S_Entity_Player::dropItemFromInventory(const ItemStack& stack, const uint8_t& slot)
@@ -157,18 +186,4 @@ void S_Entity_Player::onDeath()
 void S_Entity_Player::onRespawn()
 {
 	m_movement.blinkTo(vec2s(115, 115));
-}
-
-void S_Entity_Player::sendAllNearbyObjects() const
-{
-	auto& objectManager = ObjectManager::get();
-	m_buffer->write(SP_ObjectInstance((u16)objectManager.getObjects().size()));
-	for (auto& object : objectManager.get().getObjects())
-		m_buffer->write<Object>(object);
-}
-
-void S_Entity_Player::sendObject(Object& object)
-{
-	m_buffer->write(SP_ObjectInstance(1));
-	m_buffer->write(object);
 }

@@ -5,6 +5,7 @@
 #include "Skills.h"
 #include "ItemContainer.h"
 #include "Object.h"
+#include "S_TradeComponent.h"
 
 class S_Entity_Player : public S_Entity
 {
@@ -17,6 +18,7 @@ public:
 
 private:
 	WPacket* m_buffer;
+	S_TradeComponent m_trade;
 
 public:
 	S_Entity_Player();
@@ -25,8 +27,10 @@ public:
 	// Getters
 	WPacket& getBuffer() const;
 
+	S_TradeComponent& getTrade();
+
 	// Attemps to remove the given DropableItem from the world and add it to the player's inventory
-	bool pickUpItem(DropableItem item);
+	void pickUpItem(DropableItem item);
 
 	// Attempts to remove an item from the players inventory, notifying the player if it does
 	void dropItemFromInventory(const ItemStack& stack, const uint8_t& slot);
@@ -36,11 +40,6 @@ public:
 
 	// Adds experience to a skill and notifies the player of a change
 	void addExperience(Skill skill, exp_val amount);
-
-	// Sends a list of all objects close to the player's position
-	void sendAllNearbyObjects() const;
-
-	void sendObject(Object& object);
 
 	// Overrides
 	void onRespawn() override;

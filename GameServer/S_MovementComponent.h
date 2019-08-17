@@ -47,7 +47,7 @@ public:
 	S_Region& getWorldRegion() const;
 
 	/// Resets the movement state of the entity. Sets to IDLE
-	void resetMovement();
+	void stop();
 
 	/// Called at the beginning of every tick
 	void endUpdate();

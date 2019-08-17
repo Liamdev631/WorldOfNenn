@@ -6,32 +6,18 @@
 #include "RCOption.h"
 #include "SceneManager.h"
 
+constexpr float ItemDragDistanceCutoff = 4.0f;
+
 InventoryTab::InventoryTab()
+	: MenuTab()
 {
-	auto itemCountFont = ResourceLoader::get().getFont("assets/fonts/Candarab.ttf");
-	const auto tabSize = sf::Vector2f(32, 32);
-	for (int i = 0; i < 28; i++)
-	{
-		// Calculate the bounds of the item spriteS
-		sf::Vector2f centerPos;
-		int x = i % 4, y = i / 4;
-		centerPos.x = m_menuBounds.left + (m_menuBounds.width / 5.f) * (x + 1);
-		centerPos.y = m_menuBounds.top + (m_menuBounds.height / 8.f) * (y + 1);
-		sf::Vector2f topLeft = centerPos - tabSize / 2.f;
-
-		auto& itemImage = m_itemSlotImages[i];
-		itemImage.setPosition(topLeft);
-		itemImage.setSize(tabSize);
-		itemImage.setOutlineColor(sf::Color::White);
-
-		// Place the item count text
-		auto& itemCount = m_itemCountText[i];
-		itemCount.setFont(*itemCountFont);
-		itemCount.setPosition(topLeft + sf::Vector2f(0, -10.f));
-		itemCount.setString(L"");
-		itemCount.setFillColor(sf::Color::Black);
-		itemCount.setCharacterSize(13);
-	}
+	// Initialize the dragable item
+	GridSettings settings;
+	settings.bounds = { 519, 205, 241, 261 };
+	settings.rowSize = 5;
+	settings.cellSize = { 32, 32 };
+	m_grid.setSettings(settings);
+	m_grid.setContainer(&C_Client::get().getPlayerInventory().itemStacks[0], 30);
 }
 
 InventoryTab::~InventoryTab()
@@ -41,25 +27,10 @@ InventoryTab::~InventoryTab()
 
 void InventoryTab::setHighlightedSlot(const int& slotClicked)
 {
-	for (int i = 0; i < 28; i++)
-		m_itemSlotImages[i].setOutlineThickness(0.0f);
-	if (slotClicked > -1 && slotClicked < 28)
-		m_itemSlotImages[slotClicked].setOutlineThickness(1.0f);
-}
-
-int InventoryTab::getSlotUnderMouse(const sf::Vector2f& mousePos) const
-{
-	if (!m_menuBounds.contains(mousePos))
-		return -1;
-	auto& inventory = C_Client::get().getPlayerInventory();
-	for (int i = 0; i < 28; i++)
-	{
-		if (inventory.itemStacks[i].count == 0)
-			continue;
-		if (m_itemSlotImages[i].getGlobalBounds().contains(mousePos))
-			return i;
-	}
-	return -1;
+	for (int i = 0; i < 30; i++)
+		m_grid.itemBorders[i].setOutlineColor(sf::Color::Black);
+	if (slotClicked > -1 && slotClicked < 30)
+		m_grid.itemBorders[slotClicked].setOutlineColor(sf::Color::Yellow);
 }
 
 // UIComponent override
@@ -68,49 +39,85 @@ void InventoryTab::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 {
 	switch (ev.type)
 	{
-	case sf::Event::MouseButtonPressed:
-	{
-		setHighlightedSlot(-1);
-
-		if (!m_menuBounds.contains(mousePos))
-			return;
-
-		int slotClicked = getSlotUnderMouse(mousePos);
-		if (slotClicked < 0 || slotClicked >= 28)
+		case sf::Event::MouseButtonPressed:
 		{
-			// Mouse did not click a slot
-			return;
+			//draggedItem.exists = false;
+			setHighlightedSlot(-1);
+
+			if (!m_menuBounds.contains(mousePos))
+				return;
+
+			int slotClicked = m_grid.getSlotUnderMouse(mousePos);
+			if (slotClicked < 0 || slotClicked >= 28) // Mouse did not click a slot
+				return;
+
+			switch (ev.mouseButton.button)
+			{
+				case sf::Mouse::Button::Left:
+				{
+					auto& playerInventory = C_Client::get().getPlayerInventory();
+					auto& clickedStack = playerInventory.itemStacks[slotClicked];
+					if (clickedStack.count == 0)
+						return;
+
+					// Shift + Left Click to drop items
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+					{
+						C_Client::get().getPacket().write(CP_ItemDropped(clickedStack, (uint8_t)slotClicked));
+						return;
+					}
+
+					if (clickedStack.count == 0)
+						return;
+
+					DraggableItem draggedItem;
+					draggedItem.exists = true;
+					draggedItem.slot = slotClicked;
+					draggedItem.shape.setTexture(ResourceLoader::get().getItemTexture(clickedStack));
+					draggedItem.startPos = mousePos;
+					SceneManager::get().setDraggedItem(draggedItem);
+
+					return;
+				}
+
+				case sf::Mouse::Button::Right:
+				{
+					openRCOMenuForSlot(slotClicked);
+					return;
+				}
+			}
 		}
 
-		auto& playerInventory = C_Client::get().getPlayerInventory();
-		auto& clickedStack = playerInventory.itemStacks[slotClicked];
-		if (clickedStack.count == 0)
-			return; // The slot clicked was empty
-		auto& tabClicked = m_itemSlotImages[slotClicked];
-
-		switch (ev.mouseButton.button)
+		case sf::Event::MouseButtonReleased:
 		{
-		case sf::Mouse::Button::Left:
-		{
-			// Shift + Left Click to drop items
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-				C_Client::get().getPacket().write(CP_ItemDropped(clickedStack, (uint8_t)slotClicked));
-			else 
-				C_Client::get().getPacket().write(CP_UseItem(clickedStack.type, (uint8_t)slotClicked));
-			return;
-		}
+			if (ev.mouseButton.button == sf::Mouse::Button::Left)
+			{
+				/*if (!draggedItem.exists)
+					return;
+				draggedItem.exists = false;
+				if (!m_menuBounds.contains(mousePos))
+					return;
 
-		case sf::Mouse::Button::Right:
-		{
-			openRCOMenuForSlot(slotClicked);
-			return;
-		}
+				auto& playerInventory = C_Client::get().getPlayerInventory();
+				auto& clickedStack = playerInventory.itemStacks[draggedItem.slot];
 
-		default:
-			return;
+				if (draggedItem.draggedDistance < ItemDragDistanceCutoff)
+				{
+					// If the mouse hasn't moved much since the drag started, just use the item.
+					C_Client::get().getPacket().write(CP_UseItem(clickedStack.type, draggedItem.slot));
+					return;
+				}
+				else
+				{
+					// The item was actually dragged. Try to move it to a new slot.
+					auto toSlot = m_grid.getSlotUnderMouse(mousePos);
+					if (toSlot == -1)
+						return;
+					C_Client::get().getPacket().write(CP_SubmitItem(clickedStack, MoveItemOptions(draggedItem.slot, toSlot)));
+					return;
+				}*/
+			}
 		}
-		return;
-	}
 	}
 }
 
@@ -118,7 +125,9 @@ void InventoryTab::openRCOMenuForSlot(const int &slotClicked)
 {
 	auto& playerInventory = C_Client::get().getPlayerInventory();
 	auto& clickedStack = playerInventory.itemStacks[slotClicked];
-	auto& clickedTab = m_itemSlotImages[slotClicked];
+	if (clickedStack.count == 0)
+		return;
+	auto& clickedTab = m_grid.itemSlotImages[slotClicked];
 
 	// Highlight the selected item and unhighlight others
 	setHighlightedSlot(slotClicked);
@@ -142,25 +151,53 @@ void InventoryTab::openRCOMenuForSlot(const int &slotClicked)
 
 void InventoryTab::update(const GameTime& time, const sf::Vector2f& mousePos)
 {
+	printf("");
+	// Highlight the slot hovered by the mouse
+	int slotUnderMouse = m_grid.getSlotUnderMouse(mousePos);
+	setHighlightedSlot(slotUnderMouse);
+
+	// Move the dragged item if it exists
+	/*if (draggedItem.exists)
+	{
+		draggedItem.shape.setPosition(mousePos);
+		auto dragOffset = draggedItem.startPos - mousePos;
+		draggedItem.draggedDistance = sqrtf(dragOffset.x * dragOffset.x + dragOffset.y * dragOffset.y);
+	}*/
+
 	auto& inventory = C_Client::get().getPlayerInventory();
-	for (int i = 0; i < 28; i++)
+	for (int i = 0; i < 30; i++)
 		if (inventory.itemStacks[i].count > 0)
 		{
-			auto itemTexture = ResourceLoader::get().getItemTexture(inventory.itemStacks[i]);
-			m_itemSlotImages[i].setTexture(itemTexture);
+			// Update item textures
+			m_grid.itemSlotImages[i].setTexture(ResourceLoader::get().getItemTexture(inventory.itemStacks[i]));
+
+			// Update item count strings
 			if (inventory.itemStacks[i].count > 1)
-				m_itemCountText[i].setString(inventory.itemStacks[i].getFormattedCountString());
+				m_grid.itemCountText[i].setString(inventory.itemStacks[i].getFormattedCountString());
 		}
 }
 
 void InventoryTab::draw(sf::RenderTarget& target) const
 {
 	auto& inventory = C_Client::get().getPlayerInventory();
-	for (int i = 0; i < 28; i++)
+
+	for (int i = 0; i < 30; i++)
+	{
 		if (inventory.itemStacks[i].count > 0)
 		{
-			target.draw(m_itemSlotImages[i]);
+			// Draw the item icon
+			target.draw(m_grid.itemSlotImages[i]);
+			
+			// Draw the item count
 			if (inventory.itemStacks[i].count > 1)
-				target.draw(m_itemCountText[i]);
+				target.draw(m_grid.itemCountText[i]);
 		}
+
+		// Draw the item border
+		target.draw(m_grid.itemBorders[i]);
+	}
+
+	// Draw the dragged item if it exists
+	//if (draggedItem.exists && draggedItem.draggedDistance > ItemDragDistanceCutoff)
+	//	target.draw(draggedItem.shape);
 }

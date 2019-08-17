@@ -42,7 +42,7 @@ void S_MovementComponent::update()
 
 			// Set state to IDLE if we have reached the last waypoint
 			if (m_waypoints.size() == 0)
-				resetMovement();
+				stop();
 			break;
 		}
 
@@ -91,7 +91,7 @@ void S_MovementComponent::stepInRandomDirection()
 void S_MovementComponent::moveToPosition(const vec2<u16>& pos)
 {
 	// Fresh movement state
-	resetMovement();
+	stop();
 	moveKey.state = MoveState::Waypoint;
 	m_waypoints.push(pos);
 
@@ -198,7 +198,7 @@ const vec2s& S_MovementComponent::getPos() const
 	return moveKey.pos;
 }
 
-void S_MovementComponent::resetMovement()
+void S_MovementComponent::stop()
 {
 	while (m_waypoints.size() > 0)
 		m_waypoints.pop();
@@ -261,7 +261,7 @@ void S_MovementComponent::stepTowards(S_Entity& target)
 
 void S_MovementComponent::startFollow(u16 entity)
 {
-	resetMovement();
+	stop();
 	moveKey.state = MoveState::Follow;
 	m_followEntity = g_server->getWorldManager().getEntity(entity);
 }

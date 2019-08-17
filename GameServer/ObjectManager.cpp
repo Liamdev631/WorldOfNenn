@@ -3,7 +3,6 @@
 
 ObjectManager::ObjectManager()
 {
-	m_objects.reserve(1024);
 	loadObjects();
 }
 

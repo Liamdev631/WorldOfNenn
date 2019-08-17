@@ -39,7 +39,7 @@ public:
 	// Utiltiy functions
 	bool inRange(S_Entity& other) const;
 
-	// Damgae functions
+	// Damage functions
 
 	// Attempts to initiate combat with the given entity.
 	// @target: The combat component of the entity to attack

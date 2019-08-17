@@ -1,7 +1,7 @@
 #include "MenuTab.h"
 
 MenuTab::MenuTab()
-	: m_menuBounds(sf::FloatRect(547, 205, 190, 261))
+	: m_menuBounds(sf::FloatRect(527, 205, 230, 261))
 {
 
 }

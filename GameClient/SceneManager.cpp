@@ -51,10 +51,6 @@ SceneManager::SceneManager()
 	m_uiComponents.push_back(&Chatbox::get());
 	m_uiComponents.push_back(&SideMenu::get());
 	m_uiComponents.push_back(&RunButton::get());
-
-	m_glShader = make_shared<Shader>();
-	m_glShader->loadShader("assets/shaders/red.vert", NULL, NULL, NULL, "assets/shaders/red.frag");
-	m_terrain = Terrain::loadTerrain("assets/terrain/overworld.png", 2.0f, m_glShader);
 }
 
 SceneManager::~SceneManager()
@@ -86,9 +82,17 @@ void SceneManager::checkEvents()
 			case sf::Event::MouseButtonPressed:
 			{
 				if (ev.mouseButton.button == sf::Mouse::Button::Left)
-					onLeftClick();
+					onLeftPressed();
 				else if (ev.mouseButton.button == sf::Mouse::Button::Right)
-					onRightClick();
+					onRightPressed();
+				break;
+			}
+
+			case sf::Event::MouseButtonReleased:
+			{
+				if (ev.mouseButton.button == sf::Mouse::Button::Left)
+					onLeftReleased();
+
 				break;
 			}
 
@@ -134,10 +138,8 @@ void SceneManager::update(const GameTime& gameTime)
 		// Determine which entities are under the mouse
 		for (C_Entity* e : C_WorldManager::get().getActiveEntities())
 			if (e->getGlobalBounds().contains(mouseWorldPos))
-			{
 				if (e != C_WorldManager::get().getThisEntity())
 					m_entitiesUnderMouse.push_back(e);
-			}
 
 		// Determine which items are under the mouse
 		for (DropableItem& item : C_ItemManager::get().getItemsList())
@@ -163,6 +165,15 @@ void SceneManager::update(const GameTime& gameTime)
 		}
 	}
 
+	// Update the dragged item
+	if (m_draggedItem.exists)
+	{
+		m_draggedItem.shape.setPosition(m_mousePos - sf::Vector2f(16, 16));
+		auto dragOffset = m_draggedItem.startPos - m_mousePos;
+		m_draggedItem.draggedDistance = sqrtf(dragOffset.x * dragOffset.x + dragOffset.y * dragOffset.y);
+	}
+
+	// Update all components
 	for (auto& component : m_uiComponents)
 		component->update(C_Client::get().getGameTime(), m_mousePos);
 }
@@ -196,7 +207,7 @@ void SceneManager::drawGameScene()
 	m_gameScene.setView(m_worldView);
 
 	// Draw the map
-	//m_gameScene.draw(m_worldMap);
+	m_gameScene.draw(m_worldMap);
 
 	// Draw all items
 	for (auto& item : C_ItemManager::get().getItemsList())
@@ -217,30 +228,6 @@ void SceneManager::drawGameScene()
 	m_gameScene.draw(m_crosshair);
 	
 	// Done drawing
-	m_gameScene.display();
-	m_gameScene.setActive(false);
-}
-
-void SceneManager::draw3d()
-{
-	// Prep for drawing
-	m_gameScene.setActive(true);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	
-	auto m = glm::identity<mat4x4>();
-	auto v = glm::lookAt(fvec3(-10, -10, 10), { 5, 5, 0 }, { 0, 0, 1 });
-	auto p = glm::perspective(glm::radians(45.0f), (float)m_window.getSize().x / (float)m_window.getSize().y, 0.1f, 100.0f);
-	auto mvp = p * v * m;
-
-	m_glShader->bind();
-	//glUniformMatrix4fv(glGetUniformLocation(m_glShader->getHandle(), "MVP"), 1, GL_FALSE, &mvp[0][0]);
-	m_terrain->draw();
-	m_glShader->unbind();
-
 	m_gameScene.display();
 	m_gameScene.setActive(false);
 }
@@ -284,7 +271,6 @@ void SceneManager::drawGui()
 		text.setFillColor(sf::Color::Black);
 		m_window.draw(text);
 	}
-
 
 	// Draw the additional UI components
 	for (auto& component : m_uiComponents)
@@ -343,11 +329,18 @@ void SceneManager::drawGui()
 		}
 	}
 
+	// Draw the dragged mouse component
+	printf("%f\n", m_draggedItem.draggedDistance);
+	if (m_draggedItem.exists)
+	{
+		m_window.draw(m_draggedItem.shape);
+	}
+
 	// End draw
 	m_window.display();
 }
 
-void SceneManager::onLeftClick()
+void SceneManager::onLeftPressed()
 {
 	auto& packet = C_Client::get().getPacket();
 
@@ -386,7 +379,16 @@ void SceneManager::onLeftClick()
 	return;
 }
 
-void SceneManager::onRightClick()
+void SceneManager::onLeftReleased()
+{
+	// Check if the player was dragging an item
+	if (m_draggedItem.exists)
+	{
+		//auto draggedItem = m_draggedItem
+	}
+}
+
+void SceneManager::onRightPressed()
 {
 	m_optionsList.clear();
 	if (WorldSceneBounds.contains(m_mousePos))
@@ -498,4 +500,10 @@ void SceneManager::processRightClickOptionSelection(const RCOption& selection)
 	default:
 		return;
 	}
+}
+
+void SceneManager::setDraggedItem(const DraggableItem& item)
+{
+	m_draggedItem = item;
+	//m_isDraggingItem = true;
 }

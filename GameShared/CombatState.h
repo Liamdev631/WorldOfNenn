@@ -11,7 +11,7 @@ struct CombatState
 	u8 poisoned : 1;
 	u8 dead : 1;
 
-	void endUpdate()
+	void reset()
 	{
 		currentHealth = maxHealth;
 		poisoned = false;
@@ -26,7 +26,7 @@ struct CombatState
 	CombatState(u8 maximumHealth)
 	{
 		maxHealth = maximumHealth;
-		endUpdate();
+		reset();
 	}
 };
 #pragma pack(pop)

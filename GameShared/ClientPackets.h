@@ -141,3 +141,31 @@ struct CP_Login
 	}
 };
 #pragma pack(pop)
+
+#define CP_SubmitItem_header 9
+#pragma pack(push, 1)
+
+struct MoveItemOptions
+{
+	u8 from;
+	u8 to;
+
+	MoveItemOptions(u8 from, u8 to)
+		: from(from), to(to)
+	{ }
+};
+
+struct CP_SubmitItem
+{
+	const packet_header header = CP_SubmitItem_header;
+	ItemStack stack;
+	union
+	{
+		MoveItemOptions moveItem;
+	};
+
+	CP_SubmitItem(const ItemStack& stack, MoveItemOptions o)
+		: stack(stack), moveItem(o)
+	{ }
+};
+#pragma pack(pop)

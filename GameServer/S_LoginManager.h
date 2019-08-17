@@ -8,6 +8,8 @@
 class S_LoginManager
 {
 public:
+	typedef unique_ptr<S_LoginManager> Ptr;
+
 	S_LoginManager();
 	~S_LoginManager();
 

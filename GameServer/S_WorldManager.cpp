@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "CSVReader.h"
 
-S_WorldManager::S_WorldManager()
+S_World::S_World()
 {
 	m_entities = new S_Entity*[MAX_ENTITIES];
 	for (int i = 0; i < MAX_ENTITIES; i++)
@@ -13,26 +13,9 @@ S_WorldManager::S_WorldManager()
 	m_regions = new S_Region*[NUM_REGIONS];
 	for (size_t i = 0; i < NUM_REGIONS; i++)
 		m_regions[i] = new S_Region(*this);
-
-	// Load objects into regions
-	CSVReader reader;
-	reader.open("assets/data/ObjectInstanceData.csv");
-	reader.readNextRow();
-	int counter = 0;
-	while (reader.size() > 1)
-	{
-		Object o;
-		o.uid = counter++;
-		o.type = (ObjectType)std::stoi(reader[0]);
-		o.position.x = (u16)std::stoi(reader[1]);
-		o.position.y = (u16)std::stoi(reader[2]);
-		o.region = (Region)std::stoi(reader[3]);
-		m_regions[o.region]->injectObject(o);
-		reader.readNextRow();
-	}
 }
 
-S_WorldManager::~S_WorldManager()
+S_World::~S_World()
 {
 	for (size_t i = 0; i < NUM_REGIONS; i++)
 		delete m_regions[i];
@@ -41,24 +24,24 @@ S_WorldManager::~S_WorldManager()
 
 #pragma region Getter / Setter
 
-S_Entity* S_WorldManager::getEntity(u16 index) const
+S_Entity* S_World::getEntity(u16 index) const
 {
 	return m_entities[index];
 }
 
-std::vector<S_Entity*>& S_WorldManager::getEntities()
+std::vector<S_Entity*>& S_World::getEntities()
 {
 	return m_entitiesList;
 }
 
-S_Region& S_WorldManager::getRegion(const Region region) const
+S_Region& S_World::getRegion(const Region region) const
 {
 	return *m_regions[region];
 }
 
 #pragma endregion
 
-void S_WorldManager::update()
+void S_World::update()
 {
 	// Reset temporary states
 	for (S_Entity* entity : m_entitiesList)
@@ -79,7 +62,7 @@ void S_WorldManager::update()
 		entity->getCombat().update();
 }
 
-S_Entity_NPC* S_WorldManager::registerNPC(const u16 npcid, const EntityType entityType)
+S_Entity_NPC* S_World::registerNPC(const u16 npcid, const EntityType entityType)
 {
 	S_Entity_NPC* entity = new S_Entity_NPC((u16)(MAX_PLAYERS + npcid), entityType, R_Overworld);
 	m_entities[entity->uid] = entity;
@@ -88,14 +71,14 @@ S_Entity_NPC* S_WorldManager::registerNPC(const u16 npcid, const EntityType enti
 	return entity;
 }
 
-void S_WorldManager::registerPlayer(S_Entity_Player* connection)
+void S_World::registerPlayer(S_Entity_Player* connection)
 {
 	m_regions[connection->getMovement().region]->addConnection(connection);
 	m_entities[connection->uid] = connection;
 	m_entitiesList.push_back(connection);
 }
 
-void S_WorldManager::deregisterPlayer(S_Entity_Player* connection)
+void S_World::deregisterPlayer(S_Entity_Player* connection)
 {
 	m_regions[connection->getMovement().region]->removeConnection(connection);
 	m_entities[connection->uid] = nullptr;
@@ -106,4 +89,27 @@ void S_WorldManager::deregisterPlayer(S_Entity_Player* connection)
 			return;
 		}
 	throw "Entity manager tried to deregister a connection that does not exist!";
+}
+
+void S_World::loadMaps()
+{
+	printf("Loading NPCs.\n");
+	//auto npc1 = m_worldManager->registerNPC(0, ET_RAT);
+	//npc1->getMovement().blinkTo(vec2s(50, 50));
+	CSVReader reader;
+	reader.open("assets/data/EntityInstanceData.csv");
+	reader.readNextRow(); // Skip the first line
+	while (reader.size() > 1)
+	{
+		u16 uid = std::stoi(reader[0]);
+		EntityType type = (EntityType)std::stoi(reader[1]);
+		u16 level = std::stoi(reader[2]);
+		vec2<u16> boundsPos = vec2<u16>(std::stoi(reader[3]), std::stoi(reader[4]));
+		vec2<u8> boundsSize = vec2<u8>(std::stoi(reader[5]), std::stoi(reader[6]));
+		// reader[7] is notes
+		auto npc = registerNPC(uid, type);
+		npc->setBounds(boundsPos, boundsSize);
+		npc->getMovement().blinkTo(boundsPos);
+		reader.readNextRow();
+	}
 }

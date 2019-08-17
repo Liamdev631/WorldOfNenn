@@ -1,16 +1,4 @@
 #pragma once
-//#include <Magnum/Magnum.h>
-//#include <Magnum/GL/Buffer.h>
-//#include <Magnum/GL/DefaultFramebuffer.h>
-//#include <Magnum/GL/Mesh.h>
-//#include <Magnum/GL/Context.h>
-//#include <Magnum/Shaders/VertexColor.h>
-//#include <Magnum/Platform/GLContext.h>
-//#include <Magnum/SceneGraph/Camera.h>
-//#include <Magnum/SceneGraph/Drawable.h>
-//#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-//#include <Magnum/SceneGraph/Object.h>
-//#include <Magnum/SceneGraph/Scene.h>
 #include <SFML/Graphics.hpp>
 #include <GL/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -23,10 +11,8 @@
 #include "Chatbox.h"
 #include "RightClickOption.h"
 #include "RCOption.h"
-#include "OrbitCamera.h"
 #include <memory>
-#include "Terrain.h"
-#include "shader.h"
+#include "ClickableItemGrid.h"
 
 //  _______________________
 // |				|	   |
@@ -38,10 +24,6 @@
 // |________________|______|
 
 using namespace std;
-
-//typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-//typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
-//typedef SceneGraph::Camera3D //<SceneGraph::MatrixTransformation3D> Camera3D;
 
 class SceneManager
 {
@@ -63,9 +45,7 @@ private:
 	//GL::Mesh m_mesh {NoCreate};
 	//Shaders::VertexColor3D m_shader {NoCreate};
 	//SceneGraph::DrawableGroup3D m_drawables;
-	unique_ptr<Terrain> m_terrain;
 	sf::Shader m_shader;
-	shared_ptr<Shader> m_glShader;
 
 	//Object3D* m_cameraObject;
 	//SceneGraph::Camera3D* m_camera;
@@ -73,6 +53,7 @@ private:
 	// GUI
 	sf::RectangleShape m_interface;
 	std::vector<UIComponent*> m_uiComponents;
+	DraggableItem m_draggedItem;
 
 	// Mouse 
 	sf::Vector2f m_mousePos;
@@ -124,15 +105,17 @@ public:
 	void drawGui();
 	void drawGameScene();
 
-	void draw3d();
-
 	//void setRightClickOptions(const Target& optionsTarget, const sf::Vector2f& optionsPos, const std::vector<RightClickOption> options);
 	void setRightClickOptions(const sf::Vector2f& position, const std::vector<RCOption>& options);
 	void processRightClickOptionSelection(const RCOption& selection);
 	bool isMouseInOptionBox();
 
+	// Sets the item being dragged by the mouse
+	void setDraggedItem(const DraggableItem& item);
+
 private:
-	void onLeftClick();
-	void onRightClick();
+	void onLeftPressed();
+	void onLeftReleased();
+	void onRightPressed();
 };
 

@@ -9,6 +9,8 @@
 #include "S_WorldManager.h"
 #include "S_Entity_Player.h"
 
+using namespace std;
+
 // Forward declaration
 struct server_client;
 
@@ -21,8 +23,8 @@ public:
 
 private:
 	std::unique_ptr<enetpp::server<S_Entity_Player>> m_server;
-	S_LoginManager* m_loginManager;
-	S_WorldManager* m_worldManager;
+	S_LoginManager::Ptr m_loginManager;
+	S_World::Ptr m_worldManager;
 
 	S_Entity_Player* m_connections[MAX_PLAYERS];
 	std::vector<S_Entity_Player*> m_loadedPlayers;
@@ -36,7 +38,7 @@ public:
 	void update(); // 12 times/sec, fixed
 	void stop();
 	
-	S_WorldManager& getWorldManager() const;
+	S_World& getWorldManager() const;
 	const std::vector<S_Entity_Player*>& getPlayers() const;
 
 private:

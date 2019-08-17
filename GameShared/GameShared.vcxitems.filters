@@ -40,7 +40,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)StatSet.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Object.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Types.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\GameServer\ObjectManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)npctable.csv" />
@@ -52,7 +51,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ItemContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LootTable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Items.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\GameServer\ObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Packets">

@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{BC9B5710-ECFC-43CC-B9D2-9A83E47E349A}</ProjectGuid>
     <RootNamespace>GameClient</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Chatbox.h" />
+    <ClInclude Include="ClickableItemGrid.h" />
     <ClInclude Include="Crosshair.h" />
     <ClInclude Include="C_Client.h" />
     <ClInclude Include="C_Entity.h" />
@@ -153,19 +154,18 @@
     <ClInclude Include="Interface.h" />
     <ClInclude Include="InventoryTab.h" />
     <ClInclude Include="MenuTab.h" />
-    <ClInclude Include="OrbitCamera.h" />
     <ClInclude Include="RCOption.h" />
     <ClInclude Include="ResourceLoader.h" />
     <ClInclude Include="RunButton.h" />
     <ClInclude Include="SFMLOrthogonalLayer.hpp" />
-    <ClInclude Include="shader.h" />
     <ClInclude Include="SideMenu.h" />
     <ClInclude Include="Target.h" />
-    <ClInclude Include="Terrain.h" />
+    <ClInclude Include="TradeMenu.h" />
     <ClInclude Include="UIComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Chatbox.cpp" />
+    <ClCompile Include="ClickableItemGrid.cpp" />
     <ClCompile Include="Crosshair.cpp" />
     <ClCompile Include="C_Client.cpp" />
     <ClCompile Include="C_Entity.cpp" />
@@ -180,12 +180,10 @@
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="InventoryTab.cpp" />
     <ClCompile Include="MenuTab.cpp" />
-    <ClCompile Include="OrbitCamera.cpp" />
     <ClCompile Include="ResourceLoader.cpp" />
     <ClCompile Include="RunButton.cpp" />
-    <ClCompile Include="shader.cpp" />
     <ClCompile Include="SideMenu.cpp" />
-    <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TradeMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\shaders\red.frag" />
