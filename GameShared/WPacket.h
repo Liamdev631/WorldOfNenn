@@ -37,7 +37,7 @@ public:
 #ifdef _DEBUG
 		if (index >= m_size) {
 			printf("WPacket operator[] overflow %p\n", this);
-			throw std::overflow_error("WPacket operator[] overflow.");
+			throw std::exception("WPacket operator[] overflow.");
 		}
 #endif
 		return m_data[index];
@@ -78,7 +78,7 @@ public:
 		return m_writeOffset - m_data;
 	}
 
-	void endUpdate()
+	void flush()
 	{
 		m_writeOffset = m_data + sizeof(u32);
 	}

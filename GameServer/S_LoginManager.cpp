@@ -63,7 +63,7 @@ void S_LoginManager::loadPlayers()
 
 				fstream file;
 				SaveState state;
-				if (fs::exists(filename))
+				if (false)// sf::exists(filename))
 				{
 					printf("Loading user:%s's save.\n", conn->username);
 					file.open(filename, ios::in | ios::out | ios::app | ios::binary);

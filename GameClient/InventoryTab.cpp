@@ -1,8 +1,8 @@
 #include "InventoryTab.h"
 #include "C_Client.h"
+#include "C_WorldManager.h"
 #include "ResourceLoader.h"
 #include "Packets.h"
-#include "C_WorldManager.h"
 #include "RCOption.h"
 #include "SceneManager.h"
 
@@ -16,8 +16,8 @@ InventoryTab::InventoryTab()
 	settings.bounds = { 519, 205, 241, 261 };
 	settings.rowSize = 5;
 	settings.cellSize = { 32, 32 };
-	m_grid.setSettings(settings);
-	m_grid.setContainer(&C_Client::get().getPlayerInventory().itemStacks[0], 30);
+	m_inventoryGrid.setSettings(settings);
+	m_inventoryGrid.setContainer(&C_Client::get().getPlayerInventory().itemStacks[0], 30);
 }
 
 InventoryTab::~InventoryTab()
@@ -28,9 +28,9 @@ InventoryTab::~InventoryTab()
 void InventoryTab::setHighlightedSlot(const int& slotClicked)
 {
 	for (int i = 0; i < 30; i++)
-		m_grid.itemBorders[i].setOutlineColor(sf::Color::Black);
+		m_inventoryGrid.itemBorders[i].setOutlineColor(sf::Color::Black);
 	if (slotClicked > -1 && slotClicked < 30)
-		m_grid.itemBorders[slotClicked].setOutlineColor(sf::Color::Yellow);
+		m_inventoryGrid.itemBorders[slotClicked].setOutlineColor(sf::Color::Yellow);
 }
 
 // UIComponent override
@@ -47,7 +47,7 @@ void InventoryTab::onEvent(const sf::Event& ev, const sf::Vector2f& mousePos)
 			if (!m_menuBounds.contains(mousePos))
 				return;
 
-			int slotClicked = m_grid.getSlotUnderMouse(mousePos);
+			int slotClicked = m_inventoryGrid.getSlotUnderMouse(mousePos);
 			if (slotClicked < 0 || slotClicked >= 28) // Mouse did not click a slot
 				return;
 
@@ -127,7 +127,7 @@ void InventoryTab::openRCOMenuForSlot(const int &slotClicked)
 	auto& clickedStack = playerInventory.itemStacks[slotClicked];
 	if (clickedStack.count == 0)
 		return;
-	auto& clickedTab = m_grid.itemSlotImages[slotClicked];
+	auto& clickedTab = m_inventoryGrid.itemSlotImages[slotClicked];
 
 	// Highlight the selected item and unhighlight others
 	setHighlightedSlot(slotClicked);
@@ -153,7 +153,7 @@ void InventoryTab::update(const GameTime& time, const sf::Vector2f& mousePos)
 {
 	printf("");
 	// Highlight the slot hovered by the mouse
-	int slotUnderMouse = m_grid.getSlotUnderMouse(mousePos);
+	int slotUnderMouse = m_inventoryGrid.getSlotUnderMouse(mousePos);
 	setHighlightedSlot(slotUnderMouse);
 
 	// Move the dragged item if it exists
@@ -169,11 +169,11 @@ void InventoryTab::update(const GameTime& time, const sf::Vector2f& mousePos)
 		if (inventory.itemStacks[i].count > 0)
 		{
 			// Update item textures
-			m_grid.itemSlotImages[i].setTexture(ResourceLoader::get().getItemTexture(inventory.itemStacks[i]));
+			m_inventoryGrid.itemSlotImages[i].setTexture(ResourceLoader::get().getItemTexture(inventory.itemStacks[i]));
 
 			// Update item count strings
 			if (inventory.itemStacks[i].count > 1)
-				m_grid.itemCountText[i].setString(inventory.itemStacks[i].getFormattedCountString());
+				m_inventoryGrid.itemCountText[i].setString(inventory.itemStacks[i].getFormattedCountString());
 		}
 }
 
@@ -186,15 +186,15 @@ void InventoryTab::draw(sf::RenderTarget& target) const
 		if (inventory.itemStacks[i].count > 0)
 		{
 			// Draw the item icon
-			target.draw(m_grid.itemSlotImages[i]);
+			target.draw(m_inventoryGrid.itemSlotImages[i]);
 			
 			// Draw the item count
 			if (inventory.itemStacks[i].count > 1)
-				target.draw(m_grid.itemCountText[i]);
+				target.draw(m_inventoryGrid.itemCountText[i]);
 		}
 
 		// Draw the item border
-		target.draw(m_grid.itemBorders[i]);
+		target.draw(m_inventoryGrid.itemBorders[i]);
 	}
 
 	// Draw the dragged item if it exists

@@ -5,7 +5,7 @@
 class InventoryTab : public MenuTab
 {
 private:
-	ClickableItemGrid m_grid;
+	ClickableItemGrid m_inventoryGrid;
 
 public:
 	InventoryTab();

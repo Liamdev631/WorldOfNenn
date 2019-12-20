@@ -14,7 +14,7 @@
 constexpr auto SERVER_IP = "localhost";
 constexpr bool LOG_PACKET_HEADERS = false;
 
-enum ConnectionState
+enum struct ConnectionState
 {
 	Disconnected,
 	SayingHello,

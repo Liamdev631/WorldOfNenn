@@ -22,8 +22,13 @@ public:
 	//static S_WorldManager* WorldManager;
 
 private:
-	std::unique_ptr<enetpp::server<S_Entity_Player>> m_server;
+	// The ENET server. Handles the tcp/udp connections with the clients.
+	enetpp::server<S_Entity_Player> m_server;
+	
+	// Manages the login process.
 	S_LoginManager::Ptr m_loginManager;
+	
+	// The world that the server is simulating
 	S_World::Ptr m_worldManager;
 
 	S_Entity_Player* m_connections[MAX_PLAYERS];
@@ -49,5 +54,5 @@ private:
 	void transmitNewStates();
 	void calculateNewState();
 	void addConnectedPlayers();
-	void disconnectPlayer(S_Entity_Player& connection);
+	void disconnectPlayer(u16 uid);
 };

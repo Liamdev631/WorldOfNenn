@@ -36,6 +36,8 @@ https://github.com/fallahn/xygine/blob/master/xygine/src/components/ComponentTil
 #ifndef SFML_ORTHO_HPP_
 #define SFML_ORTHO_HPP_
 
+#undef max
+
 #include <tmxlite/Map.hpp>
 #include <tmxlite/TileLayer.hpp>
 
@@ -51,22 +53,14 @@ https://github.com/fallahn/xygine/blob/master/xygine/src/components/ComponentTil
 #include <array>
 #include <map>
 #include <string>
+#include <stdint.h>
 #include <limits>
 #include <iostream>
 #include <cmath>
 
-
-
-
 class MapLayer final : public sf::Drawable
 {
-	
-	
-
-
-
 public:
-
 
     MapLayer(const tmx::Map& map, std::size_t idx, tmx::IntRect bounds)
     {
@@ -145,7 +139,7 @@ private:
                 {
                     for (auto x = position.x; x < position.x + tileCount.x; x++)
                     {
-						unsigned int idx = (y * rowSize + x);
+						size_t idx = (y * rowSize + x);
                         if (idx < tileIDs.size() && tileIDs[idx].ID >= ts->getFirstGID()
                             && tileIDs[idx].ID < (ts->getFirstGID() + ts->getTileCount()))
                         {
@@ -252,7 +246,7 @@ private:
         //look up all the tile sets and load the textures
         const auto& tileSets = map.getTilesets();
         const auto& layerIDs = layer.getTiles();
-        std::uint32_t maxID = std::numeric_limits<std::uint32_t>::max();
+		unsigned int maxID = std::numeric_limits<std::uint32_t>::max();
         std::vector<const tmx::Tileset*> usedTileSets;
 
         for (auto i = tileSets.rbegin(); i != tileSets.rend(); ++i)

@@ -9,7 +9,6 @@
 
 S_Server::S_Server()
 {
-	m_server = make_unique<enetpp::server<S_Entity_Player>>();
 	for (int i = 0; i < MAX_PLAYERS; i++)
 		m_connections[i] = nullptr;
 	m_loginManager = make_unique<S_LoginManager>();
@@ -20,8 +19,8 @@ S_Server::S_Server()
 S_Server::~S_Server()
 {
 	for (auto& player : m_loadedPlayers)
-		disconnectPlayer(*player);
-	m_server->stop_listening();
+		disconnectPlayer(player->uid);
+	m_server.stop_listening();
 }
 
 void S_Server::start()
@@ -32,7 +31,7 @@ void S_Server::start()
 		clientInitFunc(client, ip);
 	};
 
-	m_server->start_listening(enetpp::server_listen_params<S_Entity_Player>()
+	m_server.start_listening(enetpp::server_listen_params<S_Entity_Player>()
 		.set_max_client_count(256)
 		.set_channel_count(1)
 		.set_listen_port(801)
@@ -52,22 +51,22 @@ void S_Server::addConnectedPlayers()
 		{
 			newConnection->getBuffer().write(SP_LoginResult(LoginResult::PasswordIncorrect));
 			newConnection->getBuffer().getTimestamp() = timestamp; // Set the ts at the beginning of the packet
-			m_server->send_packet_to(newConnection->uid, 0, newConnection->getBuffer().getData(), newConnection->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-			newConnection->getBuffer().endUpdate();
-			//enet_peer_disconnect_now(, ENET_PACKET_FLAG_RELIABLE);
+			m_server.send_packet_to(newConnection->uid, 0, newConnection->getBuffer().getData(), newConnection->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
+			newConnection->getBuffer().flush();
 			continue;
 		}
 		else
 		{
 			newConnection->getBuffer().write(SP_LoginResult(LoginResult::Success));
 			newConnection->getBuffer().getTimestamp() = timestamp; // Set the ts at the beginning of the packet
-			m_server->send_packet_to(newConnection->uid, 0, newConnection->getBuffer().getData(), newConnection->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-			newConnection->getBuffer().endUpdate();
+			m_server.send_packet_to(newConnection->uid, 0, newConnection->getBuffer().getData(), newConnection->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
+			newConnection->getBuffer().flush();
 		}
 
-		// Add the okayer to the world manager
+		// Add the player to the world manager
 		m_worldManager->registerPlayer(newConnection);
 		m_loadedPlayers.push_back(newConnection);
+
 		auto& packet = newConnection->getBuffer();
 
 		// Send the hello packet
@@ -91,21 +90,23 @@ void S_Server::addConnectedPlayers()
 	}
 }
 
-void S_Server::disconnectPlayer(S_Entity_Player& player)
+void S_Server::disconnectPlayer(u16 uid)
 {
-	auto iter = std::find(m_loadedPlayers.begin(), m_loadedPlayers.end(), &player);
-	assert(iter != m_loadedPlayers.end());
+	auto iter = std::find_if(m_loadedPlayers.begin(), m_loadedPlayers.end(),
+		[uid](const S_Entity_Player* entity) { return (entity->uid == uid); });
+	if (iter != m_loadedPlayers.end())
+	{
+		printf("Warning! Server tried to remove player (%u), but the player is not in the world.\n", uid);
+		return;
+	}
+	auto player = (*iter);
 	m_loadedPlayers.erase(iter);
-	m_worldManager->deregisterPlayer(&player);
+	m_worldManager->deregisterPlayer(player);
 
 	// Save the player's state
-	std::string filename = "saves/save_" + std::string(player.username) + ".sav";
+	std::string filename = "saves/save_" + std::string(player->username) + ".sav";
 	SaveState newState;
-	SaveState::savePlayerState(newState, &player);
-	//fstream file(filename, ios::out | ios::app | ios::binary | ios::trunc);
-	//file.clear();
-	//file.write((const char*)(&newState), sizeof(SaveState));
-	//file.close();
+	SaveState::savePlayerState(newState, player);
 	FILE* file;
 	auto result = fopen_s(&file, filename.c_str(), "w+b");
 	if (result)
@@ -114,7 +115,7 @@ void S_Server::disconnectPlayer(S_Entity_Player& player)
 		fclose(file);
 	}
 	else
-		printf("Error creating save for (user:%u)", player.uid);
+		printf("Error creating save for (user:%u)\n", player->uid);
 	
 
 	// Send a message to the nearby players
@@ -126,8 +127,8 @@ void S_Server::disconnectPlayer(S_Entity_Player& player)
 		buff.write(p);
 	}
 
-	printf("Client (%d) disconnected.\n", player.uid);
-	m_connections[player.uid] = nullptr;
+	printf("Client (%d) disconnected.\n", player->uid);
+	m_connections[player->uid] = nullptr;
 }
 
 void S_Server::update()
@@ -139,12 +140,12 @@ void S_Server::update()
 	transmitNewStates();
 
 	// Send the packets
-	for (auto c : m_server->get_connected_clients())
+	for (auto c : m_server.get_connected_clients())
 		if (c->getBuffer().getBytesWritten() > sizeof(u32))
 		{
 			c->getBuffer().getTimestamp() = timestamp; // Set the ts at the beginning of the packet
-			m_server->send_packet_to(c->uid, 0, c->getBuffer().getData(), c->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-			c->getBuffer().endUpdate();
+			m_server.send_packet_to(c->uid, 0, c->getBuffer().getData(), c->getBuffer().getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
+			c->getBuffer().flush();
 		}
 
 }
@@ -160,7 +161,7 @@ void S_Server::calculateNewState()
 	auto on_client_data_received = [&](S_Entity_Player& client, const u8* data, size_t data_size) {
 		onDataRecieved(client, RPacket(data, data_size));
 	};
-	m_server->consume_events(on_client_connected, on_client_disconnected, on_client_data_received);
+	m_server.consume_events(on_client_connected, on_client_disconnected, on_client_data_received);
 
 	// Calculate new entity positions
 	m_worldManager->update();
@@ -187,7 +188,7 @@ void S_Server::transmitNewStates()
 
 void S_Server::stop()
 {
-	m_server->stop_listening();
+	m_server.stop_listening();
 }
 
 S_World& S_Server::getWorldManager() const
@@ -219,7 +220,7 @@ void S_Server::onClientConnected(S_Entity_Player& client)
 /// Called when a client disconnects from the server
 void S_Server::onClientDisconnected(S_Entity_Player& client)
 {
-	disconnectPlayer(client);
+	disconnectPlayer(client.uid);
 }
 
 constexpr bool DEBUG_PRINT_PACKET_HEADER = false;

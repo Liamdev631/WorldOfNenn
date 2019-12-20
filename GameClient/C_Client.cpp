@@ -7,10 +7,8 @@
 #include "ExperienceTab.h"
 
 C_Client::C_Client()
+	: m_connectionState(ConnectionState::Disconnected), m_client(make_unique<enetpp::client>()), m_packetBuffer(new WPacket(512))
 {
-	m_connectionState = ConnectionState::Disconnected;
-	m_client = make_unique<enetpp::client>();
-	m_packetBuffer = new WPacket(512);
 	m_timer.totalTime = 0;
 	m_timer.deltaTime = 0;
 
@@ -23,44 +21,45 @@ C_Client::~C_Client()
 	m_client->disconnect();
 }
 
-#ifdef WIN32
+/*#ifdef WIN32
+#define byte win_byte_override
 #include <windows.h>
 std::string getexepath()
 {
 	char result[MAX_PATH];
 	return std::string(result, GetModuleFileName(NULL, result, MAX_PATH));
 }
-#endif
+#endif*/
 
 void C_Client::start()
 {
 #ifdef WIN32
-	printf("WINDOWS: Client running from %s.\n", getexepath().c_str());
+	//printf("WINDOWS: Client running from %s.\n", getexepath().c_str());
 #endif
 	// Ask for login info and send it to the server
 	printf("Username?\n");
-	char username[12];
 	fflush(stdout);
-	//fgets(username, 12, stdin);
+	char username[12] = "";
+	/*fgets(username, 12, stdin);
 	for (int i = 0; i < 12; i++)
 		if (username[i] == '\n')
 		{
 			username[i] = '\0';
 			break;
-		}
-	strcpy(username, "liam");
+		}*/
+	strcpy_s<12>(username, "liam");
 
 	printf("Password?\n");
-	char password[12];
+	char password[12] = "";
 	fflush(stdout);
-	//fgets(password, 12, stdin);
+	/*fgets(password, 12, stdin);
 	for (int i = 0; i < 12; i++)
 		if (password[i] == '\n')
 		{
 			password[i] = '\0';
 			break;
-		}
-	strcpy(password, "nigger");
+		}*/
+	strcpy_s<12>(password, "password");
 
 	printf("user: %s\n", username);
 	printf("pass: %s\n", password);
@@ -75,7 +74,7 @@ void C_Client::start()
 
 	m_packetBuffer->write(CP_Login(username, password, 5));
 	m_client->send_packet(0, m_packetBuffer->getData(), m_packetBuffer->getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-	m_packetBuffer->endUpdate();
+	m_packetBuffer->flush();
 }
 
 bool C_Client::update()
@@ -105,7 +104,7 @@ bool C_Client::update()
 	if (m_packetBuffer->getBytesWritten() > 0)
 	{
 		m_client->send_packet(0, m_packetBuffer->getData(), m_packetBuffer->getBytesWritten(), ENET_PACKET_FLAG_RELIABLE);
-		m_packetBuffer->endUpdate();
+		m_packetBuffer->flush();
 	}
 
 	// Render

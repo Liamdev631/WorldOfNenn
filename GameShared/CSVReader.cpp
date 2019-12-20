@@ -1,3 +1,6 @@
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+
 #include "CSVReader.h"
 #include <sstream>
 #include <locale>
@@ -43,9 +46,6 @@ const std::vector<std::wstring>& CSVReader::readNextRow()
 		m_data.push_back(L"");
 	return m_data;
 }
-
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 
 void CSVReader::open(const std::string& filename)
 {

@@ -1,7 +1,7 @@
 #ifndef ENETPP_SERVER_LISTEN_PARAMS_H_
 #define ENETPP_SERVER_LISTEN_PARAMS_H_
 
-#include "enet/enet.h"
+#include <enet/enet.h>
 #include <chrono>
 #include <functional>
 

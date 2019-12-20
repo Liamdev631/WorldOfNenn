@@ -112,7 +112,7 @@ std::vector<ItemStack> LootGenerator::generateLoot(EntityType entityType)
 		else
 		{
 			u16 random = rand() % DR_ALWAYS, counter = 0;
-			for (int i = lootTable->size() - 1; i >= 0; i--)
+			for (size_t i = lootTable->size() - 1; i >= 0; i--)
 			{
 				counter += (*lootTable)[i].dropRate;
 
