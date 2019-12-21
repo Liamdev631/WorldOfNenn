@@ -1,1 +1,1 @@
-XCOPY /E /Y assets Debug\assets\
+XCOPY /E /Y assets x64\Debug\assets\

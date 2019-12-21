@@ -122,7 +122,7 @@ void S_MovementComponent::blinkTo(const vec2s& pos)
 	//	}
 	//}
 
-	if (owner.getEntityType() == ET_PLAYER || owner.getEntityType() == ET_ADMIN)
+	if (owner.getEntityType() == EntityType::Player || owner.getEntityType() == EntityType::Admin)
 	{
 		auto& packetBuffer = reinterpret_cast<S_Entity_Player*>(&owner)->getBuffer();
 		for (auto iter = thisRegion.getEntities().begin();
@@ -296,7 +296,7 @@ void S_MovementComponent::forcePositionUpdate()
 void S_MovementComponent::setRun(bool run)
 {
 	moveKey.run = run;
-	if (owner.getEntityType() == ET_PLAYER)
+	if (owner.getEntityType() == EntityType::Player)
 	{
 		auto& player = *reinterpret_cast<S_Entity_Player*>(&owner);
 		player.getBuffer().write(SP_SetRun(moveKey.run));

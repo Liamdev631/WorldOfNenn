@@ -61,7 +61,7 @@ void C_WorldManager::setThisUID(const u16 playerUID)
 	assert(playerUID < MAX_ENTITIES);
 	this->uid = playerUID;
 	auto playerEntity = getEntity(playerUID);
-	playerEntity->setEntityType(EntityType::ET_PLAYER);
+	playerEntity->setEntityType(EntityType::Player);
 }
 
 void C_WorldManager::update(const GameTime& gameTime)

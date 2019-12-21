@@ -7,7 +7,7 @@ ResourceLoader::ResourceLoader()
 
 ResourceLoader::~ResourceLoader()
 {
-
+	
 }
 
 sf::Texture* ResourceLoader::getTexture(const std::string& fileName)
@@ -24,9 +24,9 @@ sf::Texture* ResourceLoader::getItemTexture(const ItemStack& item)
 	return getTexture(filename);
 }
 
-sf::Texture* ResourceLoader::getEntityTexture(const EntityType& type)
+sf::Texture* ResourceLoader::getEntityTexture(const EntityType type)
 {
-	std::string filename = "assets/graphics/entities/entity_" + std::to_string(type) + ".png";
+	std::string filename = "assets/graphics/entities/entity_" + std::to_string(static_cast<int>(type)) + ".png";
 	return getTexture(filename);
 }
 

@@ -90,7 +90,7 @@ void S_Server::addConnectedPlayers()
 	}
 }
 
-void S_Server::disconnectPlayer(u16 uid)
+void S_Server::disconnectPlayer(unsigned int uid)
 {
 	auto iter = std::find_if(m_loadedPlayers.begin(), m_loadedPlayers.end(),
 		[uid](const S_Entity_Player* entity) { return (entity->uid == uid); });
@@ -157,7 +157,7 @@ void S_Server::calculateNewState()
 
 	// Consume events raised by the network worker thread
 	auto on_client_connected = [&](S_Entity_Player& client) { onClientConnected(client); };
-	auto on_client_disconnected = [&](S_Entity_Player& client) { onClientDisconnected(client); };
+	auto on_client_disconnected = [&](unsigned int client) { onClientDisconnected(client); };
 	auto on_client_data_received = [&](S_Entity_Player& client, const u8* data, size_t data_size) {
 		onDataRecieved(client, RPacket(data, data_size));
 	};
@@ -218,9 +218,9 @@ void S_Server::onClientConnected(S_Entity_Player& client)
 }
 
 /// Called when a client disconnects from the server
-void S_Server::onClientDisconnected(S_Entity_Player& client)
+void S_Server::onClientDisconnected(unsigned int client)
 {
-	disconnectPlayer(client.uid);
+	disconnectPlayer(client);
 }
 
 constexpr bool DEBUG_PRINT_PACKET_HEADER = false;

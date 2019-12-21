@@ -24,11 +24,11 @@ SceneManager::SceneManager()
 	m_window.setActive(true);
 
 	// Initialize glew
-	GLenum err = glewInit();
+	/*GLenum err = glewInit();
 	if (GLEW_OK != err)
 		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-
+	*/
 	// Create the render texture for the game world
 	if (!m_gameScene.create(WorldSceneSize.x, WorldSceneSize.y, settings))
 		printf("Failed to create game scene render texture (res:(x:%u y:%u))!\n", WorldSceneSize.x, WorldSceneSize.y);
@@ -68,7 +68,7 @@ void SceneManager::checkEvents()
 			case sf::Event::Resized:
 			{
 				// adjust the viewport when the window is resized
-				glViewport(0, 0, ev.size.width, ev.size.height);
+				//glViewport(0, 0, ev.size.width, ev.size.height);
 				break;
 			}
 

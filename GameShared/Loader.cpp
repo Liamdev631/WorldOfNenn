@@ -26,12 +26,12 @@ void Loader::loadItemsInfo()
 	reader.open("assets/data/ItemData.csv");
 	reader.readNextRow(); // Skip header
 	int rows = 0;
-	for (int i = 0; i < ItemType::ITEM_COUNT; i++)
+	for (int i = 0; i < NumItemTypes; i++)
 	{
 		rows++;
 		if (reader.size() == 1)
 		{
-			printf("Error! ItemData row %i is missing! Should have %u rows!\n", rows, ItemType::ITEM_COUNT);
+			printf("Error! ItemData row %i is missing! Should have %zu rows!\n", rows, NumItemTypes);
 			return;
 		}
 
@@ -50,16 +50,16 @@ void Loader::loadEntityInfo()
 	reader.open("assets/data/EntityData.csv");
 	reader.readNextRow(); // Skip header
 	int rows = 0;
-	for (int i = 0; i < EntityType::ET_COUNT; i++)
+	for (int i = 0; i < NumItemTypes; i++)
 	{
 		rows++;
 		if (reader.size() == 1)
 		{
-			printf("Error! EntityData row %i is missing! Should have %u rows!\n", rows, EntityType::ET_COUNT);
+			printf("Error! EntityData row %i is missing! Should have %zu rows!\n", rows, NumItemTypes);
 			return;
 		}
-		m_entityNames[i] = reader[1 + (int)m_language * 2];
-		m_entityDescription[i] = reader[2 + (int)m_language * 2];
+		m_entityNames[i] = reader[1 + static_cast<unsigned int>(m_language) * 2];
+		m_entityDescription[i] = reader[2 + static_cast<unsigned int>(m_language) * 2];
 		reader.readNextRow();
 	}
 }
@@ -83,29 +83,29 @@ void Loader::loadWeaponsInfo()
 	}
 }
 
-const std::wstring& Loader::getItemName(const ItemType& item) const
+const std::wstring& Loader::getItemName(const ItemType item) const
 {
 	return m_itemNames[item];
 }
 
-const u32& Loader::getItemMaxStack(const ItemType& item) const
+const u32& Loader::getItemMaxStack(const ItemType item) const
 {
 	return m_itemMaxStack[item];
 }
 
-const std::wstring& Loader::getItemDescription(const ItemType& item) const
+const std::wstring& Loader::getItemDescription(const ItemType item) const
 {
-	return m_itemDescription[item];
+	return m_itemDescription[static_cast<size_t>(item)];
 }
 
 const std::wstring& Loader::getEntityName(const EntityType type) const
 {
-	return m_entityNames[type];
+	return m_entityNames[static_cast<size_t>(type)];
 }
 
 const std::wstring& Loader::getEntityDescription(const EntityType type) const
 {
-	return m_entityDescription[type];
+	return m_entityDescription[static_cast<size_t>(type)];
 }
 
 const WeaponStats* Loader::getWeaponData(ItemType type) const

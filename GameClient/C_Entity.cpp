@@ -8,7 +8,7 @@
 #include <string>
 
 C_Entity::C_Entity(const u16 uid)
-	: uid(uid), entityType(ET_COUNT), m_moveTimer(0), m_translating(false), expired(false), rotation(0)
+	: uid(uid), entityType(EntityType::Rat), m_moveTimer(0), m_translating(false), expired(false), rotation(0)
 {
 	C_WorldManager::get().getActiveEntities().push_back(this);
 
@@ -173,9 +173,9 @@ const sf::Color C_Entity::getColor() const
 {
 	switch (entityType)
 	{
-		case ET_ADMIN:
+		case EntityType::Admin:
 			return sf::Color::Cyan;
-		case ET_PLAYER:
+		case EntityType::Player:
 			return sf::Color::White;
 		default:
 			return sf::Color::Yellow;

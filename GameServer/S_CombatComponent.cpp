@@ -60,7 +60,7 @@ void S_CombatComponent::update()
 			targetEntity->getCombat().takeDamage(*this, damage);
 
 			// Give combat xp
-			if (owner.getEntityType() == EntityType::ET_PLAYER)
+			if (owner.getEntityType() == EntityType::Player)
 			{
 				auto thisPlayer = reinterpret_cast<S_Entity_Player*>(&owner);
 				thisPlayer->addExperience(Skill::SK_Strength, (exp_val)max(1, damage / 2));
@@ -139,7 +139,7 @@ void S_CombatComponent::die()
 
 u8 S_CombatComponent::getRange() const
 {
-	return owner.getEntityType() == ET_PLAYER ? 1 : 1;
+	return owner.getEntityType() == EntityType::Player ? 1 : 1;
 }
 
 bool S_CombatComponent::inRange(S_Entity& other) const

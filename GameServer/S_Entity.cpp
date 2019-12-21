@@ -28,7 +28,7 @@ const EntityType& S_Entity::getEntityType() const
 
 S_Entity_Player* S_Entity::asPlayer()
 {
-	if (entityType != ET_PLAYER)
+	if (entityType != EntityType::Player)
 		return nullptr;
 	return reinterpret_cast<S_Entity_Player*>(this);
 }

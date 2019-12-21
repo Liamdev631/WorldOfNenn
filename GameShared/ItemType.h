@@ -10,5 +10,6 @@ enum ItemType : u32
 	ITEM_BRONZE_SWORD = 4,
 	ITEM_IRON_SWORD = 5,
 	ITEM_FIRE_SWORD = 6,
-	ITEM_COUNT
 };
+
+constexpr size_t NumItemTypes = 7;

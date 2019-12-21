@@ -1,11 +1,12 @@
 #pragma once
 #include "Global.h"
 
-enum EntityType : u16
+enum class EntityType : u16
 {
-	ET_ADMIN = 0,
-	ET_PLAYER = 1,
-	ET_RAT = 2,
-	ET_PIG = 3,
-	ET_COUNT
+	Admin = 0,
+	Player = 1,
+	Rat = 2,
+	Pig = 3,
 };
+
+constexpr size_t NumEntityTypes = 4;

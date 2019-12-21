@@ -25,7 +25,7 @@ public:
 
 	sf::Texture* getTexture(const std::string& fileName);
 	sf::Texture* getItemTexture(const ItemStack& item);
-	sf::Texture* getEntityTexture(const EntityType& type);
+	sf::Texture* getEntityTexture(const EntityType type);
 	sf::Font* getFont(const std::string& fileName);
 };
 

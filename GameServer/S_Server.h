@@ -49,10 +49,10 @@ public:
 private:
 	void clientInitFunc(S_Entity_Player& client, const char* ip);
 	void onClientConnected(S_Entity_Player& client);
-	void onClientDisconnected(S_Entity_Player& client_uid);
+	void onClientDisconnected(unsigned int client_uid);
 	void onDataRecieved(S_Entity_Player& client, RPacket answer);
 	void transmitNewStates();
 	void calculateNewState();
 	void addConnectedPlayers();
-	void disconnectPlayer(u16 uid);
+	void disconnectPlayer(unsigned int uid);
 };

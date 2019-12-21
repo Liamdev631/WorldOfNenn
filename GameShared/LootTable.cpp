@@ -64,14 +64,14 @@ namespace hidden
 		*/
 
 		// 2 - Rat
-		addAlwaysDrop(EntityType::ET_RAT, Entry_SingleBone); // This is an example of a premade loot entry
-		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_RAW_RAT_MEAT));
-		addAlwaysDrop(EntityType::ET_RAT, LootEntry(ItemType::ITEM_COINS, 1, 3));
+		addAlwaysDrop(EntityType::Rat, Entry_SingleBone); // This is an example of a premade loot entry
+		addAlwaysDrop(EntityType::Rat, LootEntry(ItemType::ITEM_RAW_RAT_MEAT));
+		addAlwaysDrop(EntityType::Rat, LootEntry(ItemType::ITEM_COINS, 1, 3));
 
 		// 3 - Pig
-		addAlwaysDrop(EntityType::ET_PIG, Entry_SingleBone);
-		addAlwaysDrop(EntityType::ET_PIG, LootEntry(ItemType::ITEM_COINS, 2, 5));
-		addLootTable(EntityType::ET_PIG, new LootTable {
+		addAlwaysDrop(EntityType::Pig, Entry_SingleBone);
+		addAlwaysDrop(EntityType::Pig, LootEntry(ItemType::ITEM_COINS, 2, 5));
+		addLootTable(EntityType::Pig, new LootTable {
 			LootEntry(ItemType::ITEM_BRONZE_SWORD, DR_COMMON, 1, 1),
 			});
 	}

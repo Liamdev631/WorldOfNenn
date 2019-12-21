@@ -5,17 +5,8 @@
 #include "EntityType.h"
 #include "ItemType.h"
 #include "Equipment.h"
+#include "Language.h"
 #include <map>
-
-//constexpr size_t NumberOfItems = 4;
-//constexpr size_t NumberOfEntityTypes = 4;
-
-// Globalization
-enum Language
-{
-	English = 0,
-	ChineseSimp = 1,
-};
 
 class Loader
 {
@@ -25,13 +16,13 @@ private:
 	const Language m_language;
 
 	// Items
-	std::wstring	m_itemNames[ItemType::ITEM_COUNT];
-	u32				m_itemMaxStack[ItemType::ITEM_COUNT];
-	std::wstring	m_itemDescription[ItemType::ITEM_COUNT];
+	std::wstring	m_itemNames[NumItemTypes];
+	u32				m_itemMaxStack[NumItemTypes];
+	std::wstring	m_itemDescription[NumItemTypes];
 
 	// Entities
-	std::wstring	m_entityNames[EntityType::ET_COUNT];
-	std::wstring	m_entityDescription[EntityType::ET_COUNT];
+	std::wstring	m_entityNames[NumEntityTypes];
+	std::wstring	m_entityDescription[NumEntityTypes];
 
 	// Weapons
 	std::map<ItemType, WeaponStats> m_weaponData;
@@ -46,9 +37,9 @@ public:
 	}
 	
 	// Items
-	const std::wstring&	getItemName(const ItemType& item) const;
-	const u32&			getItemMaxStack(const ItemType& item) const;
-	const std::wstring&	getItemDescription(const ItemType& item) const;
+	const std::wstring&	getItemName(const ItemType item) const;
+	const u32&			getItemMaxStack(const ItemType item) const;
+	const std::wstring&	getItemDescription(const ItemType item) const;
 	
 	// Entities
 	const std::wstring& getEntityName(const EntityType type) const;

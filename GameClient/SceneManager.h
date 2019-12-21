@@ -1,8 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <GL/glew.h>
-#include <SFML/OpenGL.hpp>
+//#include <GL/glew.h>
+//#include <SFML/OpenGL.hpp>
 #include <vector>
+#include <memory>
 #include "C_WorldMap.h"
 #include "GameTime.h"
 #include "Global.h"
@@ -11,7 +12,6 @@
 #include "Chatbox.h"
 #include "RightClickOption.h"
 #include "RCOption.h"
-#include <memory>
 #include "ClickableItemGrid.h"
 
 //  _______________________
@@ -36,8 +36,8 @@ private:
 	sf::RenderTexture m_gameScene;
 	sf::View m_worldView;
 	C_WorldMap m_worldMap;
-	GLuint vertex_buffer, index_buffer;
-	GLint mvp_location, vpos_location, vcol_location;
+	//GLuint vertex_buffer, index_buffer;
+	//GLint mvp_location, vpos_location, vcol_location;
 
 	// 3D
 	//std::unique_ptr<Platform::GLContext> m_context;
